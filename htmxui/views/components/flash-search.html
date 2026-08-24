@@ -1,0 +1,48 @@
+<!-- HTMX-Flash ultra-fast client search -->
+<div class="relative w-full max-w-3xl mx-auto" 
+     hx-ext="flash" 
+     hx-flash-src="/inventory.json" 
+     hx-flash-db="inventory">
+    
+    <!-- Search Box -->
+    <div class="relative group mb-4">
+        <svg class="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input 
+            type="search" 
+            placeholder="Search 5,000 items instantly (e.g. 'calpol 500mg')..."
+            class="flex h-12 w-full rounded-full border border-input bg-background pl-11 pr-4 text-base shadow-sm transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:shadow-md"
+            hx-flash-search="true"
+            hx-target="#search-results"
+            hx-flash-limit="50"
+            autocomplete="off"
+            oninput="document.getElementById('flash-status').style.display='none'"
+        >
+        <!-- The htmx-flash.js dispatches 'flash:ready' when the 5,000 item JSON is cached in memory -->
+        <span id="flash-status" class="absolute right-4 top-3.5 text-xs text-muted-foreground animate-pulse" 
+              hx-on:flash:ready="this.innerText='⚡ 5,000 records loaded'; this.classList.remove('animate-pulse'); this.classList.add('text-green-600')">
+            Loading database...
+        </span>
+    </div>
+    
+    <!-- Results Table -->
+    <div class="rounded-xl border border-border bg-card shadow-lg overflow-hidden">
+        <div class="max-h-[500px] overflow-y-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-muted/50 sticky top-0">
+                    <tr>
+                        <th class="h-10 px-4 text-left font-medium text-muted-foreground uppercase text-xs tracking-wider">Medicine Name</th>
+                        <th class="h-10 px-4 text-left font-medium text-muted-foreground uppercase text-xs tracking-wider">Stock Qty</th>
+                        <th class="h-10 px-4 text-right font-medium text-muted-foreground uppercase text-xs tracking-wider">Cost (INR)</th>
+                    </tr>
+                </thead>
+                <tbody id="search-results">
+                    <tr>
+                        <td colspan="3" class="p-8 text-center text-muted-foreground">
+                            Waiting for search query...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

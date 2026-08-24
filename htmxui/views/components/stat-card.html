@@ -1,0 +1,10 @@
+<!-- 
+  Component: stat-card.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col gap-1">
+  <p class="text-sm font-medium text-muted-foreground">{title}</p>
+  <h3 class="text-2xl font-bold">{value}</h3>
+  <p class="text-xs text-muted-foreground">{trend}</p>
+</div>

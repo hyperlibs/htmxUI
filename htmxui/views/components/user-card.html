@@ -1,0 +1,13 @@
+<!-- 
+  Component: user-card.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-sm">
+  <img src="{avatar_url}" alt="{name}" class="h-12 w-12 rounded-full object-cover" />
+  <div class="flex flex-col">
+    <h4 class="text-sm font-semibold">{name}</h4>
+    <p class="text-xs text-muted-foreground">{role}</p>
+  </div>
+  <button class="ml-auto text-xs border border-border px-3 py-1 rounded hover:bg-muted transition-colors">View</button>
+</div>

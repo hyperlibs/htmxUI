@@ -1,0 +1,63 @@
+<div class="space-y-8 max-w-4xl py-6">
+  <div>
+    <h1 class="text-4xl font-extrabold tracking-tight mb-4">Installation</h1>
+    <p class="text-lg text-muted-foreground leading-relaxed">
+      HTMXUI is not a dependency you install via NPM. It is a collection of HTML, CSS, and lightweight JS snippets that you copy and paste directly into your project.
+    </p>
+  </div>
+
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">1. Install Tailwind CSS</h2>
+    <p class="text-sm text-muted-foreground">HTMXUI uses Tailwind CSS for all styling. Ensure you have Tailwind set up in your project.</p>
+    <div class="code-block bg-muted/50 p-4 rounded-xl border border-border font-mono text-sm overflow-x-auto">
+      npm install -D tailwindcss<br>
+      npx tailwindcss init
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">2. Include HTMX and HTMXUI Extensions</h2>
+    <p class="text-sm text-muted-foreground">Add the base HTMX script, along with our ultra-lightweight <code>htmx-bolt.js</code> for zero-bloat client-side reactivity.</p>
+    <div class="code-block bg-muted/50 p-4 rounded-xl border border-border font-mono text-sm overflow-x-auto text-foreground">
+&lt;script src="https://unpkg.com/htmx.org@2.0.4"&gt;&lt;/script&gt;<br>
+&lt;script src="/path/to/htmx-bolt.js"&gt;&lt;/script&gt;
+    </div>
+    <p class="text-sm text-muted-foreground mt-2">
+      <em>(Download <code>htmx-bolt.js</code> from the public directory of the repository).</em>
+    </p>
+  </div>
+
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">3. Setup CSS Variables (Theming)</h2>
+    <p class="text-sm text-muted-foreground">Add these CSS variables to your global stylesheet to power the dynamic theming system.</p>
+    <div class="code-block bg-muted/50 p-4 rounded-xl border border-border font-mono text-sm overflow-x-auto text-foreground">
+@layer base {<br>
+&nbsp;&nbsp;:root {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--background: 0 0% 100%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--foreground: 222.2 84% 4.9%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--card: 0 0% 100%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--card-foreground: 222.2 84% 4.9%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--primary: 221.2 83.2% 53.3%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--primary-foreground: 210 40% 98%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--muted: 210 40% 96.1%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--muted-foreground: 215.4 16.3% 46.9%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--border: 214.3 31.8% 91.4%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--input: 214.3 31.8% 91.4%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--ring: 221.2 83.2% 53.3%;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;--radius: 0.5rem;<br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+  </div>
+
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">4. Copy and Paste Components</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Browse the components in the sidebar, find the one you need, and copy the raw HTML into your templates. 
+      Use standard <code>hx-post</code>, <code>hx-get</code>, and <code>hx-target</code> attributes to hook them up to your backend!
+    </p>
+    <a href="/docs/components/button" class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 mt-2">
+      Browse Components →
+    </a>
+  </div>
+</div>

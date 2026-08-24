@@ -1,0 +1,11 @@
+<!-- 
+  Component: banner.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="w-full bg-primary px-4 py-3 text-primary-foreground flex justify-between items-center text-sm rounded-md shadow-sm">
+  <p>{message}</p>
+  <button hx-on:click="this.parentElement.remove()" class="hover:bg-primary-foreground/20 p-1 rounded">
+    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+  </button>
+</div>

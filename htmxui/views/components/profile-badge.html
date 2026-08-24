@@ -1,0 +1,9 @@
+<!-- 
+  Component: profile-badge.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1 bg-background hover:bg-muted transition-colors cursor-pointer">
+  <img src="{avatar_url}" alt="Profile" class="h-6 w-6 rounded-full object-cover" />
+  <span class="text-sm font-medium">{username}</span>
+</div>

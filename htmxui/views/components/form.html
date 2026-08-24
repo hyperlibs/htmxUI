@@ -1,0 +1,9 @@
+<!-- 
+  Component: form.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<form hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  hx-post="{submit_url}" hx-target="{target}" class="space-y-6">
+  {fields}
+  <button type="submit" class="w-full inline-flex justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90">Submit</button>
+</form>

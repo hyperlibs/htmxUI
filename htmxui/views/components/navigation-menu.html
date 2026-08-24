@@ -1,0 +1,10 @@
+<!-- 
+  Component: navigation-menu.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<nav hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="relative z-10 flex max-w-max flex-1 items-center justify-center">
+  <ul class="group flex flex-1 list-none items-center justify-center space-x-1">
+    {items}
+  </ul>
+</nav>

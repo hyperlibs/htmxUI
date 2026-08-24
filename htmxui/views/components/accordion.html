@@ -1,0 +1,19 @@
+<!-- 
+  Component: accordion.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<!-- Accordion Component (Backend Agnostic, CSS/HTML5 Only) -->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="w-full border-b border-border">
+  <details class="group [&_summary::-webkit-details-marker]:hidden">
+    <summary class="flex w-full items-center justify-between py-4 text-sm font-medium transition-all hover:underline cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      <span class="text-foreground">{heading}</span>
+      <svg class="h-4 w-4 shrink-0 transition-transform duration-200 group-open:rotate-180 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </summary>
+    <div class="pb-4 pt-0 text-sm text-muted-foreground">
+      {content}
+    </div>
+  </details>
+</div>

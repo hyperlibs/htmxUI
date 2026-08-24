@@ -1,0 +1,6 @@
+<!-- 
+  Component: link.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<a hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  href="{url}" hx-boost="true" class="font-medium text-primary underline underline-offset-4 hover:text-primary/80">{text}</a>

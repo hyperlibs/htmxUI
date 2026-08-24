@@ -1,0 +1,12 @@
+<!-- 
+  Component: carousel.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="relative w-full overflow-hidden rounded-lg border border-border">
+  <div class="flex transition-transform duration-500" style="transform: translateX(-{current_index}00%);">
+    {items}
+  </div>
+  <button hx-get="{prev_url}" hx-target="closest div" class="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 rounded-full">←</button>
+  <button hx-get="{next_url}" hx-target="closest div" class="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 p-2 rounded-full">→</button>
+</div>

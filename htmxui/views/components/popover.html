@@ -1,0 +1,20 @@
+<!-- 
+  Component: popover.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<!-- Popover Component -->
+<details hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="relative inline-block group [&_summary::-webkit-details-marker]:hidden">
+  <summary class="inline-flex w-full items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer list-none">
+    {trigger_text}
+  </summary>
+
+  <div class="absolute left-1/2 z-50 mt-2 w-72 -translate-x-1/2 rounded-md border border-border bg-popover p-4 text-popover-foreground shadow-md outline-none animate-in fade-in-80 zoom-in-95">
+    <div class="space-y-2">
+      <h4 class="font-medium leading-none">{title}</h4>
+      <p class="text-sm text-muted-foreground">
+        {content}
+      </p>
+    </div>
+  </div>
+</details>

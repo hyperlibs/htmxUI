@@ -1,0 +1,16 @@
+<!-- 
+  Component: stepper.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex items-center w-full">
+  <div class="flex items-center text-primary relative">
+    <div class="rounded-full transition duration-500 ease-in-out h-8 w-8 py-3 border-2 border-primary flex items-center justify-center font-bold">1</div>
+    <div class="absolute top-0 -ml-10 text-center mt-10 w-28 text-xs font-medium text-primary uppercase">Step 1</div>
+  </div>
+  <div class="flex-auto border-t-2 transition duration-500 ease-in-out border-primary mx-2"></div>
+  <div class="flex items-center text-muted-foreground relative">
+    <div class="rounded-full transition duration-500 ease-in-out h-8 w-8 py-3 border-2 border-border flex items-center justify-center font-bold bg-background">2</div>
+    <div class="absolute top-0 -ml-10 text-center mt-10 w-28 text-xs font-medium uppercase">Step 2</div>
+  </div>
+</div>

@@ -1,0 +1,109 @@
+<div id="demo-canvas" hx-canvas="true" hx-snap="20" class="relative w-full h-[600px] border border-border rounded-lg overflow-hidden bg-muted/20" 
+     style="background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px); background-size: 20px 20px;">
+  
+  <!-- Toolbar -->
+  <div class="absolute top-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-background/80 backdrop-blur border border-border rounded-full p-2 shadow-sm z-20">
+    <select id="component-spawner" onchange="spawnNode(this.value); this.value='';" class="h-8 rounded-md border border-input bg-background text-sm px-2 cursor-pointer hover:bg-muted">
+      <option value="">+ Spawn Component</option>
+      <option value="text">Text (Editable)</option>
+      <option value="shape">Shape</option>
+      <option value="image">Image</option>
+      <option value="button">UI: Button</option>
+      <option value="card">UI: Card</option>
+      <option value="badge">UI: Badge</option>
+      <option value="input">UI: Input</option>
+    </select>
+    <div class="w-px h-5 bg-border"></div>
+    <button onclick="document.getElementById('demo-canvas').innerHTML = ''" class="h-8 w-8 rounded-full hover:bg-accent flex items-center justify-center text-sm text-destructive" title="Clear Canvas">🗑️</button>
+  </div>
+  
+  <!-- Mini Map -->
+  <div class="absolute bottom-4 right-4 w-32 h-24 bg-background border border-border rounded-md shadow-sm z-20 p-2 opacity-80 hover:opacity-100 transition-opacity pointer-events-none">
+    <div class="w-full h-full border border-primary/20 rounded relative">
+      <div class="absolute top-2 left-2 w-10 h-6 border-2 border-primary bg-primary/10 rounded-sm"></div>
+    </div>
+  </div>
+  
+  <!-- Initial Nodes -->
+  <div id="node-1" hx-drag="true" class="absolute top-32 left-32 w-64 bg-background border border-border rounded-lg shadow-md transition-shadow hover:shadow-lg z-10 group">
+    <div class="absolute -top-6 left-0 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+      x: <span class="coord-x">128</span>, y: <span class="coord-y">128</span>
+    </div>
+    <div hx-drag-handle="true" class="px-4 py-2 border-b border-border font-medium text-sm flex justify-between items-center cursor-move bg-muted/30 select-none">
+      Node: Trigger <span class="h-2 w-2 rounded-full bg-green-500"></span>
+    </div>
+    <div class="p-4 space-y-2 text-sm text-muted-foreground">
+      <p>When user clicks the button.</p>
+    </div>
+  </div>
+  
+  <svg id="canvas-svg" class="absolute inset-0 pointer-events-none w-full h-full z-0">
+    <path hx-connect="true" hx-connect-from="node-1" hx-connect-to="node-2" 
+          fill="none" stroke="currentColor" class="text-primary" stroke-width="2" stroke-dasharray="4"/>
+  </svg>
+  
+  <div id="node-2" hx-drag="true" class="absolute top-56 left-[512px] w-64 bg-background border border-border rounded-lg shadow-md border-primary/50 transition-shadow hover:shadow-lg z-10 group">
+    <div class="absolute -top-6 left-0 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+      x: <span class="coord-x">512</span>, y: <span class="coord-y">224</span>
+    </div>
+    <div hx-drag-handle="true" class="px-4 py-2 border-b border-border font-medium text-sm flex justify-between items-center cursor-move bg-muted/30 select-none">
+      Node: Action <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+    </div>
+    <div class="p-4 space-y-2 text-sm text-muted-foreground">
+      <p>Send welcome email payload.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  let nodeCounter = 3;
+  function spawnNode(type) {
+    if (!type) return;
+    const canvas = document.getElementById('demo-canvas');
+    const id = 'node-' + (nodeCounter++);
+    const offset = (nodeCounter * 20) % 200;
+    
+    let content = '';
+    let handle = '';
+    let extraClass = '';
+    
+    if (type === 'text') {
+        content = `<div contenteditable="true" class="outline-none text-2xl font-bold p-2 min-w-[150px] focus:bg-accent/20 rounded cursor-text">Editable Text</div>`;
+    } else if (type === 'shape') {
+        content = `<div class="w-32 h-32 bg-primary/20 border-2 border-primary rounded-xl flex items-center justify-center font-medium">Shape</div>`;
+    } else if (type === 'image') {
+        content = `<div class="w-48 h-32 bg-muted rounded-xl flex items-center justify-center overflow-hidden border border-border"><img src="https://images.unsplash.com/photo-1707343843437-caacff5cfa74?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover pointer-events-none"/></div>`;
+    } else if (type === 'button') {
+        content = `<button class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2 pointer-events-none">Button Component</button>`;
+        extraClass = 'p-1 hover:border-dashed hover:border-primary/50 border-2 border-transparent rounded';
+    } else if (type === 'card') {
+        content = `<div class="rounded-xl border border-border bg-card text-card-foreground shadow w-[250px]"><div class="p-6"><h3 class="font-semibold leading-none tracking-tight">Card Component</h3><p class="text-sm text-muted-foreground mt-2">Drop other components into me!</p></div></div>`;
+        extraClass = 'p-1 hover:border-dashed hover:border-primary/50 border-2 border-transparent rounded-xl';
+    } else if (type === 'badge') {
+        content = `<div class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80 pointer-events-none">Badge</div>`;
+        extraClass = 'p-1 hover:border-dashed hover:border-primary/50 border-2 border-transparent rounded';
+    } else if (type === 'input') {
+        content = `<input type="text" placeholder="Input component..." class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm pointer-events-none"/>`;
+        extraClass = 'p-1 hover:border-dashed hover:border-primary/50 border-2 border-transparent rounded';
+    }
+
+    const startX = 100 + offset;
+    const startY = 100 + offset;
+
+    const el = document.createElement('div');
+    el.id = id;
+    el.setAttribute('hx-drag', 'true');
+    el.className = `absolute z-10 group cursor-move ${extraClass}`;
+    el.style.top = startY + 'px';
+    el.style.left = startX + 'px';
+    
+    el.innerHTML = `
+      <div class="absolute -top-6 left-0 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
+        x: <span class="coord-x">${startX}</span>, y: <span class="coord-y">${startY}</span>
+      </div>
+      ${content}
+    `;
+    
+    canvas.appendChild(el);
+  }
+</script>

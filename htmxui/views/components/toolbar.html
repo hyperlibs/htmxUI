@@ -1,0 +1,9 @@
+<!-- 
+  Component: toolbar.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex items-center space-x-1 border border-border bg-background p-1 rounded-md w-max">
+  {items}
+  <!-- <button class="p-2 hover:bg-muted rounded text-foreground">Icon</button> -->
+</div>

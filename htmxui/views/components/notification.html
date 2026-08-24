@@ -1,0 +1,14 @@
+<!-- 
+  Component: notification.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="fixed bottom-4 right-4 z-50 flex max-w-sm flex-col gap-2 rounded-lg border border-border bg-background p-4 shadow-lg animate-in slide-in-from-bottom-5">
+  <div class="flex items-start gap-4">
+    <div class="flex-1">
+      <h3 class="text-sm font-semibold">{title}</h3>
+      <p class="text-sm text-muted-foreground">{description}</p>
+    </div>
+    <button hx-on:click="this.closest('div.fixed').remove()" class="text-muted-foreground hover:text-foreground">✕</button>
+  </div>
+</div>

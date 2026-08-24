@@ -1,0 +1,8 @@
+<!-- 
+  Component: resizable.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex h-[200px] w-full items-center justify-center rounded-md border border-border bg-background p-6 resize-y overflow-auto">
+  <span class="font-semibold">Resize me vertically</span>
+</div>

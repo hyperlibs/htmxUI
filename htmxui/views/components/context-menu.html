@@ -1,0 +1,9 @@
+<!-- 
+  Component: context-menu.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<!-- Trigger requires JS to capture right click and position, but HTMX can handle actions -->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="fixed hidden bg-popover border border-border shadow-md rounded-md p-1 min-w-[8rem] z-50 text-sm" id="{id}">
+  {menu_items}
+</div>

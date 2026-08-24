@@ -1,0 +1,13 @@
+<!-- 
+  Component: alert-dialog.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<dialog hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="backdrop:bg-black/80 rounded-lg p-6 shadow-lg border border-border bg-background max-w-md w-full" id="{id}">
+  <h2 class="text-lg font-semibold">{title}</h2>
+  <p class="text-sm text-muted-foreground mt-2">{description}</p>
+  <div class="mt-4 flex justify-end gap-2">
+    <button onclick="document.getElementById('{id}').close()" class="px-4 py-2 border rounded text-sm hover:bg-accent">Cancel</button>
+    <button hx-post="{confirm_url}" class="px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90">Continue</button>
+  </div>
+</dialog>

@@ -1,0 +1,14 @@
+<!-- 
+  Component: submenu.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<details hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="group [&_summary::-webkit-details-marker]:hidden relative">
+  <summary class="flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent focus:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+    {title}
+    <span class="ml-auto text-xs opacity-60">▶</span>
+  </summary>
+  <div class="absolute left-full top-0 ml-1 w-48 rounded-md border border-border bg-popover p-1 shadow-md text-popover-foreground">
+    {items}
+  </div>
+</details>

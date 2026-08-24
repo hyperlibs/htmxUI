@@ -1,0 +1,51 @@
+<div class="w-full max-w-[210mm] mx-auto min-h-[297mm] bg-white text-black p-12 border shadow-sm font-serif">
+  <style>
+    @media print {
+      body * { visibility: hidden; }
+      .print-area, .print-area * { visibility: visible; }
+      .print-area { position: absolute; left: 0; top: 0; width: 100%; border: none; padding: 0; }
+    }
+  </style>
+  <div class="print-area">
+    <div class="flex justify-between items-end border-b-2 border-black pb-4 mb-8">
+      <div>
+        <h1 class="text-4xl font-bold">INVOICE</h1>
+        <p class="text-gray-600 mt-1 font-sans text-sm">#INV-2026-084</p>
+      </div>
+      <div class="text-right text-sm">
+        <p class="font-bold">Acme Corporation</p>
+        <p class="text-gray-600">123 Business Rd.</p>
+        <p class="text-gray-600">Tech City, TC 10101</p>
+      </div>
+    </div>
+    
+    <div class="mb-8">
+      <h3 class="font-bold mb-2">Billed To:</h3>
+      <p>Client Name</p>
+      <p class="text-gray-600">Client Address Line 1</p>
+      <p class="text-gray-600">City, State ZIP</p>
+    </div>
+    
+    <table class="w-full text-left font-sans text-sm mb-8">
+      <thead class="border-b border-black">
+        <tr><th class="py-2">Item</th><th class="py-2 text-right">Qty</th><th class="py-2 text-right">Price</th><th class="py-2 text-right">Total</th></tr>
+      </thead>
+      <tbody class="border-b border-gray-300">
+        <tr><td class="py-3 font-medium">Consulting Services</td><td class="py-3 text-right text-gray-600">10</td><td class="py-3 text-right text-gray-600">$150.00</td><td class="py-3 text-right">$1,500.00</td></tr>
+        <tr><td class="py-3 font-medium">Software License</td><td class="py-3 text-right text-gray-600">1</td><td class="py-3 text-right text-gray-600">$500.00</td><td class="py-3 text-right">$500.00</td></tr>
+      </tbody>
+    </table>
+    
+    <div class="flex justify-end font-sans">
+      <div class="w-64">
+        <div class="flex justify-between py-1 text-sm text-gray-600"><span>Subtotal</span><span>$2,000.00</span></div>
+        <div class="flex justify-between py-1 text-sm text-gray-600"><span>Tax (10%)</span><span>$200.00</span></div>
+        <div class="flex justify-between py-2 mt-2 border-t-2 border-black font-bold text-lg"><span>Total</span><span>$2,200.00</span></div>
+      </div>
+    </div>
+    
+    <div class="mt-24 text-center text-sm text-gray-500 border-t border-gray-300 pt-8">
+      Thank you for your business. Please remit payment within 30 days.
+    </div>
+  </div>
+</div>

@@ -1,0 +1,6 @@
+<!-- 
+  Component: image.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<img hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  src="{src}" alt="{alt}" loading="lazy" class="rounded-md object-cover transition-all hover:scale-105 {classes}" />

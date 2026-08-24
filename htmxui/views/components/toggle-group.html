@@ -1,0 +1,20 @@
+<!-- 
+  Component: toggle-group.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="inline-flex items-center justify-center rounded-md bg-muted p-1 text-muted-foreground" hx-post="{update_url}" hx-trigger="change" hx-target="{target}">
+  <!-- Uses radio buttons disguised as toggles for single-choice group -->
+  <label class="cursor-pointer">
+    <input type="radio" name="{name}" value="{val1}" class="peer hidden" checked />
+    <div class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all peer-checked:bg-background peer-checked:text-foreground peer-checked:shadow-sm">
+      {label1}
+    </div>
+  </label>
+  <label class="cursor-pointer">
+    <input type="radio" name="{name}" value="{val2}" class="peer hidden" />
+    <div class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all peer-checked:bg-background peer-checked:text-foreground peer-checked:shadow-sm">
+      {label2}
+    </div>
+  </label>
+</div>

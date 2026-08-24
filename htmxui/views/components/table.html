@@ -1,0 +1,17 @@
+<!-- 
+  Component: table.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="w-full overflow-auto">
+  <table class="w-full caption-bottom text-sm">
+    <thead class="[&_tr]:border-b border-border">
+      <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        {headers} <!-- <th class="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Header</th> -->
+      </tr>
+    </thead>
+    <tbody class="[&_tr:last-child]:border-0">
+      {rows} <!-- <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"><td class="p-4 align-middle">Cell</td></tr> -->
+    </tbody>
+  </table>
+</div>

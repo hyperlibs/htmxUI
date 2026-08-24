@@ -1,0 +1,19 @@
+<!-- 
+  Component: sheet.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  id="sheet-backdrop" class="fixed inset-0 z-50 bg-black/80 flex">
+  <div class="fixed inset-y-0 left-0 z-50 h-full w-3/4 border-r border-border bg-background p-6 shadow-lg transition-transform duration-300 ease-in-out sm:max-w-sm animate-in slide-in-from-left">
+    <div class="flex flex-col space-y-2 text-left">
+      <h2 class="text-lg font-semibold">{title}</h2>
+      <p class="text-sm text-muted-foreground">{description}</p>
+    </div>
+    <div class="mt-4 h-full overflow-y-auto">
+      {content}
+    </div>
+    <button hx-on:click="document.getElementById('sheet-backdrop').remove()" class="absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none">
+      ✕
+    </button>
+  </div>
+</div>

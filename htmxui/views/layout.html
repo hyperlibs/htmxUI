@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTMXUI — Dashboard Demo</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body:has(dialog[open]) { overflow: hidden; }
+    .bar { transition: height 0.4s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    .fade-in { animation: fadeIn 0.3s ease forwards; }
+  </style>
+</head>
+<body class="bg-background text-foreground antialiased min-h-screen">
+
+  <!-- App Shell -->
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="hidden md:flex w-56 flex-col border-r border-border bg-card">
+      <div class="flex h-14 items-center border-b border-border px-4">
+        <svg class="h-5 w-5 text-primary mr-2" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+        <span class="font-bold text-lg tracking-tight">HTMXUI</span>
+      </div>
+      <nav class="flex-1 p-3 space-y-1">
+        <a href="#" class="flex items-center gap-3 rounded-md bg-accent px-3 py-2 text-sm font-medium text-accent-foreground">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Customers
+        </a>
+        <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          Products
+        </a>
+        <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          Analytics
+        </a>
+        <a href="#" class="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+          <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+          Settings
+        </a>
+      </nav>
+      <div class="border-t border-border p-3">
+        <div class="flex items-center gap-3 rounded-md px-3 py-2">
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">DK</span>
+          <div class="flex flex-col">
+            <span class="text-sm font-medium">David K.</span>
+            <span class="text-xs text-muted-foreground">admin@htmxui.dev</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+
+      <!-- Top Bar -->
+      <header class="flex h-14 items-center justify-between border-b border-border px-6">
+        <div>
+          <h1 class="text-lg font-semibold">Dashboard</h1>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <svg class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="search" placeholder="Search..." class="h-9 w-48 rounded-md border border-input bg-transparent pl-9 pr-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+          </div>
+          <button class="relative p-2 rounded-md hover:bg-accent transition-colors">
+            <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="absolute top-1 right-1 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-destructive"></span></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+        <!-- Tabs -->
+        <div class="flex items-center justify-between">
+          <div class="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground">
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all bg-background text-foreground shadow-sm">Overview</button>
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:text-foreground">Analytics</button>
+            <button class="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all hover:text-foreground">Reports</button>
+          </div>
+          <button class="inline-flex items-center justify-center rounded-md text-sm font-medium bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2">
+            <svg class="mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Download
+          </button>
+        </div>
+
+        <!-- Stat Cards Row -->
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div class="rounded-xl border border-border bg-card p-6 shadow-sm fade-in">
+            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 class="text-sm font-medium tracking-tight text-muted-foreground">Total Revenue</h3>
+              <svg class="h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="text-2xl font-bold">$45,231.89</div>
+            <p class="text-xs text-muted-foreground">+20.1% from last month</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-6 shadow-sm fade-in" style="animation-delay:.05s">
+            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 class="text-sm font-medium tracking-tight text-muted-foreground">Subscriptions</h3>
+              <svg class="h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="text-2xl font-bold">+2,350</div>
+            <p class="text-xs text-muted-foreground">+180.1% from last month</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-6 shadow-sm fade-in" style="animation-delay:.1s">
+            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 class="text-sm font-medium tracking-tight text-muted-foreground">Sales</h3>
+              <svg class="h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+            </div>
+            <div class="text-2xl font-bold">+12,234</div>
+            <p class="text-xs text-muted-foreground">+19% from last month</p>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-6 shadow-sm fade-in" style="animation-delay:.15s">
+            <div class="flex flex-row items-center justify-between space-y-0 pb-2">
+              <h3 class="text-sm font-medium tracking-tight text-muted-foreground">Active Now</h3>
+              <svg class="h-4 w-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <div class="text-2xl font-bold">+573</div>
+            <p class="text-xs text-muted-foreground">+201 since last hour</p>
+          </div>
+        </div>
+
+        <!-- Main Grid: Chart + Recent Sales -->
+        <div class="grid gap-4 lg:grid-cols-7">
+
+          <!-- Chart Card -->
+          <div class="rounded-xl border border-border bg-card shadow-sm lg:col-span-4">
+            <div class="flex flex-col space-y-1.5 p-6">
+              <h3 class="font-semibold leading-none tracking-tight">Overview</h3>
+            </div>
+            <div class="p-6 pt-0">
+              <!-- Pure CSS Bar Chart -->
+              <div class="flex items-end justify-between gap-2 h-[220px]">
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:40%"></div>
+                  <span class="text-xs text-muted-foreground">Jan</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:25%"></div>
+                  <span class="text-xs text-muted-foreground">Feb</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:55%"></div>
+                  <span class="text-xs text-muted-foreground">Mar</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:75%"></div>
+                  <span class="text-xs text-muted-foreground">Apr</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:50%"></div>
+                  <span class="text-xs text-muted-foreground">May</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:65%"></div>
+                  <span class="text-xs text-muted-foreground">Jun</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:45%"></div>
+                  <span class="text-xs text-muted-foreground">Jul</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:80%"></div>
+                  <span class="text-xs text-muted-foreground">Aug</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:90%"></div>
+                  <span class="text-xs text-muted-foreground">Sep</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:60%"></div>
+                  <span class="text-xs text-muted-foreground">Oct</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:70%"></div>
+                  <span class="text-xs text-muted-foreground">Nov</span>
+                </div>
+                <div class="flex-1 flex flex-col items-center gap-1">
+                  <div class="w-full bg-primary rounded-t-sm bar" style="height:100%"></div>
+                  <span class="text-xs text-muted-foreground">Dec</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Sales Card -->
+          <div class="rounded-xl border border-border bg-card shadow-sm lg:col-span-3">
+            <div class="flex flex-col space-y-1.5 p-6">
+              <h3 class="font-semibold leading-none tracking-tight">Recent Sales</h3>
+              <p class="text-sm text-muted-foreground">You made 265 sales this month.</p>
+            </div>
+            <div class="p-6 pt-0 space-y-6">
+              <div class="flex items-center">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">OM</span>
+                <div class="ml-4 space-y-1">
+                  <p class="text-sm font-medium leading-none">Olivia Martin</p>
+                  <p class="text-sm text-muted-foreground">olivia@email.com</p>
+                </div>
+                <div class="ml-auto font-medium">+$1,999.00</div>
+              </div>
+              <div class="flex items-center">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">JL</span>
+                <div class="ml-4 space-y-1">
+                  <p class="text-sm font-medium leading-none">Jackson Lee</p>
+                  <p class="text-sm text-muted-foreground">jackson@email.com</p>
+                </div>
+                <div class="ml-auto font-medium">+$39.00</div>
+              </div>
+              <div class="flex items-center">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">IN</span>
+                <div class="ml-4 space-y-1">
+                  <p class="text-sm font-medium leading-none">Isabella Nguyen</p>
+                  <p class="text-sm text-muted-foreground">isabella@email.com</p>
+                </div>
+                <div class="ml-auto font-medium">+$299.00</div>
+              </div>
+              <div class="flex items-center">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">WK</span>
+                <div class="ml-4 space-y-1">
+                  <p class="text-sm font-medium leading-none">William Kim</p>
+                  <p class="text-sm text-muted-foreground">will@email.com</p>
+                </div>
+                <div class="ml-auto font-medium">+$99.00</div>
+              </div>
+              <div class="flex items-center">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-bold">SD</span>
+                <div class="ml-4 space-y-1">
+                  <p class="text-sm font-medium leading-none">Sofia Davis</p>
+                  <p class="text-sm text-muted-foreground">sofia@email.com</p>
+                </div>
+                <div class="ml-auto font-medium">+$39.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="rounded-xl border border-border bg-card shadow-sm">
+          <div class="flex items-center justify-between p-6">
+            <h3 class="font-semibold leading-none tracking-tight">Transactions</h3>
+            <div class="flex items-center gap-2">
+              <input type="search" placeholder="Filter emails..." class="h-8 w-40 rounded-md border border-input bg-transparent px-3 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
+              <details class="relative [&_summary::-webkit-details-marker]:hidden">
+                <summary class="inline-flex items-center justify-center rounded-md border border-input bg-background h-8 px-3 text-sm hover:bg-accent cursor-pointer list-none">
+                  Columns
+                  <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </summary>
+                <div class="absolute right-0 z-50 mt-2 w-40 rounded-md border border-border bg-popover p-1 shadow-md">
+                  <label class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded cursor-pointer"><input type="checkbox" checked class="accent-primary" /> Status</label>
+                  <label class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded cursor-pointer"><input type="checkbox" checked class="accent-primary" /> Email</label>
+                  <label class="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded cursor-pointer"><input type="checkbox" checked class="accent-primary" /> Amount</label>
+                </div>
+              </details>
+            </div>
+          </div>
+          <div class="overflow-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-t border-border bg-muted/50">
+                  <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground w-12"><input type="checkbox" class="accent-primary" /></th>
+                  <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
+                  <th class="h-10 px-4 text-left align-middle font-medium text-muted-foreground">Email</th>
+                  <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground">Amount</th>
+                  <th class="h-10 px-4 text-right align-middle font-medium text-muted-foreground w-12"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-t border-border hover:bg-muted/50 transition-colors">
+                  <td class="p-4 align-middle"><input type="checkbox" class="accent-primary" /></td>
+                  <td class="p-4 align-middle"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-500/10 text-green-600 border-green-500/20">Success</span></td>
+                  <td class="p-4 align-middle text-muted-foreground">ken99@yahoo.com</td>
+                  <td class="p-4 align-middle text-right font-medium">$316.00</td>
+                  <td class="p-4 align-middle text-right"><button class="h-8 w-8 p-0 hover:bg-accent rounded-md inline-flex items-center justify-center">···</button></td>
+                </tr>
+                <tr class="border-t border-border hover:bg-muted/50 transition-colors">
+                  <td class="p-4 align-middle"><input type="checkbox" class="accent-primary" /></td>
+                  <td class="p-4 align-middle"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-500/10 text-green-600 border-green-500/20">Success</span></td>
+                  <td class="p-4 align-middle text-muted-foreground">abe45@gmail.com</td>
+                  <td class="p-4 align-middle text-right font-medium">$242.00</td>
+                  <td class="p-4 align-middle text-right"><button class="h-8 w-8 p-0 hover:bg-accent rounded-md inline-flex items-center justify-center">···</button></td>
+                </tr>
+                <tr class="border-t border-border hover:bg-muted/50 transition-colors">
+                  <td class="p-4 align-middle"><input type="checkbox" class="accent-primary" /></td>
+                  <td class="p-4 align-middle"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-yellow-500/10 text-yellow-600 border-yellow-500/20">Processing</span></td>
+                  <td class="p-4 align-middle text-muted-foreground">monserrat44@gmail.com</td>
+                  <td class="p-4 align-middle text-right font-medium">$837.00</td>
+                  <td class="p-4 align-middle text-right"><button class="h-8 w-8 p-0 hover:bg-accent rounded-md inline-flex items-center justify-center">···</button></td>
+                </tr>
+                <tr class="border-t border-border hover:bg-muted/50 transition-colors">
+                  <td class="p-4 align-middle"><input type="checkbox" class="accent-primary" /></td>
+                  <td class="p-4 align-middle"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-green-500/10 text-green-600 border-green-500/20">Success</span></td>
+                  <td class="p-4 align-middle text-muted-foreground">silas22@gmail.com</td>
+                  <td class="p-4 align-middle text-right font-medium">$874.00</td>
+                  <td class="p-4 align-middle text-right"><button class="h-8 w-8 p-0 hover:bg-accent rounded-md inline-flex items-center justify-center">···</button></td>
+                </tr>
+                <tr class="border-t border-border hover:bg-muted/50 transition-colors">
+                  <td class="p-4 align-middle"><input type="checkbox" class="accent-primary" /></td>
+                  <td class="p-4 align-middle"><span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-red-500/10 text-red-600 border-red-500/20">Failed</span></td>
+                  <td class="p-4 align-middle text-muted-foreground">carmella@hotmail.com</td>
+                  <td class="p-4 align-middle text-right font-medium">$721.00</td>
+                  <td class="p-4 align-middle text-right"><button class="h-8 w-8 p-0 hover:bg-accent rounded-md inline-flex items-center justify-center">···</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex items-center justify-between p-4 border-t border-border">
+            <div class="text-sm text-muted-foreground">0 of 5 row(s) selected.</div>
+            <div class="flex items-center gap-2">
+              <button class="inline-flex items-center justify-center rounded-md border border-input bg-background h-8 px-3 text-sm hover:bg-accent disabled:opacity-50" disabled>Previous</button>
+              <button class="inline-flex items-center justify-center rounded-md border border-input bg-background h-8 px-3 text-sm hover:bg-accent">Next</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+</html>

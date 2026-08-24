@@ -1,0 +1,12 @@
+<!-- 
+  Component: select.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex flex-col space-y-1.5">
+  <label for="{id}" class="text-sm font-medium">{label}</label>
+  <select id="{id}" name="{name}" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50" hx-post="{update_url}" hx-trigger="change">
+    <option value="" disabled selected>{placeholder}</option>
+    {options}
+  </select>
+</div>

@@ -1,0 +1,11 @@
+<!-- 
+  Component: hover-card.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="group relative inline-block">
+  <span class="cursor-help underline decoration-dotted">{trigger}</span>
+  <div class="absolute bottom-full left-1/2 z-50 mb-2 hidden w-64 -translate-x-1/2 rounded-md border border-border bg-popover p-4 shadow-md group-hover:block animate-in fade-in-0 zoom-in-95">
+    {content}
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<!-- 
+  Component: progress-bar.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex flex-col gap-2 w-full">
+  <div class="flex justify-between text-sm">
+    <span>{label}</span>
+    <span class="font-medium">{percentage}%</span>
+  </div>
+  <div class="w-full bg-secondary rounded-full h-2">
+    <div class="bg-primary h-2 rounded-full transition-all" style="width: {percentage}%"></div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<!-- 
+  Component: slider-range.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex flex-col space-y-2 w-full">
+  <div class="flex justify-between text-sm font-medium">
+    <span>{min_val}</span>
+    <span>{max_val}</span>
+  </div>
+  <!-- Note: HTML5 native dual-thumb sliders don't exist without JS. This simulates it structurally for backend fallback -->
+  <div class="relative h-2 w-full bg-secondary rounded-full">
+    <div class="absolute h-full bg-primary rounded-full" style="left: 20%; right: 40%;"></div>
+    <input type="range" min="0" max="100" value="20" class="absolute w-full h-2 opacity-0 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto" />
+    <input type="range" min="0" max="100" value="60" class="absolute w-full h-2 opacity-0 cursor-pointer pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto" />
+  </div>
+</div>

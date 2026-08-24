@@ -1,0 +1,15 @@
+<!-- 
+  Component: tabs.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="w-full border border-border rounded-md bg-background">
+  <div class="flex h-10 items-center justify-start rounded-t-md bg-muted p-1 text-muted-foreground">
+    <!-- Triggers -->
+    <button hx-get="{tab1_url}" hx-target="#{target_id}" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 bg-background text-foreground shadow-sm">Tab 1</button>
+    <button hx-get="{tab2_url}" hx-target="#{target_id}" class="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 hover:bg-background/50 hover:text-foreground">Tab 2</button>
+  </div>
+  <div id="{target_id}" class="mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 p-4">
+    {content}
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<!-- 
+  Component: scroll-area.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="relative h-[200px] w-full rounded-md border border-border overflow-y-auto p-4 bg-background">
+  <div class="space-y-4">
+    {content}
+  </div>
+</div>

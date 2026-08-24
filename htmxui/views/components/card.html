@@ -1,0 +1,18 @@
+<!-- 
+  Component: card.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<!-- Card Component -->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="rounded-xl border border-border bg-card text-card-foreground shadow">
+  <div class="flex flex-col space-y-1.5 p-6">
+    <h3 class="font-semibold leading-none tracking-tight">{title}</h3>
+    <p class="text-sm text-muted-foreground">{description}</p>
+  </div>
+  <div class="p-6 pt-0">
+    {content}
+  </div>
+  <div class="flex items-center p-6 pt-0">
+    {footer}
+  </div>
+</div>

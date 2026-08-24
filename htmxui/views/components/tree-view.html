@@ -1,0 +1,17 @@
+<!-- 
+  Component: tree-view.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<ul hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="space-y-1 list-none pl-4 border-l border-border ml-2">
+  <li>
+    <details class="group [&_summary::-webkit-details-marker]:hidden" open>
+      <summary class="flex items-center gap-2 cursor-pointer hover:bg-muted p-1 rounded text-sm text-foreground">
+        <span class="transition-transform group-open:rotate-90">▶</span> {folder_name}
+      </summary>
+      <div class="pl-4">
+        {children}
+      </div>
+    </details>
+  </li>
+</ul>

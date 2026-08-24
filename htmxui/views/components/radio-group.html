@@ -1,0 +1,9 @@
+<!-- 
+  Component: radio-group.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<fieldset hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="grid gap-2" hx-post="{update_url}" hx-trigger="change" hx-target="{target}">
+  <legend class="text-sm font-semibold mb-2">{title}</legend>
+  {radio_buttons}
+</fieldset>

@@ -1,0 +1,18 @@
+<!-- 
+  Component: toast.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="pointer-events-auto flex w-full max-w-md rounded-lg bg-background shadow-lg ring-1 ring-black/5 animate-in slide-in-from-top-full border border-border">
+  <div class="flex w-0 flex-1 items-center p-4">
+    <div class="w-full">
+      <p class="text-sm font-medium text-foreground">{title}</p>
+      <p class="mt-1 text-sm text-muted-foreground">{description}</p>
+    </div>
+  </div>
+  <div class="flex border-l border-border">
+    <button hx-on:click="this.closest('div.pointer-events-auto').remove()" class="flex w-full items-center justify-center rounded-none rounded-r-lg border border-transparent p-4 text-sm font-medium text-primary hover:text-primary/80 focus:outline-none focus:ring-2 focus:ring-primary">
+      Close
+    </button>
+  </div>
+</div>

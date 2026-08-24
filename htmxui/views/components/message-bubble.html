@@ -1,0 +1,8 @@
+<!-- 
+  Component: message-bubble.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex w-max max-w-[75%] flex-col gap-2 rounded-lg px-3 py-2 text-sm {is_sender ? 'ml-auto bg-primary text-primary-foreground' : 'bg-muted'}">
+  {message}
+</div>

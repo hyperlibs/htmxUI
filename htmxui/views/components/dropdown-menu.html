@@ -1,0 +1,37 @@
+<!-- 
+  Component: dropdown-menu.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<!-- Dropdown Menu Component (Pure CSS via details/summary) -->
+<details hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="relative inline-block text-left group [&_summary::-webkit-details-marker]:hidden">
+  <summary class="inline-flex w-full items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer list-none">
+    {trigger_text}
+    <svg class="ml-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </summary>
+
+  <!-- The dropdown panel -->
+  <div class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md outline-none animate-in fade-in-80 slide-in-from-top-1">
+    <div class="px-2 py-1.5 text-sm font-semibold">{group_title}</div>
+    <div class="h-px bg-border my-1"></div>
+    
+    <a href="{item_1_url}" class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+      {item_1_text}
+    </a>
+    <a href="{item_2_url}" class="relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+      {item_2_text}
+    </a>
+    
+    <div class="h-px bg-border my-1"></div>
+    
+    <!-- HTMX powered dropdown action -->
+    <button 
+      hx-post="{action_url}"
+      class="w-full relative flex cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors text-destructive hover:bg-accent focus:bg-accent"
+    >
+      {danger_action_text}
+    </button>
+  </div>
+</details>

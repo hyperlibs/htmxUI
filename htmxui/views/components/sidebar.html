@@ -1,0 +1,11 @@
+<!-- 
+  Component: sidebar.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<aside hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="w-64 h-screen border-r border-border bg-background px-4 py-6 flex flex-col gap-4">
+  <div class="font-bold text-lg px-2">{logo}</div>
+  <nav class="flex flex-col gap-1">
+    {nav_items} <!-- <a href="#" class="rounded-md px-3 py-2 hover:bg-accent text-sm font-medium">Link</a> -->
+  </nav>
+</aside>

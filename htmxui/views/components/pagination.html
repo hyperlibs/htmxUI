@@ -1,0 +1,14 @@
+<!-- 
+  Component: pagination.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<nav hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  aria-label="pagination" class="mx-auto flex w-full justify-center">
+  <ul class="flex flex-row items-center gap-1">
+    <li><button hx-get="{prev_url}" class="inline-flex h-9 items-center justify-center rounded-md px-3 hover:bg-accent hover:text-accent-foreground">Previous</button></li>
+    <li><button hx-get="{page_1_url}" class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground">1</button></li>
+    <li><button hx-get="{page_2_url}" class="inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground">2</button></li>
+    <li><span class="flex h-9 w-9 items-center justify-center">...</span></li>
+    <li><button hx-get="{next_url}" class="inline-flex h-9 items-center justify-center rounded-md px-3 hover:bg-accent hover:text-accent-foreground">Next</button></li>
+  </ul>
+</nav>

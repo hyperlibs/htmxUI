@@ -1,0 +1,18 @@
+<!-- 
+  Component: wizard.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="rounded-lg border border-border bg-card shadow-sm p-6 w-full max-w-2xl mx-auto">
+  <div class="mb-8 flex justify-between items-center text-sm font-medium text-muted-foreground">
+    <span class="text-primary">Step {current} of {total}</span>
+    <span>{step_title}</span>
+  </div>
+  <div id="wizard-content" class="min-h-[200px]">
+    {content}
+  </div>
+  <div class="mt-8 flex justify-between border-t border-border pt-4">
+    <button hx-get="{prev_url}" hx-target="#wizard-content" class="px-4 py-2 border border-border rounded text-sm hover:bg-muted {prev_disabled}">Back</button>
+    <button hx-get="{next_url}" hx-target="#wizard-content" class="px-4 py-2 bg-primary text-primary-foreground rounded text-sm hover:bg-primary/90">Next</button>
+  </div>
+</div>

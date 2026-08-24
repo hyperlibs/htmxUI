@@ -1,0 +1,26 @@
+<!-- 
+  Component: drawer.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<!-- Drawer Component (Slide-out panel) -->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  id="drawer-backdrop" class="fixed inset-0 z-50 bg-black/80 flex justify-end">
+  <!-- The drawer panel sliding in from the right -->
+  <div class="fixed inset-y-0 right-0 z-50 h-full w-3/4 border-l border-border bg-background p-6 shadow-lg transition-transform duration-300 ease-in-out sm:max-w-sm animate-in slide-in-from-right">
+    
+    <div class="flex flex-col space-y-1.5 mb-4 text-left">
+      <h2 class="text-lg font-semibold text-foreground">{title}</h2>
+      <p class="text-sm text-muted-foreground">{description}</p>
+    </div>
+    
+    <div class="h-full overflow-y-auto pb-20">
+      {content}
+    </div>
+
+    <!-- Close X -->
+    <button hx-on:click="document.getElementById('drawer-backdrop').remove()" class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+      <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"></line><line x1="6" x2="18" y1="6" y2="18"></line></svg>
+      <span class="sr-only">Close</span>
+    </button>
+  </div>
+</div>

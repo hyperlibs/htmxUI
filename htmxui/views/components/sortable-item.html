@@ -1,0 +1,26 @@
+<!-- 
+  Component: sortable-item.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<!-- Sortable List Item Component (DnD Reordering) -->
+<!-- Uses HTML5 draggable and HTMX to trigger backend reordering on drop -->
+<div hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  
+  class="flex items-center gap-3 p-3 bg-card border border-border rounded-md shadow-sm cursor-grab active:cursor-grabbing hover:bg-accent/50 transition-colors"
+  draggable="true"
+  hx-trigger="dragend"
+  hx-post="{reorder_url}"
+  hx-vals='js:{"moved_item_id": "{item_id}", "new_index": calculateNewIndex(event)}'
+  hx-target="{list_target}"
+  hx-swap="innerHTML"
+  ondragstart="event.dataTransfer.setData('text/plain', '{item_id}'); this.classList.add('opacity-50')"
+  ondragover="event.preventDefault(); this.classList.add('border-primary')"
+  ondragleave="this.classList.remove('border-primary')"
+  ondragend="this.classList.remove('opacity-50', 'border-primary')"
+  ondrop="event.preventDefault(); this.classList.remove('border-primary');"
+>
+  <svg class="h-5 w-5 text-muted-foreground cursor-grab" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle>
+  </svg>
+  <span class="font-medium">{item_text}</span>
+</div>

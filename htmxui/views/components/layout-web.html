@@ -1,0 +1,56 @@
+<div class="h-[600px] w-full border border-border rounded-lg overflow-hidden flex flex-col bg-background">
+  <!-- Top App Bar -->
+  <header class="h-12 bg-primary text-primary-foreground flex items-center px-4 justify-between shrink-0">
+    <div class="flex items-center gap-4">
+      <button class="h-8 w-8 hover:bg-primary-foreground/20 rounded-md flex items-center justify-center font-bold">≡</button>
+      <span class="font-bold text-sm tracking-widest">WEB_APP</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-xs font-medium opacity-80">v2.4.1</span>
+      <div class="h-6 w-6 rounded-full bg-white/20"></div>
+    </div>
+  </header>
+  
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Collapsed Sidebar -->
+    <aside class="w-16 border-r border-border bg-muted/10 flex flex-col items-center py-4 space-y-6 shrink-0">
+      <button class="h-10 w-10 rounded-xl bg-accent flex items-center justify-center shadow-sm">🏠</button>
+      <button class="h-10 w-10 rounded-xl hover:bg-accent flex items-center justify-center text-muted-foreground transition-colors">📊</button>
+      <button class="h-10 w-10 rounded-xl hover:bg-accent flex items-center justify-center text-muted-foreground transition-colors">⚙️</button>
+    </aside>
+    
+    <!-- Secondary Panel (Master/Detail) -->
+    <div class="w-64 border-r border-border bg-background flex flex-col shrink-0">
+      <div class="p-4 border-b border-border font-semibold text-sm">Inbox</div>
+      <div class="flex-1 overflow-auto">
+        <div class="p-4 border-b border-border hover:bg-muted/50 cursor-pointer">
+          <div class="font-medium text-sm">System Update</div>
+          <div class="text-xs text-muted-foreground truncate mt-1">Version 2.4.1 is now live...</div>
+        </div>
+        <div class="p-4 border-b border-border hover:bg-muted/50 cursor-pointer bg-accent/30 border-l-2 border-l-primary">
+          <div class="font-medium text-sm">New user signup</div>
+          <div class="text-xs text-muted-foreground truncate mt-1">alice@example.com joined...</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Detail View -->
+    <main class="flex-1 bg-background flex flex-col">
+      <div class="p-6 border-b border-border flex justify-between items-start">
+        <div>
+          <h2 class="text-xl font-bold">New user signup</h2>
+          <p class="text-sm text-muted-foreground mt-1">Today at 10:24 AM</p>
+        </div>
+        <button class="px-3 py-1.5 border border-input rounded-md text-sm font-medium hover:bg-accent">Resolve</button>
+      </div>
+      <div class="p-6 flex-1 overflow-auto">
+        <p class="text-sm leading-relaxed text-foreground">
+          A new user has completed the onboarding flow successfully. All systems nominal.
+        </p>
+        <div class="mt-6 p-4 rounded-lg bg-muted/30 font-mono text-xs text-muted-foreground border border-border">
+          { "user_id": 92381, "tier": "pro", "region": "us-east-1" }
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

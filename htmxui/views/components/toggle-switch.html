@@ -1,0 +1,12 @@
+<!-- 
+  Component: toggle-switch.html
+  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
+  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
+-->
+<label hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="flex items-center space-x-2 cursor-pointer">
+  <div class="relative inline-block w-9 h-5 align-middle select-none transition duration-200 ease-in">
+    <input type="checkbox" name="{name}" class="peer absolute block w-5 h-5 rounded-full bg-background border-2 border-input appearance-none cursor-pointer transition-transform duration-200 ease-in-out checked:translate-x-full checked:border-primary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2" {checked} hx-post="{toggle_url}" hx-trigger="change" />
+    <label class="block overflow-hidden h-5 rounded-full bg-input cursor-pointer peer-checked:bg-primary"></label>
+  </div>
+  <span class="text-sm font-medium">{label}</span>
+</label>

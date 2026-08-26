@@ -1,112 +1,182 @@
 # HTMXUI — Hyper Reactive HTMX on Steroids
 
-> Original htmx completed HTML as a hypermedia. HTMXUI completes it as a **reactive, agent-friendly, composable application platform** — while remaining radically lean.
+<div align="center">
+  <p><strong>A hyperreactive, lean, hypermedia-first framework built for human developers and Agentic AI coders.</strong></p>
+  <p><em>Original htmx completed HTML as a hypermedia. HTMXUI completes it as a reactive, agent-friendly application platform — making heavy client-side SPAs obsolete.</em></p>
+</div>
 
-HTMXUI is not a UI library. It is a **deliberate fork and reinvention of htmx** into a hyperreactive, lean, hypermedia-first framework optimized for human developers *and* agentic AI coders.
+---
 
-**HTMXUI = HTMX + Shadcn-quality Components + Reactive Engine + Flash Search + Canvas Engine**
+## ⚡ The Equation
 
-## The Core Stack
-
-| Extension | Size | Purpose |
-|---|---|---|
-| **htmx-bolt.js** | ~2KB | Proxy-based reactive engine. Local state (`hx-state`), declarative bindings (`hx-text`, `hx-show`, `hx-class`, `hx-style`), actions (`hx-action`), server-driven sync via `HX-Trigger`. |
-| **htmx-flash.js** | ~1KB | In-memory search engine. Pre-loads data, filters thousands of items in 0ms. Command palettes, instant filterable tables. |
-| **htmx-canvas.js** | ~3KB | Visual node editor. Drag-and-drop (`hx-drag`), grid snapping (`hx-snap`), 2-layer nesting, dynamic Bézier connectors (`hx-connect`). |
-| **100+ Components** | HTML | Shadcn/ui-quality copy-paste components. No NPM, no Virtual DOM, no build step for logic. |
-
-## Benefits for Human Developers
-
-1. Zero NPM, zero Virtual DOM — no `node_modules`, no React, no webpack
-2. Server remains the source of truth — true hypermedia architecture
-3. Copy-paste components — full ownership, no black-box abstractions
-4. Instant local reactivity via Bolt — dropdowns, tabs, toggles without round-trips
-5. Backend agnostic — Python, Go, PHP, Rust, Bun, any language that returns HTML
-6. Tailwind-native theming — CSS variable system for dark mode and custom brands
-7. Sub-3KB total client JS — smaller than a single React hook import
-8. Progressive enhancement — start pure htmx, add Bolt/Flash only where needed
-9. 7 layout primitives — dashboards, marketing, print, canvases, mobile-first
-10. No build step for logic — HTML is the component, the server is the framework
-
-## Benefits for Agentic AI Coders
-
-1. Highly regular HTML structure — agents parse, generate, and modify UI with high success rates
-2. Declarative attribute-based behavior — no imperative JS to reason about
-3. Predictable composition — contracts that agents can reliably assemble
-4. Minimal hidden side effects — what you see in the HTML is what happens
-5. Machine-readable component patterns — consistent naming across 100+ components
-6. No complex build toolchain — agents don't manage webpack/vite/turbopack configs
-7. Server-driven mutations — modify UI by returning HTML fragments, not client state graphs
-8. Copy-paste atomic components — compose UIs by concatenating well-defined HTML blocks
-9. Small learnable grammar — `hx-state`, `hx-action`, `hx-text`, `hx-show` is the entire reactive API
-10. Lower error surface — no JSX transpilation, no hook ordering, no hydration mismatches
-
-## Design Pillars
-
-| Pillar | Meaning | Non-Goal |
-|---|---|---|
-| **Hyperreactive** | Fine-grained reactivity that works with server-driven HTML | Becoming a full SPA framework |
-| **Lean** | Minimal runtime, minimal concepts, maximal clarity | Feature bloat or "everything included" |
-| **Hypermedia-first** | Server is the source of truth; HTML is the primary medium | Client-side state ownership |
-| **Agentic-native** | Structure that AI agents can reliably generate & reason about | Human-only ergonomics |
-| **Composable** | Clear contracts for assembling UI, behavior, and layouts | Opaque magic or coupled systems |
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│  Layer 4: Your Application                          │
-│  Templates, domain components, agent-generated UI   │
-└──────────────────────────┬──────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────┐
-│  Layer 3: Composition & Layouts                     │
-│  7 layout primitives, named regions, mobile variants│
-└──────────────────────────┬──────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────┐
-│  Layer 2: Hyperreactive Layer  ⚡                    │
-│  Bolt (reactivity) + Flash (search) + Canvas        │
-└──────────────────────────┬──────────────────────────┘
-                           │
-┌──────────────────────────▼──────────────────────────┐
-│  Layer 1: Enhanced Hypermedia Core                   │
-│  htmx requests, swapping, SSE, WebSocket, history   │
-└─────────────────────────────────────────────────────┘
+```text
+HTMXUI = HTMX (Hypermedia Core)
+       + Bolt (Signal-Based Reactive State & Computed Values)
+       + Flash (In-Memory Typo-Tolerant Fuzzy Search & Filters)
+       + Form (Declarative Validation & Optimistic UI Engine)
+       + Vibe (60fps FLIP Layout Animations & Stagger Sequences)
+       + A11y (WAI-ARIA Focus Traps & Roving Tabindex)
+       + Canvas (Spatial Node Visual Engine)
+       + 100+ Shadcn-Quality Copy-Paste Components
 ```
 
-## Quick Start
+---
+
+## 📦 The Hyperreactive Suite
+
+| Engine | Source (`src/`) | Distribution (`public/`) | Capabilities |
+|---|---|---|---|
+| **⚡ Bolt** | `htmx-bolt.ts` | `htmx-bolt.js` | Fine-grained signals, dependency tracking via deep Proxies, microtask batching, computed properties (`hx-computed`), effects (`hx-effect`), two-way binding (`hx-model`), structural loops (`hx-for`), structural conditionals (`hx-if`), event modifiers (`.prevent`, `.debounce`, `.outside`), global stores (`$store`), transitions (`hx-transition`), and fluid ScaleUI resizing. |
+| **🔍 Flash** | `htmx-flash.ts` | `htmx-flash.js` | Typo-tolerant Levenshtein fuzzy search (`hx-flash-search`), multi-column filters (`hx-flash-filter`), client-side column sorting (`hx-flash-sort`), and pagination across thousands of records. |
+| **📝 Form** | `htmx-form.ts` | `htmx-form.js` | Declarative validation rules (`hx-validate="required\|email\|min:3"`), form state machine (`$form.valid`, `$form.dirty`, `$form.errors`), and automatic optimistic UI rollback on server error. |
+| **🌊 Vibe** | `htmx-vibe.ts` | `htmx-vibe.js` | FLIP layout animation engine that smoothly animates DOM swaps and list reorderings at 60fps. Includes stagger sequences (`hx-vibe-stagger`) and viewport scroll triggers (`hx-vibe-view`). |
+| **♿ A11y** | `htmx-a11y.ts` | `htmx-a11y.js` | WAI-ARIA compliant modal focus trapping (`hx-trap-focus`), roving tabindex for keyboard navigation in menus/tabs, and dynamic live screen-reader announcements (`HxA11y.announce`). |
+| **🎨 Canvas** | `htmx-canvas.js` | `htmx-canvas.js` | Spatial visual node editor engine with draggable nodes (`hx-drag`), grid auto-snapping (`hx-snap`), 2-layer nesting, dynamic Bézier elastic connectors (`hx-connect`), and coordinate badge telemetry. |
+| **🧩 UI Library** | `views/components/` | HTML | 100+ Shadcn/ui-quality copy-paste components with dark mode, customizable design tokens, and zero Virtual DOM overhead. |
+
+---
+
+## 🎯 Benefits for Human Developers
+
+1. **Zero NPM Runtime Dependencies**: No `node_modules`, no webpack or Vite build fragility.
+2. **Sub-25KB Total Client Suite**: The complete reactive suite is smaller than a single React hook import bundle.
+3. **Server Remains Source of Truth**: True hypermedia architecture with hyperreactive client ergonomics.
+4. **Fine-Grained Signals**: Only the exact DOM nodes reading a changed property re-render. Zero brute-force DOM sweeps.
+5. **Two-Way Binding with `hx-model`**: Clean synchronization for text, checkboxes, radios, and selects with `.lazy`, `.number`, `.trim`.
+6. **Structural Loops (`hx-for`) & Conditionals (`hx-if`)**: Clean HTML template rendering without JSX transpilation.
+7. **Backend Agnostic**: Works with Python (FastAPI/Django), Go, Rust, PHP (Laravel), Bun, Ruby on Rails, or Java.
+8. **Built-in Accessible Focus Trapping & Roving Tabindex**: Instant compliance without third-party libraries.
+9. **Fluid ScaleUI Resizing**: Interactive testing and responsive component scaling.
+10. **Extensible for Framework Builders**: Full TypeScript definitions (`src/types.d.ts`) enabling community developers to build Next.js-equivalent fullstack platforms.
+
+---
+
+## 🤖 Benefits for Agentic AI Coders
+
+1. **Highly Regular Declarative HTML**: AI agents can parse, generate, and refactor UI with near 100% success rate.
+2. **Eliminates Hydration & Hook Ordering Errors**: No React Rules of Hooks, useEffect infinite loops, or SSR hydration mismatches.
+3. **Unambiguous Grammar**: `hx-state`, `hx-model`, `hx-for`, `hx-if`, and `hx-on:event` form a predictable, learnable grammar.
+4. **Server-Driven Atomic Mutations**: AI agents modify interfaces simply by returning standard HTML fragments.
+5. **Zero Build Configuration Breakage**: Agents don't get trapped debugging tsconfig, Babel, or bundler plugin errors.
+6. **Machine-Readable Component Contracts**: Uniform attribute standards across 100+ Shadcn-style components.
+7. **Self-Contained Components**: Copy, paste, or mutate an HTML block without breaking distant client state graphs.
+8. **Declarative Validation in Pure HTML**: Form validation rules encoded directly in attributes (`hx-validate="required|email"`).
+9. **Global Store Telemetry**: Clean shared state manipulation via `$store.name` from client or server headers (`HX-Trigger`).
+10. **Lower Token Overhead**: Concise declarative HTML requires fewer LLM context tokens to generate and maintain.
+
+---
+
+## 🏗️ Architecture
+
+```text
+┌────────────────────────────────────────────────────────┐
+│  Layer 4: Application Layer                            │
+│  Templates, domain components, agent-generated UI      │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│  Layer 3: Composition & Layout System                  │
+│  7 layout primitives, named regions, mobile scaffolds  │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│  Layer 2: Hyperreactive Suite ⚡                        │
+│  Bolt (signals) + Flash (search) + Form + Vibe + A11y  │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│  Layer 1: Enhanced Hypermedia Core                      │
+│  htmx requests, swapping, SSE, WebSockets, history     │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Quick Start
+
+### 1. Include the Scripts
 
 ```html
-<!-- Include the core -->
+<!-- Core HTMX -->
 <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+<!-- HTMXUI Reactive Signal Engine -->
 <script src="/htmx-bolt.js"></script>
 
-<!-- Use reactive components -->
-<div hx-ext="reactive" hx-state='{ "count": 0, "open": false }'>
-  <button hx-action="count++">
-    Clicked: <span hx-text="count">0</span>
-  </button>
-  <button hx-action="open = !open">Toggle</button>
-  <div hx-show="open">I am reactive. No build step. No JSX.</div>
+<!-- Optional: Search, Forms, Animations, Accessibility -->
+<script src="/htmx-flash.js"></script>
+<script src="/htmx-form.js"></script>
+<script src="/htmx-vibe.js"></script>
+<script src="/htmx-a11y.js"></script>
+```
+
+### 2. Reactive Component Example
+
+```html
+<div hx-state='{
+  newItem: "",
+  items: [
+    { id: 1, name: "Mechanical Keyboard", price: 120, qty: 1 },
+    { id: 2, name: "Wireless Mouse", price: 60, qty: 2 }
+  ]
+}'
+hx-computed='{
+  totalPrice: items.reduce((sum, i) => sum + (i.price * i.qty), 0)
+}' class="p-6 border rounded-xl space-y-4">
+
+  <!-- Two-way binding -->
+  <div class="flex gap-2">
+    <input type="text" hx-model="newItem" placeholder="Item name..." class="px-3 py-2 border rounded flex-1">
+    <button hx-on:click='if(newItem.trim()) { items.push({ id: Date.now(), name: newItem, price: 40, qty: 1 }); newItem = ""; }' class="bg-primary text-white px-4 py-2 rounded">
+      Add
+    </button>
+  </div>
+
+  <!-- Structural list rendering -->
+  <div class="divide-y border rounded">
+    <template hx-for="(item, idx) in items">
+      <div class="p-3 flex items-center justify-between">
+        <span hx-text="item.name" class="font-medium"></span>
+        <div class="flex items-center gap-3">
+          <span>$<span hx-text="item.price"></span></span>
+          <input type="number" hx-model.number="item.qty" min="1" class="w-16 px-2 py-1 border rounded">
+          <button hx-on:click="items.splice(idx, 1)" class="text-red-500 text-xs">Remove</button>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <!-- Computed reactive total -->
+  <div class="flex justify-between items-center font-bold text-base pt-2">
+    <span>Total:</span>
+    <span class="text-primary">$<span hx-text="totalPrice">0</span></span>
+  </div>
 </div>
 ```
 
-## Local Development
+---
+
+## 🛠️ Local Development & Contributing
 
 ```bash
+# Install dependencies
 bun install
-bun run server.ts
-```
 
-Then visit `http://localhost:3000`.
+# Start documentation and preview server
+bun run dev
 
-## Testing
+# Compile TypeScript engines to public distribution bundles
+bun run build:engines
 
-```bash
+# Build Tailwind CSS + Engines
+bun run build
+
+# Run Playwright E2E UI tests
 bun test:ui
 ```
 
-## License
+---
 
-MIT
+## 📄 License
+
+MIT © [Hyperlibs](https://github.com/hyperlibs)

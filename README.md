@@ -1,108 +1,182 @@
-[![</> htmx](https://raw.githubusercontent.com/bigskysoftware/htmx/master/www/static/img/htmx_logo.1.png "high power tools for HTML")](https://htmx.org)
+# HTMXUI — Hyper Reactive HTMX on Steroids
 
-*high power tools for HTML*
+<div align="center">
+  <p><strong>A hyperreactive, lean, hypermedia-first framework built for human developers and Agentic AI coders.</strong></p>
+  <p><em>Original htmx completed HTML as a hypermedia. HTMXUI completes it as a reactive, agent-friendly application platform — making heavy client-side SPAs obsolete.</em></p>
+</div>
 
-[![Discord](https://img.shields.io/discord/725789699527933952)](https://htmx.org/discord)
-[![Netlify](https://img.shields.io/netlify/dba3fc85-d9c9-476a-a35a-e52a632cef78)](https://app.netlify.com/sites/htmx/deploys)
-[![Bundlephobia](https://badgen.net/bundlephobia/dependency-count/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
-[![Bundlephobia](https://badgen.net/bundlephobia/minzip/htmx.org)](https://bundlephobia.com/result?p=htmx.org)
+---
 
-## introduction
+## ⚡ The Equation
 
-htmx allows you to access  [AJAX](https://htmx.org/docs#ajax), [CSS Transitions](https://htmx.org/docs#css_transitions),
-[WebSockets](https://htmx.org/extensions/ws/) and [Server Sent Events](https://htmx.org/extensions/sse/)
-directly in HTML, using [attributes](https://htmx.org/reference#attributes), so you can build
-[modern user interfaces](https://htmx.org/examples) with the [simplicity](https://en.wikipedia.org/wiki/HATEOAS) and
-[power](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) of hypertext
+```text
+HTMXUI = HTMX (Hypermedia Core)
+       + Bolt (Signal-Based Reactive State & Computed Values)
+       + Flash (In-Memory Typo-Tolerant Fuzzy Search & Filters)
+       + Form (Declarative Validation & Optimistic UI Engine)
+       + Vibe (60fps FLIP Layout Animations & Stagger Sequences)
+       + A11y (WAI-ARIA Focus Traps & Roving Tabindex)
+       + Canvas (Spatial Node Visual Engine)
+       + 100+ Shadcn-Quality Copy-Paste Components
+```
 
-htmx is small ([~14k min.gz'd](https://cdn.jsdelivr.net/npm/htmx.org/dist/)),
-[dependency-free](https://github.com/bigskysoftware/htmx/blob/master/package.json) &
-[extendable](https://htmx.org/extensions)
+---
 
-## motivation
+## 📦 The Hyperreactive Suite
 
-* Why should only `<a>` and `<form>` be able to make HTTP requests?
-* Why should only `click` & `submit` events trigger them?
-* Why should only GET & POST be available?
-* Why should you only be able to replace the *entire* screen?
+| Engine | Source (`src/`) | Distribution (`public/`) | Capabilities |
+|---|---|---|---|
+| **⚡ Bolt** | `htmx-bolt.ts` | `htmx-bolt.js` | Fine-grained signals, dependency tracking via deep Proxies, microtask batching, computed properties (`hx-computed`), effects (`hx-effect`), two-way binding (`hx-model`), structural loops (`hx-for`), structural conditionals (`hx-if`), event modifiers (`.prevent`, `.debounce`, `.outside`), global stores (`$store`), transitions (`hx-transition`), and fluid ScaleUI resizing. |
+| **🔍 Flash** | `htmx-flash.ts` | `htmx-flash.js` | Typo-tolerant Levenshtein fuzzy search (`hx-flash-search`), multi-column filters (`hx-flash-filter`), client-side column sorting (`hx-flash-sort`), and pagination across thousands of records. |
+| **📝 Form** | `htmx-form.ts` | `htmx-form.js` | Declarative validation rules (`hx-validate="required\|email\|min:3"`), form state machine (`$form.valid`, `$form.dirty`, `$form.errors`), and automatic optimistic UI rollback on server error. |
+| **🌊 Vibe** | `htmx-vibe.ts` | `htmx-vibe.js` | FLIP layout animation engine that smoothly animates DOM swaps and list reorderings at 60fps. Includes stagger sequences (`hx-vibe-stagger`) and viewport scroll triggers (`hx-vibe-view`). |
+| **♿ A11y** | `htmx-a11y.ts` | `htmx-a11y.js` | WAI-ARIA compliant modal focus trapping (`hx-trap-focus`), roving tabindex for keyboard navigation in menus/tabs, and dynamic live screen-reader announcements (`HxA11y.announce`). |
+| **🎨 Canvas** | `htmx-canvas.js` | `htmx-canvas.js` | Spatial visual node editor engine with draggable nodes (`hx-drag`), grid auto-snapping (`hx-snap`), 2-layer nesting, dynamic Bézier elastic connectors (`hx-connect`), and coordinate badge telemetry. |
+| **🧩 UI Library** | `views/components/` | HTML | 100+ Shadcn/ui-quality copy-paste components with dark mode, customizable design tokens, and zero Virtual DOM overhead. |
 
-By removing these arbitrary constraints htmx completes HTML as a
-[hypertext](https://en.wikipedia.org/wiki/Hypertext)
+---
 
-## quick start
+## 🎯 Benefits for Human Developers
+
+1. **Zero NPM Runtime Dependencies**: No `node_modules`, no webpack or Vite build fragility.
+2. **Sub-25KB Total Client Suite**: The complete reactive suite is smaller than a single React hook import bundle.
+3. **Server Remains Source of Truth**: True hypermedia architecture with hyperreactive client ergonomics.
+4. **Fine-Grained Signals**: Only the exact DOM nodes reading a changed property re-render. Zero brute-force DOM sweeps.
+5. **Two-Way Binding with `hx-model`**: Clean synchronization for text, checkboxes, radios, and selects with `.lazy`, `.number`, `.trim`.
+6. **Structural Loops (`hx-for`) & Conditionals (`hx-if`)**: Clean HTML template rendering without JSX transpilation.
+7. **Backend Agnostic**: Works with Python (FastAPI/Django), Go, Rust, PHP (Laravel), Bun, Ruby on Rails, or Java.
+8. **Built-in Accessible Focus Trapping & Roving Tabindex**: Instant compliance without third-party libraries.
+9. **Fluid ScaleUI Resizing**: Interactive testing and responsive component scaling.
+10. **Extensible for Framework Builders**: Full TypeScript definitions (`src/types.d.ts`) enabling community developers to build Next.js-equivalent fullstack platforms.
+
+---
+
+## 🤖 Benefits for Agentic AI Coders
+
+1. **Highly Regular Declarative HTML**: AI agents can parse, generate, and refactor UI with near 100% success rate.
+2. **Eliminates Hydration & Hook Ordering Errors**: No React Rules of Hooks, useEffect infinite loops, or SSR hydration mismatches.
+3. **Unambiguous Grammar**: `hx-state`, `hx-model`, `hx-for`, `hx-if`, and `hx-on:event` form a predictable, learnable grammar.
+4. **Server-Driven Atomic Mutations**: AI agents modify interfaces simply by returning standard HTML fragments.
+5. **Zero Build Configuration Breakage**: Agents don't get trapped debugging tsconfig, Babel, or bundler plugin errors.
+6. **Machine-Readable Component Contracts**: Uniform attribute standards across 100+ Shadcn-style components.
+7. **Self-Contained Components**: Copy, paste, or mutate an HTML block without breaking distant client state graphs.
+8. **Declarative Validation in Pure HTML**: Form validation rules encoded directly in attributes (`hx-validate="required|email"`).
+9. **Global Store Telemetry**: Clean shared state manipulation via `$store.name` from client or server headers (`HX-Trigger`).
+10. **Lower Token Overhead**: Concise declarative HTML requires fewer LLM context tokens to generate and maintain.
+
+---
+
+## 🏗️ Architecture
+
+```text
+┌────────────────────────────────────────────────────────┐
+│  Layer 4: Application Layer                            │
+│  Templates, domain components, agent-generated UI      │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│  Layer 3: Composition & Layout System                  │
+│  7 layout primitives, named regions, mobile scaffolds  │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│  Layer 2: Hyperreactive Suite ⚡                        │
+│  Bolt (signals) + Flash (search) + Form + Vibe + A11y  │
+└───────────────────────────┬────────────────────────────┘
+                            │
+┌───────────────────────────▼────────────────────────────┐
+│  Layer 1: Enhanced Hypermedia Core                      │
+│  htmx requests, swapping, SSE, WebSockets, history     │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Quick Start
+
+### 1. Include the Scripts
 
 ```html
-  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js"    
-          integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" 
-          crossorigin="anonymous"></script>
-  <!-- have a button POST a click via AJAX -->
-  <button hx-post="/clicked" hx-swap="outerHTML">
-    Click Me
-  </button>
+<!-- Core HTMX -->
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+<!-- HTMXUI Reactive Signal Engine -->
+<script src="/htmx-bolt.js"></script>
+
+<!-- Optional: Search, Forms, Animations, Accessibility -->
+<script src="/htmx-flash.js"></script>
+<script src="/htmx-form.js"></script>
+<script src="/htmx-vibe.js"></script>
+<script src="/htmx-a11y.js"></script>
 ```
 
-The [`hx-post`](https://htmx.org/attributes/hx-post) and [`hx-swap`](https://htmx.org/attributes/hx-swap) attributes tell htmx:
+### 2. Reactive Component Example
 
-> "When a user clicks on this button, issue an AJAX request to /clicked, and replace the entire button with the response"
+```html
+<div hx-state='{
+  newItem: "",
+  items: [
+    { id: 1, name: "Mechanical Keyboard", price: 120, qty: 1 },
+    { id: 2, name: "Wireless Mouse", price: 60, qty: 2 }
+  ]
+}'
+hx-computed='{
+  totalPrice: items.reduce((sum, i) => sum + (i.price * i.qty), 0)
+}' class="p-6 border rounded-xl space-y-4">
 
-htmx is the successor to [intercooler.js](http://intercoolerjs.org)
+  <!-- Two-way binding -->
+  <div class="flex gap-2">
+    <input type="text" hx-model="newItem" placeholder="Item name..." class="px-3 py-2 border rounded flex-1">
+    <button hx-on:click='if(newItem.trim()) { items.push({ id: Date.now(), name: newItem, price: 40, qty: 1 }); newItem = ""; }' class="bg-primary text-white px-4 py-2 rounded">
+      Add
+    </button>
+  </div>
 
-### installing as a node package
+  <!-- Structural list rendering -->
+  <div class="divide-y border rounded">
+    <template hx-for="(item, idx) in items">
+      <div class="p-3 flex items-center justify-between">
+        <span hx-text="item.name" class="font-medium"></span>
+        <div class="flex items-center gap-3">
+          <span>$<span hx-text="item.price"></span></span>
+          <input type="number" hx-model.number="item.qty" min="1" class="w-16 px-2 py-1 border rounded">
+          <button hx-on:click="items.splice(idx, 1)" class="text-red-500 text-xs">Remove</button>
+        </div>
+      </div>
+    </template>
+  </div>
 
-To install using npm:
-
+  <!-- Computed reactive total -->
+  <div class="flex justify-between items-center font-bold text-base pt-2">
+    <span>Total:</span>
+    <span class="text-primary">$<span hx-text="totalPrice">0</span></span>
+  </div>
+</div>
 ```
-npm install htmx.org --save
+
+---
+
+## 🛠️ Local Development & Contributing
+
+```bash
+# Install dependencies
+bun install
+
+# Start documentation and preview server
+bun run dev
+
+# Compile TypeScript engines to public distribution bundles
+bun run build:engines
+
+# Build Tailwind CSS + Engines
+bun run build
+
+# Run Playwright E2E UI tests
+bun test:ui
 ```
 
-Note there is an old broken package called `htmx`.  This is `htmx.org`.
+---
 
-## website & docs
+## 📄 License
 
-* <https://htmx.org>
-* <https://htmx.org/docs>
-
-## contributing
-Want to contribute? Check out our [contribution guidelines](CONTRIBUTING.md)
-
-No time? Then [become a sponsor](https://github.com/sponsors/bigskysoftware#sponsors)
-
-### hacking guide
-
-To develop htmx locally, you will need to install the development dependencies.
-
-Run:
-
-```
-npm install
-```
-
-Then, run a web server in the root.
-
-This is easiest with:
-
-```
-npx serve
-```
-
-You can then run the test suite by navigating to:
-
-<http://0.0.0.0:3000/test/>
-
-At this point you can modify `/src/htmx.js` to add features, and then add tests in the appropriate area under `/test`.
-
-* `/test/index.html` - the root test page from which all other tests are included
-* `/test/attributes` - attribute specific tests
-* `/test/core` - core functionality tests
-* `/test/core/regressions.js` - regression tests
-* `/test/ext` - extension tests
-* `/test/manual` - manual tests that cannot be automated
-
-htmx uses the [mocha](https://mochajs.org/) testing framework, the [chai](https://www.chaijs.com/) assertion framework
-and [sinon](https://sinonjs.org/releases/v9/fake-xhr-and-server/) to mock out AJAX requests.  They are all OK.
-
-## haiku
-
-*javascript fatigue:<br/>
-longing for a hypertext<br/>
-already in hand*
+MIT © [Hyperlibs](https://github.com/hyperlibs)

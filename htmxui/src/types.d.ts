@@ -19,6 +19,9 @@ declare global {
     HxA11y: HxA11yAPI;
     HxVirtual?: any;
     HxGrid?: any;
+    HxOffline?: any;
+    HxDevTools?: any;
+    HTMXUI?: any;
   }
 }
 

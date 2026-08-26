@@ -5,7 +5,7 @@ const COMPONENTS = [
   "chip","collapsible","color-picker","combobox","command","container","context-menu","data-table",
   "date-picker","dialog","divider","drawer","dropdown-menu","empty-state","error-message",
   "file-upload","flash-search","form","hover-card","icon","image","indicator","input","input-otp","kbd","label",
-  "layout-block","layout-canvas","layout-grid","layout-page","layout-print","layout-scaffold","layout-web",
+  "layout-block","layout-canvas","layout-grid","layout-page","layout-print","layout-scaffold","layout-web","layout-mweb","layout-mapp",
   "link","list","list-item","loading-spinner","masonry-grid","menubar","message-bubble",
   "navigation-menu","notification","number-input","page-header","pagination","panel",
   "password-input","pin-input","popover","profile-badge","progress","progress-bar","pulse",
@@ -13,7 +13,7 @@ const COMPONENTS = [
   "select","separator","sheet","sidebar","skeleton","slider","slider-range","snackbar","splitter",
   "stat-card","stepper","submenu","switch","table","tabs","tag","text","textarea","timeline",
   "time-picker","toast","toggle","toggle-group","toggle-switch","toolbar","tooltip","tree-view","user-card",
-  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual"
+  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual","hx-offline"
 ];
 
 function formatName(slug: string): string {
@@ -71,6 +71,8 @@ async function buildComponentPage(slug: string): Promise<string> {
   <script src="/htmx-a11y.js"></script>
   <script src="/htmx-virtual.js"></script>
   <script src="/htmx-grid.js"></script>
+  <script src="/htmx-offline.js"></script>
+  <script src="/htmx-devtools.js"></script>
   <script src="/htmx-canvas.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
@@ -446,6 +448,14 @@ const server = Bun.serve({
 
     if (url.pathname === "/htmx-grid.js") {
       return new Response(Bun.file("public/htmx-grid.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/htmx-offline.js") {
+      return new Response(Bun.file("public/htmx-offline.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/htmx-devtools.js") {
+      return new Response(Bun.file("public/htmx-devtools.js"), { headers: { "Content-Type": "application/javascript" } });
     }
 
     if (url.pathname === "/api/erp-invoices.json") {

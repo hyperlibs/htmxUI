@@ -1,0 +1,69 @@
+<div class="space-y-8 max-w-4xl py-4">
+  <div class="space-y-2">
+    <h1 class="text-3xl font-bold tracking-tight text-foreground">Offline-First Engine (hx-offline)</h1>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Resilient offline operations for warehouses, field tools, and unstable network environments. Automatically intercepts failed HTMX mutations, queues them into browser IndexedDB, and auto-replays upon reconnection with zero data loss.
+    </p>
+  </div>
+
+  <!-- Offline Status Banner & Interactive Simulation -->
+  <div class="p-6 rounded-xl border border-border bg-card shadow-sm space-y-6">
+    <div class="flex items-center justify-between border-b border-border pb-4">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-sm font-semibold text-foreground">Network Engine Status</span>
+      </div>
+      <div class="text-xs font-mono text-muted-foreground">
+        IndexedDB Queue: <strong class="hx-offline-queue-count text-primary">0</strong> pending mutations
+      </div>
+    </div>
+
+    <!-- Offline Visual Indicator Banner -->
+    <div hx-offline-indicator style="display:none;" class="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between text-amber-600 dark:text-amber-400 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-base">📴</span>
+        <span><strong>Offline Mode Active:</strong> All form edits and mutations are being safely queued locally in IndexedDB.</span>
+      </div>
+      <span class="font-mono font-bold"><span class="hx-offline-queue-count">0</span> queued</span>
+    </div>
+
+    <!-- Offline Form Demo -->
+    <form hx-post="/api/invoices/new" class="space-y-4">
+      <h3 class="text-sm font-semibold text-foreground">Test Offline Mutation Queue</h3>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-medium text-foreground mb-1">Customer</label>
+          <input type="text" name="customer" value="Cyberdyne Systems" class="w-full px-3 py-2 text-xs bg-background border border-input rounded-md">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-foreground mb-1">Amount ($)</label>
+          <input type="number" name="amount" value="4500" class="w-full px-3 py-2 text-xs bg-background border border-input rounded-md">
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="window.HxOffline.queueRequest({ id: 'demo_' + Date.now(), url: '/api/invoices', method: 'POST', headers: {}, body: JSON.stringify({ customer: 'Cyberdyne', amount: 4500 }), timestamp: Date.now(), retries: 0 })" class="px-4 py-2 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90">Simulate Offline Mutation</button>
+        <button type="button" onclick="window.HxOffline.replayQueue()" class="px-4 py-2 text-xs font-medium bg-background border border-border rounded-md hover:bg-accent">Trigger Manual Replay</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Usage Code -->
+  <div class="space-y-4 pt-4 border-t border-border">
+    <h2 class="text-xl font-bold text-foreground">Declarative HTML Usage</h2>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>&lt;!-- Include Offline Engine --&gt;
+&lt;script src="/htmx-offline.js"&gt;&lt;/script&gt;
+
+&lt;!-- Offline Warning Banner (automatically displays when connectivity drops) --&gt;
+&lt;div hx-offline-indicator style="display: none;" class="p-3 bg-amber-500 text-white"&gt;
+  You are offline. &lt;span class="hx-offline-queue-count"&gt;0&lt;/span&gt; changes saved locally.
+&lt;/div&gt;
+
+&lt;!-- Standard HTMX mutations automatically queue on network drop --&gt;
+&lt;form hx-post="/api/orders" hx-target="#result"&gt;
+  &lt;input name="item"&gt;
+  &lt;button type="submit"&gt;Submit Order&lt;/button&gt;
+&lt;/form&gt;</pre>
+    </div>
+  </div>
+</div>

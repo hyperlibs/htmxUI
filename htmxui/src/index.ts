@@ -13,3 +13,5 @@ export { HxVibe, FlipManager, initVibe } from './htmx-vibe';
 export { HxA11y, trapFocus, initRovingTabindex, announce, initA11y } from './htmx-a11y';
 export { VirtualScroller, initVirtual } from './htmx-virtual';
 export { EnterpriseDataGrid, initGrids } from './htmx-grid';
+export { HxOffline } from './htmx-offline';
+export { HxDevTools } from './htmx-devtools';

@@ -51,6 +51,7 @@ const NO_SCALE_UI = [
 async function buildComponentPage(slug: string): Promise<string> {
   const name = formatName(slug);
   const sidebar = buildSidebar(slug);
+  const isGettingStarted = GETTING_STARTED.includes(slug);
   const sourceFile = Bun.file(`views/components/${slug}.html`);
   const sourceHtml = await sourceFile.exists() ? await sourceFile.text() : "<!-- Component source not found -->";
   
@@ -83,13 +84,7 @@ async function buildComponentPage(slug: string): Promise<string> {
           <span class="font-bold text-lg tracking-tight">HTMXUI</span>
         </a>
       </div>
-      <div class="p-3 border-b border-border">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">Getting Started</p>
-        <a href="/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Introduction</a>
-        <a href="/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Installation</a>
-      </div>
       <div class="flex-1 p-3 overflow-y-auto">
-        <p class="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">Components</p>
         ${sidebar}
       </div>
     </aside>
@@ -113,6 +108,9 @@ async function buildComponentPage(slug: string): Promise<string> {
       </header>
 
       <main class="flex-1 p-6 lg:p-10 max-w-4xl">
+        ${isGettingStarted ? `
+          ${demo}
+        ` : `
         <!-- Title -->
         <div class="space-y-2 mb-8">
           <h1 class="text-3xl font-bold tracking-tight">${name}</h1>
@@ -145,8 +143,6 @@ async function buildComponentPage(slug: string): Promise<string> {
             function toggleScaleUI(enabled) {
               const content = document.getElementById('preview-content');
               
-              // We want to apply scaleui="1" to the root interactive elements of the demo
-              // If it's a section wrapper (like most demos), we apply it to its children instead so they can be resized individually
               const firstChild = content.firstElementChild;
               let targets = [firstChild];
               
@@ -210,7 +206,7 @@ async function buildComponentPage(slug: string): Promise<string> {
 &lt;!-- Server can update client state via header --&gt;
 &lt;!-- HX-Trigger: {"hxStateUpdate": {"target": "#my-${slug}", "state": {"themeColor": "destructive"}}} --&gt;</pre></code></div>
         </div>
-
+        `}
       </main>
     </div>
   </div>
@@ -231,39 +227,48 @@ const server = Bun.serve({
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>HTMXUI - The Modern HTMX Component Library</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTMXUI — Hyper Reactive HTMX on Steroids</title>
   <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body class="bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground min-h-screen flex flex-col">
+
+  <!-- Header -->
   <header class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
     <div class="container mx-auto px-4 lg:px-8 h-16 flex items-center justify-between max-w-7xl">
       <div class="flex items-center gap-3 font-bold text-xl tracking-tight">
-        <div class="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-sm shadow-sm">H</div>
+        <div class="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center text-sm shadow-sm font-black">H</div>
         HTMXUI
       </div>
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-        <a href="/docs/components/installation" class="hover:text-foreground transition-colors">Documentation</a>
+        <a href="/docs/components/introduction" class="hover:text-foreground transition-colors">Documentation</a>
         <a href="/docs/components/button" class="hover:text-foreground transition-colors">Components</a>
-        <a href="https://github.com/your-repo" class="hover:text-foreground transition-colors">GitHub</a>
+        <a href="https://github.com/hyperlibs/htmxUI" class="hover:text-foreground transition-colors">GitHub</a>
       </nav>
     </div>
   </header>
+
   <main class="flex-1 flex flex-col">
-    <section class="py-32 px-4 text-center flex flex-col items-center justify-center relative overflow-hidden">
+
+    <!-- Hero -->
+    <section class="py-28 md:py-36 px-4 text-center flex flex-col items-center justify-center relative overflow-hidden">
       <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background pointer-events-none"></div>
-      <div class="relative z-10 flex flex-col items-center">
+      <div class="relative z-10 flex flex-col items-center max-w-5xl mx-auto">
         <div class="inline-flex items-center rounded-full border border-border bg-muted/50 px-4 py-1.5 text-sm font-medium mb-8 backdrop-blur-sm text-primary">
-          🎉 Version 1.0 is now live
+          ⚡ Hyper Reactive HTMX on Steroids
         </div>
-        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter max-w-4xl mb-8 leading-[1.1]">
-          Beautiful UI components for <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">HTMX</span>.
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tighter max-w-4xl mb-6 leading-[1.05]">
+          HTMX + Shadcn + <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-600">Reactive Engine</span>
         </h1>
-        <p class="text-xl md:text-2xl text-muted-foreground max-w-2xl mb-12 leading-relaxed">
-          Accessible. Customizable. Zero NPM bloat. Build modern SaaS applications entirely in HTML with the power of HTMX and Tailwind CSS.
+        <p class="text-lg md:text-xl text-muted-foreground max-w-3xl mb-6 leading-relaxed">
+          HTMXUI is not a UI library. It is a <strong class="text-foreground">deliberate fork and reinvention of htmx</strong> into a hyperreactive, lean framework. 100+ Shadcn-quality components. ~2KB reactive engine. Zero NPM bloat.
+        </p>
+        <p class="text-base text-muted-foreground max-w-2xl mb-10 leading-relaxed">
+          Built for human developers <em>and</em> agentic AI coders who need predictable, composable, server-driven UIs.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-          <a href="/docs/components/installation" class="inline-flex items-center justify-center h-14 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-lg transition-colors hover:bg-primary/90 shadow-lg hover:shadow-xl w-full sm:w-auto">
+          <a href="/docs/components/introduction" class="inline-flex items-center justify-center h-14 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-lg transition-colors hover:bg-primary/90 shadow-lg hover:shadow-xl w-full sm:w-auto">
             Get Started
           </a>
           <a href="/docs/components/button" class="inline-flex items-center justify-center h-14 px-8 rounded-md border border-input bg-background font-semibold text-lg transition-colors hover:bg-muted shadow-sm w-full sm:w-auto">
@@ -272,29 +277,136 @@ const server = Bun.serve({
         </div>
       </div>
     </section>
-    <section class="border-t border-border bg-muted/30 py-24 px-4">
-      <div class="container mx-auto grid md:grid-cols-3 gap-8 max-w-7xl">
-        <div class="bg-background p-8 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow">
-          <div class="h-12 w-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 text-2xl">⚡</div>
-          <h3 class="text-xl font-bold mb-3">Zero JS Bloat</h3>
-          <p class="text-muted-foreground leading-relaxed">No React, no Virtual DOM. Powered entirely by native browser APIs and lightweight HTMX extensions like htmx-bolt.</p>
+
+    <!-- The Stack -->
+    <section class="border-t border-border bg-muted/20 py-20 px-4">
+      <div class="container mx-auto max-w-7xl">
+        <div class="text-center mb-14">
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-4">The Core Stack</h2>
+          <p class="text-muted-foreground text-lg max-w-2xl mx-auto">Four microscopic extensions that complete HTML as a reactive, composable application platform.</p>
         </div>
-        <div class="bg-background p-8 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow">
-          <div class="h-12 w-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 text-2xl">🎨</div>
-          <h3 class="text-xl font-bold mb-3">100+ Components</h3>
-          <p class="text-muted-foreground leading-relaxed">From basic buttons to deeply complex data tables and interactive visual node canvases. Copy and paste directly into your apps.</p>
-        </div>
-        <div class="bg-background p-8 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow">
-          <div class="h-12 w-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-6 text-2xl">🚀</div>
-          <h3 class="text-xl font-bold mb-3">Backend Agnostic</h3>
-          <p class="text-muted-foreground leading-relaxed">Use with Python, Go, PHP, or Bun. If your backend can return HTML, you can use HTMXUI to build single-page app experiences.</p>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-background p-6 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow">
+            <div class="h-10 w-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4 text-lg font-bold">⚡</div>
+            <h3 class="text-lg font-bold mb-2">htmx-bolt.js</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">~2KB reactive engine. Proxy-based local state, declarative bindings, server-driven state sync via HX-Trigger. The missing middle ground.</p>
+          </div>
+          <div class="bg-background p-6 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow">
+            <div class="h-10 w-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4 text-lg font-bold">🔍</div>
+            <h3 class="text-lg font-bold mb-2">htmx-flash.js</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">In-memory search engine. Loads data once, filters thousands of items in 0ms. Perfect for command palettes & instant search.</p>
+          </div>
+          <div class="bg-background p-6 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow">
+            <div class="h-10 w-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4 text-lg font-bold">🎨</div>
+            <h3 class="text-lg font-bold mb-2">htmx-canvas.js</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">Visual node editor engine. Drag-and-drop, grid snapping, 2-layer nesting, dynamic Bézier connectors. Pure vanilla JS.</p>
+          </div>
+          <div class="bg-background p-6 rounded-2xl shadow-sm border border-border hover:shadow-md transition-shadow">
+            <div class="h-10 w-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center mb-4 text-lg font-bold">📦</div>
+            <h3 class="text-lg font-bold mb-2">100+ Components</h3>
+            <p class="text-sm text-muted-foreground leading-relaxed">Shadcn/ui-quality HTML components. Copy-paste directly. No NPM, no Virtual DOM, no build step for logic. Full ownership.</p>
+          </div>
         </div>
       </div>
     </section>
+
+    <!-- Benefits for Developers -->
+    <section class="border-t border-border py-20 px-4">
+      <div class="container mx-auto max-w-7xl grid lg:grid-cols-2 gap-16">
+        <div>
+          <div class="inline-flex items-center rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-semibold mb-4 text-primary">FOR HUMAN DEVELOPERS</div>
+          <h2 class="text-3xl font-extrabold tracking-tight mb-6">Why developers choose HTMXUI</h2>
+          <ol class="space-y-3 text-sm text-foreground">
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">01.</span><span>Zero NPM, zero Virtual DOM — no node_modules, no React, no webpack</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">02.</span><span>Server remains the source of truth — true hypermedia architecture</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">03.</span><span>Copy-paste components — full ownership, no black-box abstractions</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">04.</span><span>Instant local reactivity via Bolt — dropdowns, tabs, toggles without round-trips</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">05.</span><span>Backend agnostic — Python, Go, PHP, Rust, Bun, any language that returns HTML</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">06.</span><span>Tailwind-native theming — CSS variable system for dark mode and custom brands</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">07.</span><span>Sub-3KB total client JS — smaller than a single React hook import</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">08.</span><span>Progressive enhancement — start pure htmx, add Bolt/Flash only where needed</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">09.</span><span>7 layout primitives — dashboards, marketing, print, canvases, mobile-first</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">10.</span><span>No build step for logic — HTML is the component, the server is the framework</span></li>
+          </ol>
+        </div>
+        <div>
+          <div class="inline-flex items-center rounded-full border border-border bg-muted/50 px-3 py-1 text-xs font-semibold mb-4 text-primary">FOR AGENTIC AI CODERS</div>
+          <h2 class="text-3xl font-extrabold tracking-tight mb-6">Why AI agents prefer HTMXUI</h2>
+          <ol class="space-y-3 text-sm text-foreground">
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">01.</span><span>Highly regular HTML structure — agents parse, generate, and modify UI with high success rates</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">02.</span><span>Declarative attribute-based behavior — no imperative JS to reason about</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">03.</span><span>Predictable composition — contracts that agents can reliably assemble</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">04.</span><span>Minimal hidden side effects — what you see in the HTML is what happens</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">05.</span><span>Machine-readable component patterns — consistent naming across 100+ components</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">06.</span><span>No complex build toolchain — agents don't manage webpack/vite/turbopack configs</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">07.</span><span>Server-driven mutations — modify UI by returning HTML fragments, not client state graphs</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">08.</span><span>Copy-paste atomic components — compose UIs by concatenating well-defined HTML blocks</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">09.</span><span>Small learnable grammar — hx-state, hx-action, hx-text, hx-show is the entire reactive API</span></li>
+            <li class="flex gap-3"><span class="font-bold text-primary shrink-0">10.</span><span>Lower error surface — no JSX transpilation, no hook ordering, no hydration mismatches</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="border-t border-border bg-muted/20 py-20 px-4">
+      <div class="container mx-auto max-w-3xl text-center">
+        <h2 class="text-3xl font-extrabold tracking-tight mb-4">Architecture</h2>
+        <p class="text-muted-foreground text-base mb-10">Each layer is optional and progressive. Use only what you need.</p>
+        <div class="space-y-3">
+          <div class="bg-background border border-border rounded-xl p-5 text-sm font-medium shadow-sm">
+            <span class="text-muted-foreground">Layer 4:</span> <strong>Your Application</strong> <span class="text-muted-foreground">— Templates, domain components, agent-generated UI</span>
+          </div>
+          <div class="flex justify-center text-muted-foreground text-lg">↓</div>
+          <div class="bg-background border border-border rounded-xl p-5 text-sm font-medium shadow-sm">
+            <span class="text-muted-foreground">Layer 3:</span> <strong>Composition & Layouts</strong> <span class="text-muted-foreground">— 7 layout primitives, named regions, mobile variants</span>
+          </div>
+          <div class="flex justify-center text-muted-foreground text-lg">↓</div>
+          <div class="bg-primary/5 border-2 border-primary/30 rounded-xl p-5 text-sm font-medium shadow-sm">
+            <span class="text-primary font-semibold">Layer 2:</span> <strong class="text-primary">Hyperreactive Layer</strong> <span class="text-muted-foreground">— Bolt (reactivity) + Flash (search) + Canvas (spatial)</span>
+          </div>
+          <div class="flex justify-center text-muted-foreground text-lg">↓</div>
+          <div class="bg-background border border-border rounded-xl p-5 text-sm font-medium shadow-sm">
+            <span class="text-muted-foreground">Layer 1:</span> <strong>Enhanced Hypermedia Core</strong> <span class="text-muted-foreground">— htmx requests, swapping, SSE, WebSocket, history</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Design Pillars -->
+    <section class="border-t border-border py-20 px-4">
+      <div class="container mx-auto max-w-5xl">
+        <h2 class="text-3xl font-extrabold tracking-tight mb-10 text-center">Design Pillars</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead>
+              <tr class="border-b-2 border-border">
+                <th class="text-left py-3 px-4 font-semibold">Pillar</th>
+                <th class="text-left py-3 px-4 font-semibold">Meaning</th>
+                <th class="text-left py-3 px-4 font-semibold text-muted-foreground">Non-Goal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr><td class="py-3 px-4 font-bold text-primary">Hyperreactive</td><td class="py-3 px-4">Fine-grained reactivity that works with server-driven HTML</td><td class="py-3 px-4 text-muted-foreground">Becoming a full SPA framework</td></tr>
+              <tr><td class="py-3 px-4 font-bold text-primary">Lean</td><td class="py-3 px-4">Minimal runtime, minimal concepts, maximal clarity</td><td class="py-3 px-4 text-muted-foreground">Feature bloat or "everything included"</td></tr>
+              <tr><td class="py-3 px-4 font-bold text-primary">Hypermedia-first</td><td class="py-3 px-4">Server is the source of truth; HTML is the primary medium</td><td class="py-3 px-4 text-muted-foreground">Client-side state ownership</td></tr>
+              <tr><td class="py-3 px-4 font-bold text-primary">Agentic-native</td><td class="py-3 px-4">Structure that AI agents can reliably generate & reason about</td><td class="py-3 px-4 text-muted-foreground">Human-only ergonomics</td></tr>
+              <tr><td class="py-3 px-4 font-bold text-primary">Composable</td><td class="py-3 px-4">Clear contracts for assembling UI, behavior, and layouts</td><td class="py-3 px-4 text-muted-foreground">Opaque magic or coupled systems</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
   </main>
-  <footer class="border-t border-border py-12 text-center text-sm text-muted-foreground bg-background">
-    <p>Built for the HTMX community. Engineered for speed.</p>
+
+  <footer class="border-t border-border py-12 px-4">
+    <div class="container mx-auto max-w-7xl text-center">
+      <p class="text-sm text-muted-foreground mb-2">HTMXUI — Hyper Reactive HTMX on Steroids</p>
+      <p class="text-xs text-muted-foreground">Original htmx completed HTML as a hypermedia. HTMXUI completes it as a reactive, agent-friendly, composable application platform.</p>
+    </div>
   </footer>
+
 </body>
 </html>`, { headers: { "Content-Type": "text/html" } });
     }
@@ -323,19 +435,14 @@ const server = Bun.serve({
     const match = url.pathname.match(/^\/docs\/components\/(.+)$/);
     if (match) {
       const slug = match[1];
-      if (COMPONENTS.includes(slug)) {
+      if (COMPONENTS.includes(slug) || GETTING_STARTED.includes(slug)) {
         return new Response(await buildComponentPage(slug), { headers: { "Content-Type": "text/html" } });
       }
     }
 
-    // Redirect /docs to first component
+    // Redirect /docs to introduction
     if (url.pathname === "/docs" || url.pathname === "/docs/") {
-      return Response.redirect("/docs/components/accordion", 302);
-    }
-
-    // Home page — redirect to docs
-    if (url.pathname === "/") {
-      return Response.redirect("/docs/components/button", 302);
+      return Response.redirect("/docs/components/introduction", 302);
     }
 
     return new Response("Not Found", { status: 404 });

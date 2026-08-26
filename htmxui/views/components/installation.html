@@ -1,62 +1,206 @@
-<div class="space-y-8 max-w-4xl py-6">
+<div class="space-y-10 max-w-4xl py-6">
+  <!-- Header -->
   <div>
-    <h1 class="text-4xl font-extrabold tracking-tight mb-4">Installation</h1>
+    <h1 class="text-4xl font-extrabold tracking-tight mb-2 text-foreground">Installation</h1>
     <p class="text-lg text-muted-foreground leading-relaxed">
-      HTMXUI is not a dependency you install via NPM. It is a collection of HTML, CSS, and lightweight JS snippets that you copy and paste directly into your project.
+      Get HTMXUI running in your project in under 2 minutes.
     </p>
   </div>
 
+  <!-- Prerequisites -->
   <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">1. Install Tailwind CSS</h2>
-    <p class="text-sm text-muted-foreground">HTMXUI uses Tailwind CSS for all styling. Ensure you have Tailwind set up in your project.</p>
-    <div class="code-block bg-muted/50 p-4 rounded-xl border border-border font-mono text-sm overflow-x-auto">
-      npm install -D tailwindcss<br>
-      npx tailwindcss init
-    </div>
-  </div>
-
-  <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">2. Include HTMX and HTMXUI Extensions</h2>
-    <p class="text-sm text-muted-foreground">Add the base HTMX script, along with our ultra-lightweight <code>htmx-bolt.js</code> for zero-bloat client-side reactivity.</p>
-    <div class="code-block bg-muted/50 p-4 rounded-xl border border-border font-mono text-sm overflow-x-auto text-foreground">
-&lt;script src="https://unpkg.com/htmx.org@2.0.4"&gt;&lt;/script&gt;<br>
-&lt;script src="/path/to/htmx-bolt.js"&gt;&lt;/script&gt;
-    </div>
-    <p class="text-sm text-muted-foreground mt-2">
-      <em>(Download <code>htmx-bolt.js</code> from the public directory of the repository).</em>
-    </p>
-  </div>
-
-  <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">3. Setup CSS Variables (Theming)</h2>
-    <p class="text-sm text-muted-foreground">Add these CSS variables to your global stylesheet to power the dynamic theming system.</p>
-    <div class="code-block bg-muted/50 p-4 rounded-xl border border-border font-mono text-sm overflow-x-auto text-foreground">
-@layer base {<br>
-&nbsp;&nbsp;:root {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--background: 0 0% 100%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--foreground: 222.2 84% 4.9%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--card: 0 0% 100%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--card-foreground: 222.2 84% 4.9%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--primary: 221.2 83.2% 53.3%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--primary-foreground: 210 40% 98%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--muted: 210 40% 96.1%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--muted-foreground: 215.4 16.3% 46.9%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--border: 214.3 31.8% 91.4%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--input: 214.3 31.8% 91.4%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--ring: 221.2 83.2% 53.3%;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;--radius: 0.5rem;<br>
-&nbsp;&nbsp;}<br>
-}
-    </div>
-  </div>
-
-  <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2">4. Copy and Paste Components</h2>
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Prerequisites</h2>
     <p class="text-sm text-muted-foreground leading-relaxed">
-      Browse the components in the sidebar, find the one you need, and copy the raw HTML into your templates. 
-      Use standard <code>hx-post</code>, <code>hx-get</code>, and <code>hx-target</code> attributes to hook them up to your backend!
+      HTMXUI is intentionally lightweight, non-invasive, and engine-agnostic. Before getting started, ensure your environment provides:
     </p>
-    <a href="/docs/components/button" class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 mt-2">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+      <div class="rounded-lg border border-border bg-card p-4 space-y-2">
+        <div class="flex items-center gap-2 font-semibold text-sm text-foreground">
+          <svg class="h-4 w-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Tailwind CSS
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Tailwind CSS (v3 or v4) configured in your build toolchain or via CDN.
+        </p>
+      </div>
+
+      <div class="rounded-lg border border-border bg-card p-4 space-y-2">
+        <div class="flex items-center gap-2 font-semibold text-sm text-foreground">
+          <svg class="h-4 w-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          Any HTML Backend
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Any server backend that returns HTML (Python, Go, PHP, Bun, Rust, etc.).
+        </p>
+      </div>
+
+      <div class="rounded-lg border border-border bg-card p-4 space-y-2">
+        <div class="flex items-center gap-2 font-semibold text-sm text-foreground">
+          <svg class="h-4 w-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          No NPM Dependency
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Zero NPM packages or complex client build steps are required for HTMXUI itself.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1: Core Scripts -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 1 — Include the Core Scripts</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Add the base HTMX library and the HTMXUI client-side extensions into your base template layout:
+    </p>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-sm overflow-x-auto leading-relaxed">
+      <pre><code>&lt;!-- HTMX Core --&gt;
+&lt;script src="https://unpkg.com/htmx.org@2.0.4"&gt;&lt;/script&gt;
+
+&lt;!-- HTMXUI Reactive Engine --&gt;
+&lt;script src="/htmx-bolt.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: In-Memory Search Engine --&gt;
+&lt;script src="/htmx-flash.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: Visual Canvas Engine --&gt;
+&lt;script src="/htmx-canvas.js"&gt;&lt;/script&gt;</code></pre>
+    </div>
+    <div class="rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground leading-relaxed flex items-start gap-2.5">
+      <svg class="h-4 w-4 text-primary shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <div>
+        <strong class="text-foreground font-medium">Note:</strong> <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">htmx-bolt.js</code> is the only required extension (~2KB). Flash and Canvas are optional and add zero overhead if not used.
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Theming -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 2 — Setup Tailwind CSS Theming</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      HTMXUI uses CSS custom properties for theming, enabling effortless customization and seamless dark mode support. Add the following CSS variables block to your global stylesheet:
+    </p>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-sm overflow-x-auto leading-relaxed">
+      <pre><code>@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+  }
+}</code></pre>
+    </div>
+  </div>
+
+  <!-- Step 3: Copy Components -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 3 — Copy Components</h2>
+    <p class="text-sm text-foreground leading-relaxed">
+      HTMXUI follows a copy-paste model. Instead of importing complex packages, you own the markup completely.
+    </p>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Browse the sidebar, find a component, and copy the HTML markup directly into your backend templates. Replace placeholders with your template variables (Jinja2, Go templates, Blade, ERB, etc.).
+    </p>
+    <div class="rounded-lg border border-border bg-card p-4 space-y-2">
+      <h3 class="text-sm font-semibold text-foreground">Template Integration Examples:</h3>
+      <ul class="list-disc list-inside space-y-1.5 text-sm text-muted-foreground">
+        <li><strong class="text-foreground">Python (Jinja2 / Django)</strong>: Insert directly into <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.html</code> templates and bind context variables.</li>
+        <li><strong class="text-foreground">Go (html/template / Templ)</strong>: Paste into standard Go template blocks or reusable component functions.</li>
+        <li><strong class="text-foreground">PHP (Laravel Blade)</strong>: Paste into <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.blade.php</code> views or anonymous Blade components.</li>
+        <li><strong class="text-foreground">Bun / Node / Rust</strong>: Embed into any SSR template engine with zero compilation pipeline required.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Step 4: Add Reactivity (Bolt) -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 4 — Add Reactivity (Bolt)</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      When you need instant client-side interactivity without a round-trip to the server, use Bolt:
+    </p>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-sm overflow-x-auto leading-relaxed">
+      <pre><code>&lt;div hx-ext="reactive" hx-state='{ "count": 0, "open": false }'&gt;
+  &lt;button hx-action="count++"&gt;Clicked: &lt;span hx-text="count"&gt;0&lt;/span&gt;&lt;/button&gt;
+  &lt;button hx-action="open = !open"&gt;Toggle&lt;/button&gt;
+  &lt;div hx-show="open" class="mt-4 p-4 border rounded"&gt;I am reactive!&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <p class="text-sm text-foreground leading-relaxed">
+      <strong>No build step. No JSX. No Virtual DOM. Just HTML attributes.</strong> Bolt handles localized reactive state natively in ~2KB of vanilla JavaScript.
+    </p>
+  </div>
+
+  <!-- Architecture Overview -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Architecture Overview</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      HTMXUI provides a layered architecture that pairs the server-driven simplicity of hypermedia with client-side hyperreactivity:
+    </p>
+    
+    <div class="flex flex-col items-center space-y-2 py-2 max-w-xl mx-auto w-full">
+      <!-- Layer 1 -->
+      <div class="w-full rounded-xl border border-border bg-card p-4 shadow-sm text-center">
+        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Application Layer</div>
+        <div class="font-semibold text-sm text-foreground">Your Templates &amp; Domain Components</div>
+        <div class="text-xs text-muted-foreground mt-1">Jinja2, Go templates, Blade, JSX-less SSR, Custom Logic</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="flex items-center justify-center text-muted-foreground">
+        <svg class="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+      </div>
+
+      <!-- Layer 2 -->
+      <div class="w-full rounded-xl border border-border bg-card p-4 shadow-sm text-center">
+        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Composition &amp; Layout System</div>
+        <div class="font-semibold text-sm text-foreground">7 Layout Primitives</div>
+        <div class="text-xs text-muted-foreground mt-1">Layout Page, Web, Block, Grid, Scaffold, Canvas &amp; Print</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="flex items-center justify-center text-muted-foreground">
+        <svg class="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+      </div>
+
+      <!-- Layer 3 -->
+      <div class="w-full rounded-xl border border-border bg-card p-4 shadow-sm text-center">
+        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Hyperreactive Layer</div>
+        <div class="font-semibold text-sm text-foreground">Bolt + Flash + Canvas</div>
+        <div class="text-xs text-muted-foreground mt-1">Instant local state, 0ms in-memory search &amp; interactive node canvas</div>
+      </div>
+
+      <!-- Arrow -->
+      <div class="flex items-center justify-center text-muted-foreground">
+        <svg class="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+      </div>
+
+      <!-- Layer 4 -->
+      <div class="w-full rounded-xl border border-primary/30 bg-primary/5 p-4 shadow-sm text-center">
+        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Enhanced Hypermedia Core</div>
+        <div class="font-semibold text-sm text-foreground">htmx Foundation</div>
+        <div class="text-xs text-muted-foreground mt-1">Declarative requests, targeted DOM swapping, SSE &amp; WebSockets</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Call to Action -->
+  <div class="pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+      <h3 class="text-sm font-semibold text-foreground">Ready to start building?</h3>
+      <p class="text-xs text-muted-foreground">Explore over 100+ accessible, copy-paste ready UI components.</p>
+    </div>
+    <a href="/docs/components/button" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 shrink-0">
       Browse Components →
     </a>
   </div>

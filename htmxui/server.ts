@@ -13,7 +13,7 @@ const COMPONENTS = [
   "select","separator","sheet","sidebar","skeleton","slider","slider-range","snackbar","splitter",
   "stat-card","stepper","submenu","switch","table","tabs","tag","text","textarea","timeline",
   "time-picker","toast","toggle","toggle-group","toggle-switch","toolbar","tooltip","tree-view","user-card",
-  "video-player","watermark","wizard","date-range-picker"
+  "video-player","watermark","wizard","date-range-picker","hx-grid","hx-virtual"
 ];
 
 function formatName(slug: string): string {
@@ -69,6 +69,8 @@ async function buildComponentPage(slug: string): Promise<string> {
   <script src="/htmx-form.js"></script>
   <script src="/htmx-vibe.js"></script>
   <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-virtual.js"></script>
+  <script src="/htmx-grid.js"></script>
   <script src="/htmx-canvas.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
@@ -436,6 +438,29 @@ const server = Bun.serve({
 
     if (url.pathname === "/htmx-a11y.js") {
       return new Response(Bun.file("public/htmx-a11y.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/htmx-virtual.js") {
+      return new Response(Bun.file("public/htmx-virtual.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/htmx-grid.js") {
+      return new Response(Bun.file("public/htmx-grid.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/api/erp-invoices.json") {
+      const count = parseInt(url.searchParams.get("count") || "10000", 10);
+      const statuses = ["Paid", "Pending", "Overdue", "Draft", "Processing"];
+      const customers = ["Acme Corp", "Globex LLC", "Initech", "Umbrella Co", "Stark Industries", "Wayne Enterprises", "Cyberdyne", "Soylent Corp"];
+      
+      const invoices = Array.from({ length: count }, (_, i) => ({
+        id: `INV-${100000 + i}`,
+        customer: customers[i % customers.length],
+        amount: (Math.random() * 5000 + 100).toFixed(2),
+        status: statuses[i % statuses.length],
+        date: new Date(Date.now() - (i * 86400000)).toISOString().split('T')[0]
+      }));
+      return new Response(JSON.stringify(invoices), { headers: { "Content-Type": "application/json" } });
     }
 
     if (url.pathname === "/htmx-canvas.js") {

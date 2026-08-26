@@ -17,6 +17,8 @@ declare global {
     HxForm?: HxFormAPI;
     HxVibe: HxVibeAPI;
     HxA11y: HxA11yAPI;
+    HxVirtual?: any;
+    HxGrid?: any;
   }
 }
 

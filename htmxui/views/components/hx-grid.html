@@ -1,0 +1,47 @@
+<div class="space-y-8 max-w-5xl py-4">
+  <div class="space-y-2">
+    <h1 class="text-3xl font-bold tracking-tight text-foreground">Enterprise Data Grid (&lt;hx-grid&gt;)</h1>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      A high-performance virtualized data grid built for complex ERP applications. Supports 100k+ rows at 60fps, column resizing, multi-row selection, inline cell editing, and client-side CSV export.
+    </p>
+  </div>
+
+  <!-- Interactive Grid Demo -->
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h3 class="text-base font-semibold text-foreground">Live Demo: 10,000 Virtualized ERP Invoices</h3>
+      <div class="text-xs text-muted-foreground font-mono">Double-click any cell to edit • Drag column borders to resize</div>
+    </div>
+
+    <!-- The Data Grid Container -->
+    <div hx-grid hx-grid-src="/api/erp-invoices.json?count=10000" hx-grid-row-height="40" class="w-full"></div>
+  </div>
+
+  <!-- Usage Guide -->
+  <div class="space-y-4 pt-4 border-t border-border">
+    <h2 class="text-xl font-bold text-foreground">Declarative HTML Usage</h2>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>&lt;!-- 1. Include the Grid engine --&gt;
+&lt;script src="/htmx-grid.js"&gt;&lt;/script&gt;
+
+&lt;!-- 2. Declarative 100k-row Grid bound to JSON API --&gt;
+&lt;div hx-grid 
+     hx-grid-src="/api/invoices.json" 
+     hx-grid-row-height="40"&gt;
+&lt;/div&gt;
+
+&lt;!-- 3. Or initialize with custom column configuration via JS --&gt;
+&lt;script&gt;
+  const grid = new HxGrid.EnterpriseDataGrid(document.getElementById('my-grid'), {
+    columns: [
+      { field: 'id', header: 'Invoice ID', width: 140, editable: false },
+      { field: 'customer', header: 'Customer Name', width: 220, editable: true },
+      { field: 'amount', header: 'Total ($)', width: 120, formatter: val =&gt; '$' + val },
+      { field: 'status', header: 'Status', width: 130 }
+    ],
+    data: myInvoiceData
+  });
+&lt;/script&gt;</pre>
+    </div>
+  </div>
+</div>

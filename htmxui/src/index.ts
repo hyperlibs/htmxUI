@@ -11,3 +11,5 @@ export { HxFlash, FlashDatabase } from './htmx-flash';
 export { HxForm, defaultValidators, defaultMessages, validateInput, initForm } from './htmx-form';
 export { HxVibe, FlipManager, initVibe } from './htmx-vibe';
 export { HxA11y, trapFocus, initRovingTabindex, announce, initA11y } from './htmx-a11y';
+export { VirtualScroller, initVirtual } from './htmx-virtual';
+export { EnterpriseDataGrid, initGrids } from './htmx-grid';

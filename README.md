@@ -103,26 +103,32 @@ HTMXUI = HTMX (Hypermedia Core)
 <!-- HTMXUI Reactive Signal Engine -->
 <script src="/htmx-bolt.js"></script>
 
-<!-- Optional: Search, Forms, Animations, Accessibility -->
+<!-- Optional: Search, Forms, Animations, Accessibility, Virtualization, Grid, Offline -->
 <script src="/htmx-flash.js"></script>
 <script src="/htmx-form.js"></script>
 <script src="/htmx-vibe.js"></script>
 <script src="/htmx-a11y.js"></script>
+<script src="/htmx-virtual.js"></script>
+<script src="/htmx-grid.js"></script>
+<script src="/htmx-offline.js"></script>
 ```
 
 ### 2. Reactive Component Example
 
 ```html
-<div hx-state='{
-  newItem: "",
-  items: [
-    { id: 1, name: "Mechanical Keyboard", price: 120, qty: 1 },
-    { id: 2, name: "Wireless Mouse", price: 60, qty: 2 }
-  ]
-}'
-hx-computed='{
-  totalPrice: items.reduce((sum, i) => sum + (i.price * i.qty), 0)
-}' class="p-6 border rounded-xl space-y-4">
+<div class="p-6 border rounded-xl space-y-4"
+     hx-computed='{ totalPrice: items.reduce((sum, i) => sum + (i.price * i.qty), 0) }'>
+
+  <!-- Recommended: Declare initial state via script block -->
+  <script type="application/json" hx-state>
+  {
+    "newItem": "",
+    "items": [
+      { "id": 1, "name": "Mechanical Keyboard", "price": 120, "qty": 1 },
+      { "id": 2, "name": "Wireless Mouse", "price": 60, "qty": 2 }
+    ]
+  }
+  </script>
 
   <!-- Two-way binding -->
   <div class="flex gap-2">

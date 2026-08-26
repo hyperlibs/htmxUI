@@ -4,6 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "bun run server.ts",
+    "build:engines": "bun build src/htmx-bolt.ts --outfile public/htmx-bolt.js && bun build src/htmx-flash.ts --outfile public/htmx-flash.js && bun build src/htmx-form.ts --outfile public/htmx-form.js && bun build src/htmx-vibe.ts --outfile public/htmx-vibe.js && bun build src/htmx-a11y.ts --outfile public/htmx-a11y.js",
+    "build:css": "bunx tailwindcss -i public/styles/input.css -o public/styles/output.css",
+    "build": "bun run build:engines && bun run build:css",
     "test:ui": "bunx playwright test"
   },
   "keywords": [],

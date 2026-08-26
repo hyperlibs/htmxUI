@@ -66,6 +66,9 @@ async function buildComponentPage(slug: string): Promise<string> {
   <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
   <script src="/htmx-bolt.js"></script>
   <script src="/htmx-flash.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <script src="/htmx-a11y.js"></script>
   <script src="/htmx-canvas.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
@@ -421,6 +424,18 @@ const server = Bun.serve({
 
     if (url.pathname === "/htmx-flash.js") {
       return new Response(Bun.file("public/htmx-flash.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/htmx-form.js") {
+      return new Response(Bun.file("public/htmx-form.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/htmx-vibe.js") {
+      return new Response(Bun.file("public/htmx-vibe.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/htmx-a11y.js") {
+      return new Response(Bun.file("public/htmx-a11y.js"), { headers: { "Content-Type": "application/javascript" } });
     }
 
     if (url.pathname === "/htmx-canvas.js") {

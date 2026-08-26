@@ -1,86 +1,69 @@
 <div class="space-y-10 max-w-4xl py-6">
-  <!-- Header -->
-  <div>
-    <h1 class="text-4xl font-extrabold tracking-tight mb-2 text-foreground">Installation</h1>
-    <p class="text-lg text-muted-foreground leading-relaxed">
-      Get HTMXUI running in your project in under 2 minutes.
+  <!-- Title & Subtitle -->
+  <div class="space-y-3">
+    <h1 class="text-4xl font-extrabold tracking-tight text-foreground">Installation & Quickstart</h1>
+    <p class="text-lg text-muted-foreground leading-relaxed font-medium">
+      Set up the hyperreactive HTMXUI suite in your project in under 2 minutes. Zero NPM build step required.
     </p>
   </div>
 
-  <!-- Prerequisites -->
+  <!-- Section: Prerequisites -->
   <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Prerequisites</h2>
-    <p class="text-sm text-muted-foreground leading-relaxed">
-      HTMXUI is intentionally lightweight, non-invasive, and engine-agnostic. Before getting started, ensure your environment provides:
-    </p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-      <div class="rounded-lg border border-border bg-card p-4 space-y-2">
-        <div class="flex items-center gap-2 font-semibold text-sm text-foreground">
-          <svg class="h-4 w-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          Tailwind CSS
-        </div>
-        <p class="text-sm text-muted-foreground leading-relaxed">
-          Tailwind CSS (v3 or v4) configured in your build toolchain or via CDN.
-        </p>
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Prerequisites</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="font-semibold text-sm mb-1 text-foreground">Tailwind CSS</div>
+        <div class="text-xs text-muted-foreground">v3 or v4 with standard design token variables</div>
       </div>
-
-      <div class="rounded-lg border border-border bg-card p-4 space-y-2">
-        <div class="flex items-center gap-2 font-semibold text-sm text-foreground">
-          <svg class="h-4 w-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          Any HTML Backend
-        </div>
-        <p class="text-sm text-muted-foreground leading-relaxed">
-          Any server backend that returns HTML (Python, Go, PHP, Bun, Rust, etc.).
-        </p>
+      <div class="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="font-semibold text-sm mb-1 text-foreground">Any Backend</div>
+        <div class="text-xs text-muted-foreground">Python, Go, Rust, PHP, Bun, Node, Ruby, Java</div>
       </div>
-
-      <div class="rounded-lg border border-border bg-card p-4 space-y-2">
-        <div class="flex items-center gap-2 font-semibold text-sm text-foreground">
-          <svg class="h-4 w-4 text-primary shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          No NPM Dependency
-        </div>
-        <p class="text-sm text-muted-foreground leading-relaxed">
-          Zero NPM packages or complex client build steps are required for HTMXUI itself.
-        </p>
+      <div class="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="font-semibold text-sm mb-1 text-foreground">Zero Node Modules</div>
+        <div class="text-xs text-muted-foreground">No React runtime, no JSX, no webpack bundler</div>
       </div>
     </div>
   </div>
 
-  <!-- Step 1: Core Scripts -->
+  <!-- Section: Step 1 — Include Core Scripts -->
   <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 1 — Include the Core Scripts</h2>
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 1 — Include Core Scripts</h2>
     <p class="text-sm text-muted-foreground leading-relaxed">
-      Add the base HTMX library and the HTMXUI client-side extensions into your base template layout:
+      Add HTMX and the HTMXUI engines to your base HTML layout. <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">htmx-bolt.js</code> is the only required extension for signals and reactivity.
     </p>
-    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-sm overflow-x-auto leading-relaxed">
-      <pre><code>&lt;!-- HTMX Core --&gt;
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>&lt;!-- 1. HTMX Core --&gt;
 &lt;script src="https://unpkg.com/htmx.org@2.0.4"&gt;&lt;/script&gt;
 
-&lt;!-- HTMXUI Reactive Engine --&gt;
+&lt;!-- 2. Signal-Based Reactive Engine (~8KB) --&gt;
 &lt;script src="/htmx-bolt.js"&gt;&lt;/script&gt;
 
-&lt;!-- Optional: In-Memory Search Engine --&gt;
+&lt;!-- Optional: In-Memory Fuzzy Search &amp; Multi-Filter Engine --&gt;
 &lt;script src="/htmx-flash.js"&gt;&lt;/script&gt;
 
-&lt;!-- Optional: Visual Canvas Engine --&gt;
-&lt;script src="/htmx-canvas.js"&gt;&lt;/script&gt;</code></pre>
-    </div>
-    <div class="rounded-lg border border-border bg-muted/40 p-3 text-sm text-muted-foreground leading-relaxed flex items-start gap-2.5">
-      <svg class="h-4 w-4 text-primary shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-      <div>
-        <strong class="text-foreground font-medium">Note:</strong> <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">htmx-bolt.js</code> is the only required extension (~2KB). Flash and Canvas are optional and add zero overhead if not used.
-      </div>
+&lt;!-- Optional: Form Validation &amp; Optimistic UI Engine --&gt;
+&lt;script src="/htmx-form.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: FLIP Vibe &amp; Layout Animation Engine --&gt;
+&lt;script src="/htmx-vibe.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: Focus Trap &amp; Roving Tabindex Engine --&gt;
+&lt;script src="/htmx-a11y.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: Visual Spatial Node Canvas Engine --&gt;
+&lt;script src="/htmx-canvas.js"&gt;&lt;/script&gt;</pre>
     </div>
   </div>
 
-  <!-- Step 2: Theming -->
+  <!-- Section: Step 2 — Setup Tailwind CSS Variables -->
   <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 2 — Setup Tailwind CSS Theming</h2>
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 2 — Configure CSS Design Tokens</h2>
     <p class="text-sm text-muted-foreground leading-relaxed">
-      HTMXUI uses CSS custom properties for theming, enabling effortless customization and seamless dark mode support. Add the following CSS variables block to your global stylesheet:
+      HTMXUI components use CSS custom properties for instant dark mode and theme switching. Add these variables to your stylesheet:
     </p>
-    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-sm overflow-x-auto leading-relaxed">
-      <pre><code>@layer base {
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>@layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -94,113 +77,137 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
   }
-}</code></pre>
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+  }
+}</pre>
     </div>
   </div>
 
-  <!-- Step 3: Copy Components -->
+  <!-- Section: Step 3 — Reactive Directives Cheat Sheet -->
   <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 3 — Copy Components</h2>
-    <p class="text-sm text-foreground leading-relaxed">
-      HTMXUI follows a copy-paste model. Instead of importing complex packages, you own the markup completely.
-    </p>
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 3 — Reactive Grammar &amp; Directives</h2>
     <p class="text-sm text-muted-foreground leading-relaxed">
-      Browse the sidebar, find a component, and copy the HTML markup directly into your backend templates. Replace placeholders with your template variables (Jinja2, Go templates, Blade, ERB, etc.).
+      Bolt provides a complete signal-based declarative grammar directly inside HTML attributes:
     </p>
-    <div class="rounded-lg border border-border bg-card p-4 space-y-2">
-      <h3 class="text-sm font-semibold text-foreground">Template Integration Examples:</h3>
-      <ul class="list-disc list-inside space-y-1.5 text-sm text-muted-foreground">
-        <li><strong class="text-foreground">Python (Jinja2 / Django)</strong>: Insert directly into <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.html</code> templates and bind context variables.</li>
-        <li><strong class="text-foreground">Go (html/template / Templ)</strong>: Paste into standard Go template blocks or reusable component functions.</li>
-        <li><strong class="text-foreground">PHP (Laravel Blade)</strong>: Paste into <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.blade.php</code> views or anonymous Blade components.</li>
-        <li><strong class="text-foreground">Bun / Node / Rust</strong>: Embed into any SSR template engine with zero compilation pipeline required.</li>
-      </ul>
+    <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead class="bg-muted/50 border-b border-border text-foreground font-semibold">
+          <tr>
+            <th class="py-3 px-4">Directive</th>
+            <th class="py-3 px-4">Description</th>
+            <th class="py-3 px-4">Example</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border text-muted-foreground text-xs font-mono">
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-state</td>
+            <td class="font-sans text-muted-foreground">Defines local reactive component context</td>
+            <td>hx-state="{ count: 0, items: [] }"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-computed</td>
+            <td class="font-sans text-muted-foreground">Derived memoized properties</td>
+            <td>hx-computed="{ total: price * qty }"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-model</td>
+            <td class="font-sans text-muted-foreground">Two-way data binding with modifiers</td>
+            <td>hx-model.number="qty"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-for</td>
+            <td class="font-sans text-muted-foreground">Structural list rendering on template</td>
+            <td>&lt;template hx-for="item in items"&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-if</td>
+            <td class="font-sans text-muted-foreground">Structural conditional DOM mounting</td>
+            <td>&lt;template hx-if="user.isLoggedIn"&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-on:event</td>
+            <td class="font-sans text-muted-foreground">Event handlers with modifiers (.prevent, .debounce)</td>
+            <td>hx-on:click.prevent="count++"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-transition</td>
+            <td class="font-sans text-muted-foreground">Smooth enter/leave CSS transitions</td>
+            <td>hx-transition="fade"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-validate</td>
+            <td class="font-sans text-muted-foreground">Declarative input validation rules</td>
+            <td>hx-validate="required|email|min:5"</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <!-- Step 4: Add Reactivity (Bolt) -->
+  <!-- Section: Step 4 — Complete Working Example -->
   <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Step 4 — Add Reactivity (Bolt)</h2>
-    <p class="text-sm text-muted-foreground leading-relaxed">
-      When you need instant client-side interactivity without a round-trip to the server, use Bolt:
-    </p>
-    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-sm overflow-x-auto leading-relaxed">
-      <pre><code>&lt;div hx-ext="reactive" hx-state='{ "count": 0, "open": false }'&gt;
-  &lt;button hx-action="count++"&gt;Clicked: &lt;span hx-text="count"&gt;0&lt;/span&gt;&lt;/button&gt;
-  &lt;button hx-action="open = !open"&gt;Toggle&lt;/button&gt;
-  &lt;div hx-show="open" class="mt-4 p-4 border rounded"&gt;I am reactive!&lt;/div&gt;
-&lt;/div&gt;</code></pre>
-    </div>
-    <p class="text-sm text-foreground leading-relaxed">
-      <strong>No build step. No JSX. No Virtual DOM. Just HTML attributes.</strong> Bolt handles localized reactive state natively in ~2KB of vanilla JavaScript.
-    </p>
-  </div>
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 4 — Complete Example</h2>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>&lt;!-- Reactive Shopping Cart with Signals, Computed Total, and hx-for list --&gt;
+&lt;div hx-state='{
+  newItem: "",
+  items: [
+    { id: 1, name: "Mechanical Keyboard", price: 120, qty: 1 },
+    { id: 2, name: "Wireless Mouse", price: 60, qty: 2 }
+  ]
+}'
+hx-computed='{
+  totalPrice: items.reduce((sum, i) => sum + (i.price * i.qty), 0)
+}' class="p-6 border border-border rounded-xl bg-card space-y-4"&gt;
 
-  <!-- Architecture Overview -->
-  <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight border-b border-border pb-2 text-foreground">Architecture Overview</h2>
-    <p class="text-sm text-muted-foreground leading-relaxed">
-      HTMXUI provides a layered architecture that pairs the server-driven simplicity of hypermedia with client-side hyperreactivity:
-    </p>
-    
-    <div class="flex flex-col items-center space-y-2 py-2 max-w-xl mx-auto w-full">
-      <!-- Layer 1 -->
-      <div class="w-full rounded-xl border border-border bg-card p-4 shadow-sm text-center">
-        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Application Layer</div>
-        <div class="font-semibold text-sm text-foreground">Your Templates &amp; Domain Components</div>
-        <div class="text-xs text-muted-foreground mt-1">Jinja2, Go templates, Blade, JSX-less SSR, Custom Logic</div>
-      </div>
+  &lt;h3 class="text-lg font-bold"&gt;Hyperreactive Shopping Cart&lt;/h3&gt;
 
-      <!-- Arrow -->
-      <div class="flex items-center justify-center text-muted-foreground">
-        <svg class="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-      </div>
+  &lt;!-- Two-way input binding --&gt;
+  &lt;div class="flex gap-2"&gt;
+    &lt;input type="text" hx-model="newItem" placeholder="Add item name..." class="px-3 py-2 border rounded-md text-sm flex-1"&gt;
+    &lt;button hx-on:click='if(newItem.trim()) { items.push({ id: Date.now(), name: newItem, price: 40, qty: 1 }); newItem = ""; }' class="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium"&gt;Add&lt;/button&gt;
+  &lt;/div&gt;
 
-      <!-- Layer 2 -->
-      <div class="w-full rounded-xl border border-border bg-card p-4 shadow-sm text-center">
-        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Composition &amp; Layout System</div>
-        <div class="font-semibold text-sm text-foreground">7 Layout Primitives</div>
-        <div class="text-xs text-muted-foreground mt-1">Layout Page, Web, Block, Grid, Scaffold, Canvas &amp; Print</div>
-      </div>
+  &lt;!-- List rendering with hx-for --&gt;
+  &lt;div class="divide-y border rounded-md overflow-hidden"&gt;
+    &lt;template hx-for="(item, idx) in items"&gt;
+      &lt;div class="p-3 flex items-center justify-between bg-background"&gt;
+        &lt;span hx-text="item.name" class="font-medium text-sm"&gt;&lt;/span&gt;
+        &lt;div class="flex items-center gap-3"&gt;
+          &lt;span class="text-sm text-muted-foreground"&gt;$&lt;span hx-text="item.price"&gt;&lt;/span&gt;&lt;/span&gt;
+          &lt;input type="number" hx-model.number="item.qty" min="1" class="w-16 px-2 py-1 border rounded text-xs"&gt;
+          &lt;button hx-on:click="items.splice(idx, 1)" class="text-destructive text-xs hover:underline"&gt;Remove&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/template&gt;
+  &lt;/div&gt;
 
-      <!-- Arrow -->
-      <div class="flex items-center justify-center text-muted-foreground">
-        <svg class="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-      </div>
-
-      <!-- Layer 3 -->
-      <div class="w-full rounded-xl border border-border bg-card p-4 shadow-sm text-center">
-        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Hyperreactive Layer</div>
-        <div class="font-semibold text-sm text-foreground">Bolt + Flash + Canvas</div>
-        <div class="text-xs text-muted-foreground mt-1">Instant local state, 0ms in-memory search &amp; interactive node canvas</div>
-      </div>
-
-      <!-- Arrow -->
-      <div class="flex items-center justify-center text-muted-foreground">
-        <svg class="h-5 w-5 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
-      </div>
-
-      <!-- Layer 4 -->
-      <div class="w-full rounded-xl border border-primary/30 bg-primary/5 p-4 shadow-sm text-center">
-        <div class="text-xs font-bold uppercase tracking-wider text-primary mb-1">Enhanced Hypermedia Core</div>
-        <div class="font-semibold text-sm text-foreground">htmx Foundation</div>
-        <div class="text-xs text-muted-foreground mt-1">Declarative requests, targeted DOM swapping, SSE &amp; WebSockets</div>
-      </div>
+  &lt;!-- Computed reactive total --&gt;
+  &lt;div class="flex justify-between items-center pt-2 font-bold text-base"&gt;
+    &lt;span&gt;Total Amount:&lt;/span&gt;
+    &lt;span class="text-primary"&gt;$&lt;span hx-text="totalPrice"&gt;0&lt;/span&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
     </div>
   </div>
 
-  <!-- Call to Action -->
-  <div class="pt-6 border-t border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <div>
-      <h3 class="text-sm font-semibold text-foreground">Ready to start building?</h3>
-      <p class="text-xs text-muted-foreground">Explore over 100+ accessible, copy-paste ready UI components.</p>
-    </div>
-    <a href="/docs/components/button" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 shrink-0">
+  <!-- CTA -->
+  <div class="pt-4 flex gap-4">
+    <a href="/docs/components/button" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
       Browse Components →
     </a>
   </div>

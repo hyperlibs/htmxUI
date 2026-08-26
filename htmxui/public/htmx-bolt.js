@@ -1,202 +1,751 @@
-// htmx-reactive.js
-// A native HTMX extension that adds Svelte/Alpine-like client-side reactivity,
-// controllable by both the UI and the Backend Server.
+// src/htmx-bolt.ts
+var stores = {};
+var activeEffect = null;
+var effectStack = [];
+var pendingEffects = new Set;
+var isFlushing = false;
+function queueEffect(effect) {
+  pendingEffects.add(effect);
+  if (!isFlushing) {
+    isFlushing = true;
+    queueMicrotask(flushEffects);
+  }
+}
+function flushEffects() {
+  const effectsToRun = Array.from(pendingEffects);
+  pendingEffects.clear();
+  isFlushing = false;
+  for (const effect of effectsToRun) {
+    effect();
+  }
+}
 
-(function () {
-  // Store the reactive proxy for each element
-  const reactiveStates = new WeakMap();
-
-  function makeReactive(target, element) {
-    return new Proxy(target, {
-      set(obj, prop, value) {
-        obj[prop] = value;
-        // When state changes, re-evaluate bindings for this element and its children
-        updateBindings(element, obj);
+class SignalTracker {
+  subscribers = new Set;
+  depend() {
+    if (activeEffect) {
+      this.subscribers.add(activeEffect);
+    }
+  }
+  notify() {
+    for (const effect of Array.from(this.subscribers)) {
+      queueEffect(effect);
+    }
+  }
+}
+function createReactiveObject(target, rootNotify = null, path = "") {
+  if (target === null || typeof target !== "object" || target.__isProxy) {
+    return target;
+  }
+  const signalMap = new Map;
+  function getSignal(prop) {
+    if (!signalMap.has(prop)) {
+      signalMap.set(prop, new SignalTracker);
+    }
+    return signalMap.get(prop);
+  }
+  for (const key in target) {
+    if (Object.prototype.hasOwnProperty.call(target, key)) {
+      const val = target[key];
+      if (typeof val === "object" && val !== null) {
+        target[key] = createReactiveObject(val, rootNotify, path ? `${path}.${key}` : key);
+      }
+    }
+  }
+  const proxy = new Proxy(target, {
+    get(obj, prop, receiver) {
+      if (prop === "__isProxy")
+        return true;
+      if (prop === "__raw")
+        return obj;
+      if (typeof prop === "string") {
+        getSignal(prop).depend();
+      }
+      return Reflect.get(obj, prop, receiver);
+    },
+    set(obj, prop, value, receiver) {
+      const oldVal = obj[prop];
+      if (oldVal === value && typeof value !== "object") {
         return true;
       }
-    });
+      const wrappedVal = typeof value === "object" && value !== null ? createReactiveObject(value, rootNotify, path ? `${path}.${String(prop)}` : String(prop)) : value;
+      const result = Reflect.set(obj, prop, wrappedVal, receiver);
+      if (typeof prop === "string") {
+        getSignal(prop).notify();
+        if (rootNotify)
+          rootNotify();
+      }
+      return result;
+    },
+    deleteProperty(obj, prop) {
+      const has = prop in obj;
+      const result = Reflect.deleteProperty(obj, prop);
+      if (has && typeof prop === "string") {
+        getSignal(prop).notify();
+        if (rootNotify)
+          rootNotify();
+      }
+      return result;
+    }
+  });
+  return proxy;
+}
+function evaluateExpression(expr, context, extraScope = {}) {
+  try {
+    const scopeKeys = ["$store", "$refs", "$el", "$event", ...Object.keys(context), ...Object.keys(extraScope)];
+    const scopeValues = [
+      stores,
+      context.__refs || {},
+      extraScope.$el || null,
+      extraScope.$event || null,
+      ...Object.values(context),
+      ...Object.values(extraScope)
+    ];
+    const trimmed = expr.trim();
+    const fn = new Function(...scopeKeys, `return (${trimmed})`);
+    return fn(...scopeValues);
+  } catch (e) {
+    try {
+      const scopeKeys = ["$store", "$refs", "$el", "$event", ...Object.keys(context), ...Object.keys(extraScope)];
+      const scopeValues = [
+        stores,
+        context.__refs || {},
+        extraScope.$el || null,
+        extraScope.$event || null,
+        ...Object.values(context),
+        ...Object.values(extraScope)
+      ];
+      const fn = new Function(...scopeKeys, `with(this) { ${expr} }`);
+      return fn.apply(context, scopeValues);
+    } catch (err) {
+      console.warn(`[htmx-bolt] Evaluation error in "${expr}":`, err.message);
+      return;
+    }
   }
-
-  function updateBindings(rootElement, state) {
-    // hx-text: updates innerText
-    const textNodes = rootElement.querySelectorAll('[hx-text]');
-    textNodes.forEach(node => {
-      const expr = node.getAttribute('hx-text');
-      try {
-        const val = new Function(...Object.keys(state), `return ${expr}`)(...Object.values(state));
-        node.innerText = val;
-      } catch (e) {
-        console.error("hx-text evaluation error:", e);
-      }
-    });
-
-    // hx-show: toggles display
-    const showNodes = rootElement.querySelectorAll('[hx-show]');
-    showNodes.forEach(node => {
-      const expr = node.getAttribute('hx-show');
-      try {
-        const val = new Function(...Object.keys(state), `return ${expr}`)(...Object.values(state));
-        node.style.display = val ? '' : 'none';
-      } catch (e) {
-        console.error("hx-show evaluation error:", e);
-      }
-    });
-    
-    // hx-class: conditionally applies classes
-    const classNodes = rootElement.querySelectorAll('[hx-class]');
-    classNodes.forEach(node => {
-      const expr = node.getAttribute('hx-class');
-      try {
-        const classObj = new Function(...Object.keys(state), `return ${expr}`)(...Object.values(state));
-        for (const [className, condition] of Object.entries(classObj)) {
-          if (condition) {
-            node.classList.add(...className.split(' '));
-          } else {
-            node.classList.remove(...className.split(' '));
-          }
-        }
-      } catch (e) {
-        console.error("hx-class evaluation error:", e);
-      }
-    });
-
-    // hx-style: dynamically applies inline styles (format: "{ color: 'red', width: size + 'px' }")
-    const styleNodes = rootElement.querySelectorAll('[hx-style]');
-    styleNodes.forEach(node => {
-      const expr = node.getAttribute('hx-style');
-      try {
-        const styleObj = new Function(...Object.keys(state), `return ${expr}`)(...Object.values(state));
-        for (const [prop, value] of Object.entries(styleObj)) {
-          node.style[prop] = value;
-        }
-      } catch (e) {
-        console.error("hx-style evaluation error:", e);
-      }
-    });
+}
+function executeAction(expr, context, extraScope = {}) {
+  try {
+    const scopeKeys = ["$store", "$refs", "$el", "$event", ...Object.keys(context), ...Object.keys(extraScope)];
+    const scopeValues = [
+      stores,
+      context.__refs || {},
+      extraScope.$el || null,
+      extraScope.$event || null,
+      ...Object.values(context),
+      ...Object.values(extraScope)
+    ];
+    const fn = new Function(...scopeKeys, `with(this) { ${expr} }`);
+    return fn.apply(context, scopeValues);
+  } catch (err) {
+    console.error(`[htmx-bolt] Action error in "${expr}":`, err);
   }
-
-  // Allow server to trigger state updates via HX-Trigger header
-  // Example server header: HX-Trigger: {"hxStateUpdate": {"target": "#my-counter", "state": {"count": 10}}}
-  document.body.addEventListener('hxStateUpdate', function(evt) {
-    const detail = evt.detail;
-    if (detail && detail.target && detail.state) {
-      const el = document.querySelector(detail.target);
-      if (el && reactiveStates.has(el)) {
-        const proxy = reactiveStates.get(el);
-        // Update the proxy state with the new values from the server
-        for (const [key, value] of Object.entries(detail.state)) {
-          proxy[key] = value;
-        }
-      }
+}
+function runWithEffect(effectFn) {
+  const effect = () => {
+    effectStack.push(effect);
+    activeEffect = effect;
+    try {
+      effectFn();
+    } finally {
+      effectStack.pop();
+      activeEffect = effectStack[effectStack.length - 1] || null;
     }
-  });
-
-  htmx.defineExtension('reactive', {
-    onEvent: function (name, evt) {
-      if (name === 'htmx:beforeProcessNode') {
-        const elt = evt.detail.elt;
-        
-        // Find elements with hx-state to initialize reactive context
-        if (elt.hasAttribute && elt.hasAttribute('hx-state')) {
-          let stateObj = {};
-          try {
-            stateObj = new Function(`return ${elt.getAttribute('hx-state')}`)();
-          } catch (e) {
-            console.error("Error parsing hx-state:", e);
-          }
-          
-          const reactiveState = makeReactive(stateObj, elt);
-          reactiveStates.set(elt, reactiveState);
-          updateBindings(elt, reactiveState);
-          
-          // Action binders for UI-driven updates
-          const bindAction = (attrName, eventName) => {
-            const actionNodes = elt.querySelectorAll(`[${attrName}]`);
-            actionNodes.forEach(node => {
-              if (node[`__${attrName}Attached`]) return;
-              node[`__${attrName}Attached`] = true;
-              node.addEventListener(eventName, (e) => {
-                 const expr = node.getAttribute(attrName);
-                 try {
-                   // Expose event object and state
-                   const func = new Function('state', 'event', `with(state) { ${expr} }`);
-                   func(reactiveState, e);
-                 } catch(err) {
-                   console.error(`Error in ${attrName}:`, err);
-                 }
-              });
-            });
-          };
-          
-          bindAction('hx-action', 'click');
-          bindAction('hx-action-dblclick', 'dblclick');
-        }
+  };
+  effect();
+  return effect;
+}
+function applyTransition(el, stage, type = "enter") {
+  const transitionPreset = el.getAttribute("hx-transition");
+  const enterClass = el.getAttribute("hx-transition:enter") || "";
+  const enterStart = el.getAttribute("hx-transition:enter-start") || "";
+  const enterEnd = el.getAttribute("hx-transition:enter-end") || "";
+  const leaveClass = el.getAttribute("hx-transition:leave") || "";
+  const leaveStart = el.getAttribute("hx-transition:leave-start") || "";
+  const leaveEnd = el.getAttribute("hx-transition:leave-end") || "";
+  if (transitionPreset) {
+    const presets = {
+      fade: {
+        enter: "transition-opacity duration-200",
+        enterStart: "opacity-0",
+        enterEnd: "opacity-100",
+        leave: "transition-opacity duration-150",
+        leaveStart: "opacity-100",
+        leaveEnd: "opacity-0"
+      },
+      slide: {
+        enter: "transition-all duration-200 ease-out",
+        enterStart: "opacity-0 -translate-y-2",
+        enterEnd: "opacity-100 translate-y-0",
+        leave: "transition-all duration-150 ease-in",
+        leaveStart: "opacity-100 translate-y-0",
+        leaveEnd: "opacity-0 -translate-y-2"
+      },
+      scale: {
+        enter: "transition-all duration-200 ease-out",
+        enterStart: "opacity-0 scale-95",
+        enterEnd: "opacity-100 scale-100",
+        leave: "transition-all duration-150 ease-in",
+        leaveStart: "opacity-100 scale-100",
+        leaveEnd: "opacity-0 scale-95"
       }
-    }
-  });
-
-  // ScaleUI: Universal inline parameter for component resizing
-  const scaleUiResizer = new ResizeObserver(entries => {
-    for (let entry of entries) {
-      const el = entry.target;
-      if (el.getAttribute('scaleui') === '1') {
-        if (!el._baseWidth) {
-          el._baseWidth = el.offsetWidth;
-          // Capture base styles if needed for manual fluid typography
-          const style = window.getComputedStyle(el);
-          el._baseFontSize = parseFloat(style.fontSize);
-          el._baseGap = parseFloat(style.gap) || 0;
-        }
-        
-        // Calculate resize ratio
-        const ratio = el.offsetWidth / el._baseWidth;
-        
-        // Expose ratio as a CSS variable for advanced scaling
-        el.style.setProperty('--scaleui-ratio', ratio);
-        
-        // Optional: Naive inline scaling of font-size to fulfill "resize font size, font gap"
-        // This gives immediate visual feedback of the "ScaleUI" fluid concept
-        if (el._baseFontSize) el.style.fontSize = (el._baseFontSize * ratio) + 'px';
-        if (el._baseGap) el.style.gap = (el._baseGap * ratio) + 'px';
-      }
-    }
-  });
-
-  function handleScaleUI(el) {
-    if (el.getAttribute('scaleui') === '1') {
-      el.style.resize = 'both';
-      el.style.overflow = 'auto';
-      scaleUiResizer.observe(el);
+    };
+    const p = presets[transitionPreset] || presets.fade;
+    if (type === "enter") {
+      runCssTransition(el, p.enter, p.enterStart, p.enterEnd);
     } else {
-      el.style.resize = '';
-      el.style.overflow = '';
-      el.style.fontSize = '';
-      el.style.gap = '';
-      el.style.removeProperty('--scaleui-ratio');
-      scaleUiResizer.unobserve(el);
-      delete el._baseWidth;
+      return runCssTransition(el, p.leave, p.leaveStart, p.leaveEnd);
+    }
+    return Promise.resolve();
+  }
+  if (enterClass || leaveClass) {
+    if (type === "enter") {
+      runCssTransition(el, enterClass, enterStart, enterEnd);
+    } else {
+      return runCssTransition(el, leaveClass, leaveStart, leaveEnd);
     }
   }
-
-  // Initialize existing elements
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[scaleui]').forEach(handleScaleUI);
-    
-    // Watch for dynamic additions of scaleui
-    new MutationObserver(mutations => {
-      for (let m of mutations) {
-        if (m.type === 'attributes' && m.attributeName === 'scaleui') {
-          handleScaleUI(m.target);
-        } else if (m.type === 'childList') {
-          m.addedNodes.forEach(node => {
-            if (node.nodeType === 1) {
-              if (node.hasAttribute('scaleui')) handleScaleUI(node);
-              node.querySelectorAll('[scaleui]').forEach(handleScaleUI);
+  return Promise.resolve();
+}
+function runCssTransition(el, baseClasses, startClasses, endClasses) {
+  return new Promise((resolve) => {
+    const addList = (str) => str.split(/\s+/).filter(Boolean);
+    const base = addList(baseClasses);
+    const start = addList(startClasses);
+    const end = addList(endClasses);
+    el.classList.add(...base, ...start);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.classList.remove(...start);
+        el.classList.add(...end);
+        const onEnd = () => {
+          el.removeEventListener("transitionend", onEnd);
+          el.classList.remove(...base);
+          resolve();
+        };
+        el.addEventListener("transitionend", onEnd, { once: true });
+        setTimeout(onEnd, 400);
+      });
+    });
+  });
+}
+var elementStates = new WeakMap;
+function initComponent(rootEl) {
+  if (elementStates.has(rootEl))
+    return elementStates.get(rootEl);
+  let initialData = {};
+  const stateAttr = rootEl.getAttribute("hx-state");
+  if (stateAttr) {
+    try {
+      initialData = new Function(`return (${stateAttr})`)();
+    } catch (e) {
+      console.error("[htmx-bolt] Invalid hx-state JSON/expression:", stateAttr, e);
+    }
+  }
+  const refs = {};
+  initialData.__refs = refs;
+  rootEl.querySelectorAll("[hx-ref]").forEach((el) => {
+    const refName = el.getAttribute("hx-ref");
+    if (refName)
+      refs[refName] = el;
+  });
+  const reactiveState = createReactiveObject(initialData);
+  elementStates.set(rootEl, reactiveState);
+  const computedAttr = rootEl.getAttribute("hx-computed");
+  if (computedAttr) {
+    try {
+      const computedDef = new Function(`return (${computedAttr})`)();
+      for (const [key, expr] of Object.entries(computedDef)) {
+        runWithEffect(() => {
+          const val = evaluateExpression(expr, reactiveState, { $el: rootEl });
+          reactiveState[key] = val;
+        });
+      }
+    } catch (e) {
+      console.error("[htmx-bolt] Invalid hx-computed:", computedAttr, e);
+    }
+  }
+  rootEl.querySelectorAll("[hx-effect]").forEach((el) => {
+    const expr = el.getAttribute("hx-effect");
+    runWithEffect(() => {
+      evaluateExpression(expr, reactiveState, { $el: el });
+    });
+  });
+  processStructuralDirectives(rootEl, reactiveState);
+  bindDirectives(rootEl, reactiveState);
+  bindEvents(rootEl, reactiveState);
+  return reactiveState;
+}
+function processStructuralDirectives(rootEl, state) {
+  const ifTemplates = Array.from(rootEl.querySelectorAll("template[hx-if], [hx-if]"));
+  ifTemplates.forEach((el) => {
+    if (el._hxIfProcessed)
+      return;
+    el._hxIfProcessed = true;
+    const expr = el.getAttribute("hx-if");
+    const isTemplate = el.tagName === "TEMPLATE";
+    const anchor = document.createComment(`hx-if: ${expr}`);
+    el.parentNode?.insertBefore(anchor, el);
+    let renderedEl = isTemplate ? null : el;
+    if (isTemplate)
+      el.remove();
+    runWithEffect(() => {
+      const condition = Boolean(evaluateExpression(expr, state, { $el: el }));
+      if (condition) {
+        if (!renderedEl) {
+          renderedEl = isTemplate ? el.content.firstElementChild?.cloneNode(true) : el;
+          if (renderedEl && anchor.parentNode) {
+            anchor.parentNode.insertBefore(renderedEl, anchor.nextSibling);
+            bindDirectives(renderedEl, state);
+            bindEvents(renderedEl, state);
+            applyTransition(renderedEl, "enter");
+          }
+        } else {
+          renderedEl.style.display = "";
+        }
+      } else {
+        if (renderedEl) {
+          applyTransition(renderedEl, "leave").then(() => {
+            if (isTemplate && renderedEl && renderedEl.parentNode) {
+              renderedEl.parentNode.removeChild(renderedEl);
+              renderedEl = null;
+            } else if (renderedEl) {
+              renderedEl.style.display = "none";
             }
           });
         }
       }
-    }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['scaleui'] });
+    });
   });
-
-})();
+  const forTemplates = Array.from(rootEl.querySelectorAll("template[hx-for]"));
+  forTemplates.forEach((template) => {
+    if (template._hxForProcessed)
+      return;
+    template._hxForProcessed = true;
+    const forExpr = template.getAttribute("hx-for");
+    const match = forExpr.match(/^\s*(?:\(?\s*(\w+)\s*(?:,\s*(\w+))?\s*\)?)\s+in\s+(.+)\s*$/);
+    if (!match) {
+      console.error("[htmx-bolt] Invalid hx-for syntax:", forExpr);
+      return;
+    }
+    const itemVar = match[1];
+    const indexVar = match[2] || "_idx";
+    const listExpr = match[3];
+    const anchor = document.createComment(`hx-for: ${forExpr}`);
+    template.parentNode?.insertBefore(anchor, template);
+    template.remove();
+    let currentNodes = [];
+    runWithEffect(() => {
+      const list = evaluateExpression(listExpr, state, { $el: template }) || [];
+      const items = Array.isArray(list) ? list : Object.entries(list);
+      currentNodes.forEach((node) => {
+        if (node.parentNode)
+          node.parentNode.removeChild(node);
+      });
+      currentNodes = [];
+      items.forEach((item, index) => {
+        const clone = template.content.cloneNode(true);
+        const itemScope = {
+          [itemVar]: item,
+          [indexVar]: index
+        };
+        const scopedState = new Proxy(state, {
+          get(target, prop, receiver) {
+            if (typeof prop === "string" && prop in itemScope)
+              return itemScope[prop];
+            return Reflect.get(target, prop, receiver);
+          },
+          set(target, prop, value, receiver) {
+            if (typeof prop === "string" && prop in itemScope) {
+              itemScope[prop] = value;
+              return true;
+            }
+            return Reflect.set(target, prop, value, receiver);
+          }
+        });
+        bindDirectives(clone, scopedState);
+        bindEvents(clone, scopedState);
+        const insertedNodes = Array.from(clone.childNodes);
+        anchor.parentNode?.insertBefore(clone, anchor);
+        currentNodes.push(...insertedNodes);
+      });
+    });
+  });
+}
+function bindDirectives(rootEl, state) {
+  const textEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("[hx-text]") : []);
+  if (rootEl.hasAttribute && rootEl.hasAttribute("hx-text"))
+    textEls.unshift(rootEl);
+  textEls.forEach((el) => {
+    const expr = el.getAttribute("hx-text");
+    runWithEffect(() => {
+      const val = evaluateExpression(expr, state, { $el: el });
+      el.innerText = val !== undefined && val !== null ? String(val) : "";
+    });
+  });
+  const htmlEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("[hx-html]") : []);
+  if (rootEl.hasAttribute && rootEl.hasAttribute("hx-html"))
+    htmlEls.unshift(rootEl);
+  htmlEls.forEach((el) => {
+    const expr = el.getAttribute("hx-html");
+    runWithEffect(() => {
+      const val = evaluateExpression(expr, state, { $el: el });
+      el.innerHTML = val !== undefined && val !== null ? String(val) : "";
+    });
+  });
+  const showEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("[hx-show]") : []);
+  if (rootEl.hasAttribute && rootEl.hasAttribute("hx-show"))
+    showEls.unshift(rootEl);
+  showEls.forEach((el) => {
+    const expr = el.getAttribute("hx-show");
+    runWithEffect(() => {
+      const isShown = Boolean(evaluateExpression(expr, state, { $el: el }));
+      if (isShown) {
+        el.style.display = "";
+        applyTransition(el, "enter");
+      } else {
+        applyTransition(el, "leave").then(() => {
+          el.style.display = "none";
+        });
+      }
+    });
+  });
+  const classEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("[hx-class]") : []);
+  if (rootEl.hasAttribute && rootEl.hasAttribute("hx-class"))
+    classEls.unshift(rootEl);
+  classEls.forEach((el) => {
+    const expr = el.getAttribute("hx-class");
+    runWithEffect(() => {
+      const res = evaluateExpression(expr, state, { $el: el });
+      if (typeof res === "object" && res !== null) {
+        for (const [className, condition] of Object.entries(res)) {
+          const classList = className.split(/\s+/).filter(Boolean);
+          if (condition) {
+            el.classList.add(...classList);
+          } else {
+            el.classList.remove(...classList);
+          }
+        }
+      } else if (typeof res === "string") {
+        if (el._prevDynamicClass) {
+          el.classList.remove(...el._prevDynamicClass.split(/\s+/).filter(Boolean));
+        }
+        el._prevDynamicClass = res;
+        el.classList.add(...res.split(/\s+/).filter(Boolean));
+      }
+    });
+  });
+  const styleEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("[hx-style]") : []);
+  if (rootEl.hasAttribute && rootEl.hasAttribute("hx-style"))
+    styleEls.unshift(rootEl);
+  styleEls.forEach((el) => {
+    const expr = el.getAttribute("hx-style");
+    runWithEffect(() => {
+      const res = evaluateExpression(expr, state, { $el: el });
+      if (typeof res === "object" && res !== null) {
+        for (const [prop, val] of Object.entries(res)) {
+          el.style[prop] = val;
+        }
+      }
+    });
+  });
+  const allEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("*") : []);
+  if (rootEl.nodeType === 1)
+    allEls.unshift(rootEl);
+  allEls.forEach((el) => {
+    if (!el.attributes)
+      return;
+    for (const attr of Array.from(el.attributes)) {
+      let attrName = null;
+      if (attr.name.startsWith(":")) {
+        attrName = attr.name.slice(1);
+      } else if (attr.name.startsWith("hx-bind:")) {
+        attrName = attr.name.slice(8);
+      }
+      if (attrName) {
+        const expr = attr.value;
+        runWithEffect(() => {
+          const val = evaluateExpression(expr, state, { $el: el });
+          if (val === false || val === null || val === undefined) {
+            el.removeAttribute(attrName);
+          } else if (val === true) {
+            el.setAttribute(attrName, "");
+          } else {
+            el.setAttribute(attrName, String(val));
+          }
+        });
+      }
+    }
+  });
+  const modelEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("[hx-model]") : []);
+  if (rootEl.hasAttribute && rootEl.hasAttribute("hx-model"))
+    modelEls.unshift(rootEl);
+  modelEls.forEach((el) => {
+    const modelAttr = el.getAttribute("hx-model");
+    const parts = modelAttr.split(".");
+    const propPath = parts[0];
+    const modifiers = parts.slice(1);
+    const isLazy = modifiers.includes("lazy");
+    const isNumber = modifiers.includes("number") || el.type === "number";
+    const isTrim = modifiers.includes("trim");
+    runWithEffect(() => {
+      const val = evaluateExpression(propPath, state, { $el: el });
+      if (el.type === "checkbox") {
+        if (Array.isArray(val)) {
+          el.checked = val.includes(el.value);
+        } else {
+          el.checked = Boolean(val);
+        }
+      } else if (el.type === "radio") {
+        el.checked = el.value === String(val);
+      } else {
+        if (el.value !== String(val !== undefined && val !== null ? val : "")) {
+          el.value = val !== undefined && val !== null ? String(val) : "";
+        }
+      }
+    });
+    const isInputEl = el instanceof HTMLInputElement;
+    const eventName = isInputEl && (el.type === "checkbox" || el.type === "radio") || isLazy || el.tagName === "SELECT" ? "change" : "input";
+    el.addEventListener(eventName, () => {
+      let val;
+      if (isInputEl && el.type === "checkbox") {
+        const current = evaluateExpression(propPath, state, { $el: el });
+        if (Array.isArray(current)) {
+          val = el.checked ? [...current, el.value] : current.filter((x) => x !== el.value);
+        } else {
+          val = el.checked;
+        }
+      } else if (isInputEl && el.type === "radio") {
+        val = el.value;
+      } else {
+        val = el.value;
+        if (isTrim)
+          val = val.trim();
+        if (isNumber) {
+          const num = parseFloat(val);
+          val = isNaN(num) ? val : num;
+        }
+      }
+      executeAction(`${propPath} = $eventValue`, state, { $el: el, $eventValue: val });
+    });
+  });
+}
+function bindEvents(rootEl, state) {
+  const allEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("*") : []);
+  if (rootEl.nodeType === 1)
+    allEls.unshift(rootEl);
+  allEls.forEach((el) => {
+    if (!el.attributes)
+      return;
+    if (el.hasAttribute("hx-action") && !el._hxActionAttached) {
+      el._hxActionAttached = true;
+      const expr = el.getAttribute("hx-action");
+      el.addEventListener("click", (e) => {
+        executeAction(expr, state, { $el: el, $event: e });
+      });
+    }
+    if (el.hasAttribute("hx-action-dblclick") && !el._hxActionDblAttached) {
+      el._hxActionDblAttached = true;
+      const expr = el.getAttribute("hx-action-dblclick");
+      el.addEventListener("dblclick", (e) => {
+        executeAction(expr, state, { $el: el, $event: e });
+      });
+    }
+    for (const attr of Array.from(el.attributes)) {
+      let eventDecl = null;
+      if (attr.name.startsWith("hx-on:")) {
+        eventDecl = attr.name.slice(6);
+      } else if (attr.name.startsWith("@")) {
+        eventDecl = attr.name.slice(1);
+      }
+      if (eventDecl) {
+        const parts = eventDecl.split(".");
+        const eventName = parts[0];
+        const modifiers = parts.slice(1);
+        const expr = attr.value;
+        let targetElement = el;
+        if (modifiers.includes("window"))
+          targetElement = window;
+        if (modifiers.includes("document"))
+          targetElement = document;
+        let handler = (e) => {
+          if (modifiers.includes("prevent"))
+            e.preventDefault();
+          if (modifiers.includes("stop"))
+            e.stopPropagation();
+          if (modifiers.includes("self") && e.target !== el)
+            return;
+          if (e instanceof KeyboardEvent) {
+            const keyModifiers = ["enter", "escape", "space", "tab", "arrow-up", "arrow-down", "arrow-left", "arrow-right", "delete", "backspace"];
+            for (const mod of modifiers) {
+              if (keyModifiers.includes(mod)) {
+                const normalizedKey = e.key.toLowerCase().replace(/_/g, "-");
+                if (normalizedKey !== mod)
+                  return;
+              }
+            }
+          }
+          if (modifiers.includes("outside")) {
+            if (el.contains(e.target))
+              return;
+          }
+          executeAction(expr, state, { $el: el, $event: e });
+        };
+        const debounceMod = modifiers.find((m) => m.startsWith("debounce"));
+        if (debounceMod) {
+          const timeMatch = debounceMod.match(/\d+/);
+          const delay = timeMatch ? parseInt(timeMatch[0], 10) : 250;
+          let timeout;
+          const originalHandler = handler;
+          handler = (e) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => originalHandler(e), delay);
+          };
+        }
+        const throttleMod = modifiers.find((m) => m.startsWith("throttle"));
+        if (throttleMod) {
+          const timeMatch = throttleMod.match(/\d+/);
+          const delay = timeMatch ? parseInt(timeMatch[0], 10) : 250;
+          let lastRun = 0;
+          const originalHandler = handler;
+          handler = (e) => {
+            const now = Date.now();
+            if (now - lastRun >= delay) {
+              lastRun = now;
+              originalHandler(e);
+            }
+          };
+        }
+        const once = modifiers.includes("once");
+        targetElement.addEventListener(eventName, handler, { once });
+      }
+    }
+  });
+}
+var HxBolt = {
+  store(name, initialValue) {
+    if (initialValue !== undefined) {
+      stores[name] = createReactiveObject(initialValue);
+    }
+    return stores[name];
+  },
+  getStore(name) {
+    return stores[name];
+  },
+  getState(el) {
+    return elementStates.get(el);
+  },
+  init(root) {
+    const scopeRoots = root.querySelectorAll ? root.querySelectorAll('[hx-state], [hx-ext="reactive"]') : [];
+    scopeRoots.forEach(initComponent);
+    if (root.hasAttribute && (root.hasAttribute("hx-state") || root.getAttribute("hx-ext") === "reactive")) {
+      initComponent(root);
+    }
+  }
+};
+if (typeof window !== "undefined") {
+  let handleScaleUI = function(el) {
+    if (el.getAttribute("scaleui") === "1") {
+      el.style.resize = "both";
+      el.style.overflow = "auto";
+      scaleUiResizer.observe(el);
+    } else {
+      el.style.resize = "";
+      el.style.overflow = "";
+      el.style.fontSize = "";
+      el.style.gap = "";
+      el.style.removeProperty("--scaleui-ratio");
+      scaleUiResizer.unobserve(el);
+      delete el._baseWidth;
+    }
+  };
+  window.HxBolt = HxBolt;
+  document.body.addEventListener("hxStateUpdate", function(evt) {
+    const detail = evt.detail;
+    if (detail && detail.target && detail.state) {
+      const el = document.querySelector(detail.target);
+      if (el && elementStates.has(el)) {
+        const state = elementStates.get(el);
+        for (const [key, value] of Object.entries(detail.state)) {
+          state[key] = value;
+        }
+      }
+    }
+  });
+  document.body.addEventListener("hxStoreUpdate", function(evt) {
+    const detail = evt.detail;
+    if (detail && detail.store && detail.state) {
+      const store = stores[detail.store];
+      if (store) {
+        for (const [key, value] of Object.entries(detail.state)) {
+          store[key] = value;
+        }
+      }
+    }
+  });
+  if (typeof window.htmx !== "undefined") {
+    window.htmx.defineExtension("reactive", {
+      onEvent: function(name, evt) {
+        if (name === "htmx:beforeProcessNode" || name === "htmx:afterProcessNode") {
+          const elt = evt.detail.elt;
+          if (elt && elt.nodeType === 1) {
+            if (elt.hasAttribute("hx-state") || elt.getAttribute("hx-ext") === "reactive") {
+              initComponent(elt);
+            }
+          }
+        }
+      }
+    });
+  }
+  const scaleUiResizer = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      const el = entry.target;
+      if (el.getAttribute("scaleui") === "1") {
+        if (!el._baseWidth) {
+          el._baseWidth = el.offsetWidth;
+          const style = window.getComputedStyle(el);
+          el._baseFontSize = parseFloat(style.fontSize);
+          el._baseGap = parseFloat(style.gap) || 0;
+        }
+        const ratio = el.offsetWidth / (el._baseWidth || 1);
+        el.style.setProperty("--scaleui-ratio", String(ratio));
+        if (el._baseFontSize)
+          el.style.fontSize = el._baseFontSize * ratio + "px";
+        if (el._baseGap)
+          el.style.gap = el._baseGap * ratio + "px";
+      }
+    }
+  });
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[hx-state]").forEach((el) => initComponent(el));
+    document.querySelectorAll("[scaleui]").forEach((el) => handleScaleUI(el));
+    new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === "attributes" && m.attributeName === "scaleui") {
+          handleScaleUI(m.target);
+        } else if (m.type === "childList") {
+          m.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) {
+              const el = node;
+              if (el.hasAttribute("scaleui"))
+                handleScaleUI(el);
+              el.querySelectorAll("[scaleui]").forEach((child) => handleScaleUI(child));
+              if (el.hasAttribute("hx-state"))
+                initComponent(el);
+              el.querySelectorAll("[hx-state]").forEach((child) => initComponent(child));
+            }
+          });
+        }
+      }
+    }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["scaleui", "hx-state"] });
+  });
+}
+export {
+  runWithEffect,
+  initComponent,
+  executeAction,
+  evaluateExpression,
+  createReactiveObject,
+  applyTransition,
+  SignalTracker,
+  HxBolt
+};

@@ -1,4 +1,4 @@
-const GETTING_STARTED = ["introduction", "installation"];
+const GETTING_STARTED = ["introduction", "installation", "rosetta-stone", "common-ai-hallucinations"];
 const COMPONENTS = [
   "accordion","alert","alert-dialog","aspect-ratio","avatar","avatar-group","badge","banner",
   "breadcrumb","button","button-group","calendar","card","carousel","checkbox","checkbox-group",
@@ -440,6 +440,18 @@ const server = Bun.serve({
 
     if (url.pathname === "/htmx-canvas.js") {
       return new Response(Bun.file("public/htmx-canvas.js"), { headers: { "Content-Type": "application/javascript" } });
+    }
+
+    if (url.pathname === "/schema/htmxui.json") {
+      return new Response(Bun.file("schema/htmxui.json"), { headers: { "Content-Type": "application/json" } });
+    }
+
+    if (url.pathname === "/llms.txt") {
+      return new Response(Bun.file("public/llms.txt"), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+    }
+
+    if (url.pathname === "/llms-full.txt") {
+      return new Response(Bun.file("public/llms-full.txt"), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
     }
 
     if (url.pathname === "/inventory.json") {

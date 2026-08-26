@@ -1,4 +1,144 @@
 // src/htmx-bolt.ts
+var config = {
+  strictMode: false,
+  debug: false,
+  version: "1.0.0"
+};
+var ERROR_CATALOG = {
+  "HTMXUI-BOLT-001": {
+    title: 'Invalid JSON syntax in <script type="application/json" hx-state> or hx-state attribute.',
+    fix: 'Verify JSON formatting. Ensure all keys and strings use valid double quotes, or use a <script type="application/json" hx-state> child element.'
+  },
+  "HTMXUI-BOLT-002": {
+    title: "Circular dependency or recursion detected in hx-computed property.",
+    fix: "Check expressions in hx-computed to ensure property A does not depend directly or indirectly on itself."
+  },
+  "HTMXUI-BOLT-003": {
+    title: "Invalid hx-for syntax.",
+    fix: 'Expected format: "item in items" or "(item, index) in items". Ensure hx-for is placed directly on a <template> tag.'
+  },
+  "HTMXUI-BOLT-004": {
+    title: "Referenced undefined property or global store.",
+    fix: 'Ensure the property exists in local hx-state or the store was registered via HxBolt.store("name", initialValue).'
+  },
+  "HTMXUI-BOLT-005": {
+    title: "Unrecognized hx-* attribute detected (potential AI hallucination or typo).",
+    fix: "Check the attribute spelling against the official HTMXUI schema in /schema/htmxui.json."
+  }
+};
+function reportError(code, detail, el = null) {
+  const meta = ERROR_CATALOG[code] || { title: "Unknown runtime error", fix: "Consult /schema/htmxui.json" };
+  const message = `[${code}] ${meta.title}
+Detail: ${detail}
+Fix: ${meta.fix}`;
+  if (config.strictMode) {
+    throw new Error(message);
+  } else {
+    console.warn(`%c${message}`, "color: #ef4444; font-weight: bold;", el);
+  }
+}
+var KNOWN_ATTRIBUTES = new Set([
+  "hx-state",
+  "hx-computed",
+  "hx-effect",
+  "hx-model",
+  "hx-text",
+  "hx-html",
+  "hx-show",
+  "hx-if",
+  "hx-for",
+  "hx-class",
+  "hx-style",
+  "hx-ref",
+  "hx-transition",
+  "hx-transition:enter",
+  "hx-transition:enter-start",
+  "hx-transition:enter-end",
+  "hx-transition:leave",
+  "hx-transition:leave-start",
+  "hx-transition:leave-end",
+  "hx-validate",
+  "hx-error-for",
+  "hx-optimistic",
+  "hx-flash-src",
+  "hx-flash-db",
+  "hx-flash-search",
+  "hx-flash-filter",
+  "hx-flash-sort",
+  "hx-flash-limit",
+  "hx-flash-empty",
+  "hx-vibe-flip",
+  "hx-vibe-stagger",
+  "hx-vibe-view",
+  "hx-vibe-initial",
+  "hx-vibe-once",
+  "hx-motion-flip",
+  "hx-motion-stagger",
+  "hx-motion-view",
+  "hx-motion-initial",
+  "hx-motion-once",
+  "hx-trap-focus",
+  "hx-roving",
+  "scaleui",
+  "hx-get",
+  "hx-post",
+  "hx-put",
+  "hx-delete",
+  "hx-patch",
+  "hx-target",
+  "hx-swap",
+  "hx-trigger",
+  "hx-ext",
+  "hx-select",
+  "hx-indicator",
+  "hx-push-url",
+  "hx-params",
+  "hx-headers",
+  "hx-vals"
+]);
+function levenshteinDistance(a, b) {
+  if (a.length === 0)
+    return b.length;
+  if (b.length === 0)
+    return a.length;
+  const matrix = [];
+  for (let i = 0;i <= b.length; i++)
+    matrix[i] = [i];
+  for (let j = 0;j <= a.length; j++)
+    matrix[0][j] = j;
+  for (let i = 1;i <= b.length; i++) {
+    for (let j = 1;j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, matrix[i][j - 1] + 1, matrix[i - 1] + 1);
+      }
+    }
+  }
+  return matrix[b.length][a.length];
+}
+function checkAttributeTypos(el) {
+  if (!el.attributes)
+    return;
+  for (const attr of Array.from(el.attributes)) {
+    const name = attr.name;
+    if (name.startsWith("hx-") && !name.startsWith("hx-on:") && !name.startsWith("hx-bind:") && !name.startsWith("hx-msg-")) {
+      if (!KNOWN_ATTRIBUTES.has(name)) {
+        let closest = "";
+        let minDistance = 4;
+        for (const known of KNOWN_ATTRIBUTES) {
+          const dist = levenshteinDistance(name, known);
+          if (dist < minDistance) {
+            minDistance = dist;
+            closest = known;
+          }
+        }
+        const suggestion = closest ? ` Did you mean '${closest}'?` : "";
+        reportError("HTMXUI-BOLT-005", `Element has unknown attribute '${name}'.${suggestion}`, el);
+      }
+    }
+  }
+}
 var stores = {};
 var activeEffect = null;
 var effectStack = [];
@@ -72,6 +212,9 @@ function createReactiveObject(target, rootNotify = null, path = "") {
       const result = Reflect.set(obj, prop, wrappedVal, receiver);
       if (typeof prop === "string") {
         getSignal(prop).notify();
+        if (config.debug) {
+          console.log(`[htmx-bolt:debug] ⚡ Signal mutated: "${path ? path + "." : ""}${String(prop)}"`, { oldVal, newVal: value });
+        }
         if (rootNotify)
           rootNotify();
       }
@@ -92,12 +235,13 @@ function createReactiveObject(target, rootNotify = null, path = "") {
 }
 function evaluateExpression(expr, context, extraScope = {}) {
   try {
-    const scopeKeys = ["$store", "$refs", "$el", "$event", ...Object.keys(context), ...Object.keys(extraScope)];
+    const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(context), ...Object.keys(extraScope)];
     const scopeValues = [
       stores,
       context.__refs || {},
       extraScope.$el || null,
       extraScope.$event || null,
+      context.$form || {},
       ...Object.values(context),
       ...Object.values(extraScope)
     ];
@@ -106,38 +250,42 @@ function evaluateExpression(expr, context, extraScope = {}) {
     return fn(...scopeValues);
   } catch (e) {
     try {
-      const scopeKeys = ["$store", "$refs", "$el", "$event", ...Object.keys(context), ...Object.keys(extraScope)];
+      const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(context), ...Object.keys(extraScope)];
       const scopeValues = [
         stores,
         context.__refs || {},
         extraScope.$el || null,
         extraScope.$event || null,
+        context.$form || {},
         ...Object.values(context),
         ...Object.values(extraScope)
       ];
       const fn = new Function(...scopeKeys, `with(this) { ${expr} }`);
       return fn.apply(context, scopeValues);
     } catch (err) {
-      console.warn(`[htmx-bolt] Evaluation error in "${expr}":`, err.message);
+      if (config.debug) {
+        console.warn(`[htmx-bolt] Evaluation error in "${expr}":`, err.message);
+      }
       return;
     }
   }
 }
 function executeAction(expr, context, extraScope = {}) {
   try {
-    const scopeKeys = ["$store", "$refs", "$el", "$event", ...Object.keys(context), ...Object.keys(extraScope)];
+    const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(context), ...Object.keys(extraScope)];
     const scopeValues = [
       stores,
       context.__refs || {},
       extraScope.$el || null,
       extraScope.$event || null,
+      context.$form || {},
       ...Object.values(context),
       ...Object.values(extraScope)
     ];
     const fn = new Function(...scopeKeys, `with(this) { ${expr} }`);
     return fn.apply(context, scopeValues);
   } catch (err) {
-    console.error(`[htmx-bolt] Action error in "${expr}":`, err);
+    reportError("HTMXUI-BOLT-004", `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
   }
 }
 function runWithEffect(effectFn) {
@@ -232,13 +380,27 @@ var elementStates = new WeakMap;
 function initComponent(rootEl) {
   if (elementStates.has(rootEl))
     return elementStates.get(rootEl);
+  checkAttributeTypos(rootEl);
   let initialData = {};
-  const stateAttr = rootEl.getAttribute("hx-state");
-  if (stateAttr) {
+  const stateScript = rootEl.querySelector(':scope > script[type="application/json"][hx-state], :scope > script[type="text/hx-state"], :scope > script[hx-state]');
+  if (stateScript && stateScript.textContent) {
     try {
-      initialData = new Function(`return (${stateAttr})`)();
+      initialData = JSON.parse(stateScript.textContent.trim());
     } catch (e) {
-      console.error("[htmx-bolt] Invalid hx-state JSON/expression:", stateAttr, e);
+      try {
+        initialData = new Function(`return (${stateScript.textContent.trim()})`)();
+      } catch (err) {
+        reportError("HTMXUI-BOLT-001", `Failed to parse <script hx-state> content: ${err.message}`, rootEl);
+      }
+    }
+  } else {
+    const stateAttr = rootEl.getAttribute("hx-state");
+    if (stateAttr) {
+      try {
+        initialData = new Function(`return (${stateAttr})`)();
+      } catch (e) {
+        reportError("HTMXUI-BOLT-001", `Invalid hx-state attribute expression: ${stateAttr}`, rootEl);
+      }
     }
   }
   const refs = {};
@@ -261,7 +423,7 @@ function initComponent(rootEl) {
         });
       }
     } catch (e) {
-      console.error("[htmx-bolt] Invalid hx-computed:", computedAttr, e);
+      reportError("HTMXUI-BOLT-002", `Invalid hx-computed definition: ${computedAttr}`, rootEl);
     }
   }
   rootEl.querySelectorAll("[hx-effect]").forEach((el) => {
@@ -281,6 +443,7 @@ function processStructuralDirectives(rootEl, state) {
     if (el._hxIfProcessed)
       return;
     el._hxIfProcessed = true;
+    checkAttributeTypos(el);
     const expr = el.getAttribute("hx-if");
     const isTemplate = el.tagName === "TEMPLATE";
     const anchor = document.createComment(`hx-if: ${expr}`);
@@ -321,10 +484,11 @@ function processStructuralDirectives(rootEl, state) {
     if (template._hxForProcessed)
       return;
     template._hxForProcessed = true;
+    checkAttributeTypos(template);
     const forExpr = template.getAttribute("hx-for");
     const match = forExpr.match(/^\s*(?:\(?\s*(\w+)\s*(?:,\s*(\w+))?\s*\)?)\s+in\s+(.+)\s*$/);
     if (!match) {
-      console.error("[htmx-bolt] Invalid hx-for syntax:", forExpr);
+      reportError("HTMXUI-BOLT-003", `Invalid hx-for expression "${forExpr}". Must be "item in items" or "(item, idx) in items".`, template);
       return;
     }
     const itemVar = match[1];
@@ -376,6 +540,7 @@ function bindDirectives(rootEl, state) {
   if (rootEl.hasAttribute && rootEl.hasAttribute("hx-text"))
     textEls.unshift(rootEl);
   textEls.forEach((el) => {
+    checkAttributeTypos(el);
     const expr = el.getAttribute("hx-text");
     runWithEffect(() => {
       const val = evaluateExpression(expr, state, { $el: el });
@@ -386,6 +551,7 @@ function bindDirectives(rootEl, state) {
   if (rootEl.hasAttribute && rootEl.hasAttribute("hx-html"))
     htmlEls.unshift(rootEl);
   htmlEls.forEach((el) => {
+    checkAttributeTypos(el);
     const expr = el.getAttribute("hx-html");
     runWithEffect(() => {
       const val = evaluateExpression(expr, state, { $el: el });
@@ -396,6 +562,7 @@ function bindDirectives(rootEl, state) {
   if (rootEl.hasAttribute && rootEl.hasAttribute("hx-show"))
     showEls.unshift(rootEl);
   showEls.forEach((el) => {
+    checkAttributeTypos(el);
     const expr = el.getAttribute("hx-show");
     runWithEffect(() => {
       const isShown = Boolean(evaluateExpression(expr, state, { $el: el }));
@@ -413,6 +580,7 @@ function bindDirectives(rootEl, state) {
   if (rootEl.hasAttribute && rootEl.hasAttribute("hx-class"))
     classEls.unshift(rootEl);
   classEls.forEach((el) => {
+    checkAttributeTypos(el);
     const expr = el.getAttribute("hx-class");
     runWithEffect(() => {
       const res = evaluateExpression(expr, state, { $el: el });
@@ -438,6 +606,7 @@ function bindDirectives(rootEl, state) {
   if (rootEl.hasAttribute && rootEl.hasAttribute("hx-style"))
     styleEls.unshift(rootEl);
   styleEls.forEach((el) => {
+    checkAttributeTypos(el);
     const expr = el.getAttribute("hx-style");
     runWithEffect(() => {
       const res = evaluateExpression(expr, state, { $el: el });
@@ -480,6 +649,7 @@ function bindDirectives(rootEl, state) {
   if (rootEl.hasAttribute && rootEl.hasAttribute("hx-model"))
     modelEls.unshift(rootEl);
   modelEls.forEach((el) => {
+    checkAttributeTypos(el);
     const modelAttr = el.getAttribute("hx-model");
     const parts = modelAttr.split(".");
     const propPath = parts[0];
@@ -622,6 +792,8 @@ function bindEvents(rootEl, state) {
   });
 }
 var HxBolt = {
+  config,
+  errors: ERROR_CATALOG,
   store(name, initialValue) {
     if (initialValue !== undefined) {
       stores[name] = createReactiveObject(initialValue);
@@ -659,6 +831,7 @@ if (typeof window !== "undefined") {
     }
   };
   window.HxBolt = HxBolt;
+  window.HTMXUI = { config, errors: ERROR_CATALOG, bolt: HxBolt };
   document.body.addEventListener("hxStateUpdate", function(evt) {
     const detail = evt.detail;
     if (detail && detail.target && detail.state) {
@@ -688,7 +861,7 @@ if (typeof window !== "undefined") {
         if (name === "htmx:beforeProcessNode" || name === "htmx:afterProcessNode") {
           const elt = evt.detail.elt;
           if (elt && elt.nodeType === 1) {
-            if (elt.hasAttribute("hx-state") || elt.getAttribute("hx-ext") === "reactive") {
+            if (elt.hasAttribute("hx-state") || elt.querySelector("script[hx-state]") || elt.getAttribute("hx-ext") === "reactive") {
               initComponent(elt);
             }
           }
@@ -716,7 +889,11 @@ if (typeof window !== "undefined") {
     }
   });
   document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("[hx-state]").forEach((el) => initComponent(el));
+    document.querySelectorAll("[hx-state], script[hx-state]").forEach((el) => {
+      const root = el.tagName === "SCRIPT" ? el.parentElement : el;
+      if (root)
+        initComponent(root);
+    });
     document.querySelectorAll("[scaleui]").forEach((el) => handleScaleUI(el));
     new MutationObserver((mutations) => {
       for (const m of mutations) {
@@ -729,7 +906,7 @@ if (typeof window !== "undefined") {
               if (el.hasAttribute("scaleui"))
                 handleScaleUI(el);
               el.querySelectorAll("[scaleui]").forEach((child) => handleScaleUI(child));
-              if (el.hasAttribute("hx-state"))
+              if (el.hasAttribute("hx-state") || el.querySelector("script[hx-state]"))
                 initComponent(el);
               el.querySelectorAll("[hx-state]").forEach((child) => initComponent(child));
             }
@@ -741,11 +918,14 @@ if (typeof window !== "undefined") {
 }
 export {
   runWithEffect,
+  reportError,
   initComponent,
   executeAction,
   evaluateExpression,
   createReactiveObject,
+  config,
   applyTransition,
   SignalTracker,
-  HxBolt
+  HxBolt,
+  ERROR_CATALOG
 };

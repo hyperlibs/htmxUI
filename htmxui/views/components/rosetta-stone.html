@@ -1,0 +1,95 @@
+<div class="space-y-10 max-w-4xl py-6">
+  <!-- Title & Subtitle -->
+  <div class="space-y-3">
+    <h1 class="text-4xl font-extrabold tracking-tight text-foreground">React & Vue → HTMXUI Rosetta Stone</h1>
+    <p class="text-lg text-muted-foreground leading-relaxed font-medium">
+      Direct side-by-side translation guide mapping familiar React and Vue concepts to native HTMXUI declarative patterns.
+    </p>
+  </div>
+
+  <!-- Table 1: State & Reactivity -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">1. State &amp; Reactivity</h2>
+    <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      <table class="w-full text-left text-xs border-collapse">
+        <thead class="bg-muted/50 border-b border-border text-foreground font-semibold">
+          <tr>
+            <th class="py-3 px-4 w-1/4">React</th>
+            <th class="py-3 px-4 w-1/4">Vue 3</th>
+            <th class="py-3 px-4 w-1/2">HTMXUI</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border text-muted-foreground font-mono">
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">const [count, setCount] = useState(0)</td>
+            <td class="py-3 px-4 text-emerald-500">const count = ref(0)</td>
+            <td class="py-3 px-4 text-primary font-bold">&lt;script type="application/json" hx-state&gt;<br>{"count": 0}<br>&lt;/script&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">const total = useMemo(() =&gt; price * qty, [price, qty])</td>
+            <td class="py-3 px-4 text-emerald-500">const total = computed(() =&gt; price.value * qty.value)</td>
+            <td class="py-3 px-4 text-primary font-bold">hx-computed='{ "total": price * qty }'</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">useEffect(() =&gt; { log(count) }, [count])</td>
+            <td class="py-3 px-4 text-emerald-500">watchEffect(() =&gt; { log(count.value) })</td>
+            <td class="py-3 px-4 text-primary font-bold">hx-effect="console.log(count)"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">useContext(AuthContext)</td>
+            <td class="py-3 px-4 text-emerald-500">inject('auth') / Pinia store</td>
+            <td class="py-3 px-4 text-primary font-bold">$store.auth.user</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Table 2: Templating & Directives -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">2. Template Directives &amp; DOM Control</h2>
+    <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      <table class="w-full text-left text-xs border-collapse">
+        <thead class="bg-muted/50 border-b border-border text-foreground font-semibold">
+          <tr>
+            <th class="py-3 px-4 w-1/4">React</th>
+            <th class="py-3 px-4 w-1/4">Vue 3</th>
+            <th class="py-3 px-4 w-1/2">HTMXUI</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border text-muted-foreground font-mono">
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">&lt;span&gt;{user.name}&lt;/span&gt;</td>
+            <td class="py-3 px-4 text-emerald-500">&lt;span&gt;{{ user.name }}&lt;/span&gt;</td>
+            <td class="py-3 px-4 text-primary font-bold">&lt;span hx-text="user.name"&gt;&lt;/span&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">{items.map(item =&gt; &lt;Item key={item.id} /&gt;)}</td>
+            <td class="py-3 px-4 text-emerald-500">&lt;div v-for="item in items" :key="item.id"&gt;</td>
+            <td class="py-3 px-4 text-primary font-bold">&lt;template hx-for="item in items"&gt;&lt;div&gt;...&lt;/div&gt;&lt;/template&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">{isLoggedIn &amp;&amp; &lt;Dashboard /&gt;}</td>
+            <td class="py-3 px-4 text-emerald-500">&lt;div v-if="isLoggedIn"&gt;</td>
+            <td class="py-3 px-4 text-primary font-bold">&lt;template hx-if="isLoggedIn"&gt;&lt;div&gt;...&lt;/div&gt;&lt;/template&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">&lt;div style={{ display: open ? 'block' : 'none' }}&gt;</td>
+            <td class="py-3 px-4 text-emerald-500">&lt;div v-show="open"&gt;</td>
+            <td class="py-3 px-4 text-primary font-bold">&lt;div hx-show="open" hx-transition="fade"&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">value={val} onChange={e =&gt; setVal(e.target.value)}</td>
+            <td class="py-3 px-4 text-emerald-500">v-model="val"</td>
+            <td class="py-3 px-4 text-primary font-bold">hx-model="val" (or hx-model.number, hx-model.lazy)</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-3 px-4 text-sky-500">onClick={(e) =&gt; { e.preventDefault(); submit(); }}</td>
+            <td class="py-3 px-4 text-emerald-500">@click.prevent="submit"</td>
+            <td class="py-3 px-4 text-primary font-bold">hx-on:click.prevent="submit()" or @click.prevent="submit()"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="space-y-10 max-w-4xl py-6">
+  <!-- Title & Subtitle -->
+  <div class="space-y-3">
+    <h1 class="text-4xl font-extrabold tracking-tight text-foreground">Common AI Hallucinations &amp; Gotchas</h1>
+    <p class="text-lg text-muted-foreground leading-relaxed font-medium">
+      The top 10 pitfalls AI coders and LLMs encounter when generating HTMXUI code, and how to write them correctly.
+    </p>
+  </div>
+
+  <div class="space-y-6">
+    <!-- Item 1 -->
+    <div class="p-5 rounded-xl border border-border bg-card shadow-sm space-y-2">
+      <div class="font-semibold text-sm text-foreground flex items-center gap-2">
+        <span class="text-destructive font-mono">❌ Mistake 1:</span> Using JSX syntax ({variable}) inside HTML
+      </div>
+      <p class="text-xs text-muted-foreground">LLMs trained on React often insert <code class="bg-muted px-1 rounded text-xs">{count}</code> into HTML text.</p>
+      <div class="p-3 bg-muted/50 rounded font-mono text-xs text-foreground">
+        <span class="text-destructive">Bad:</span> &lt;span&gt;{count}&lt;/span&gt;<br>
+        <span class="text-emerald-500 font-bold">Good:</span> &lt;span hx-text="count"&gt;0&lt;/span&gt;
+      </div>
+    </div>
+
+    <!-- Item 2 -->
+    <div class="p-5 rounded-xl border border-border bg-card shadow-sm space-y-2">
+      <div class="font-semibold text-sm text-foreground flex items-center gap-2">
+        <span class="text-destructive font-mono">❌ Mistake 2:</span> Escaping JSON quotes inside hx-state attributes
+      </div>
+      <p class="text-xs text-muted-foreground">Writing complex nested JSON inside <code class="bg-muted px-1 rounded text-xs">hx-state='{...}'</code> leads to quote escaping errors.</p>
+      <div class="p-3 bg-muted/50 rounded font-mono text-xs text-foreground">
+        <span class="text-destructive">Bad:</span> &lt;div hx-state='{"user": {"name": "John"}}'&gt;<br>
+        <span class="text-emerald-500 font-bold">Good:</span> &lt;div&gt;&lt;script type="application/json" hx-state&gt;{"user": {"name": "John"}}&lt;/script&gt;...&lt;/div&gt;
+      </div>
+    </div>
+
+    <!-- Item 3 -->
+    <div class="p-5 rounded-xl border border-border bg-card shadow-sm space-y-2">
+      <div class="font-semibold text-sm text-foreground flex items-center gap-2">
+        <span class="text-destructive font-mono">❌ Mistake 3:</span> Using v-for or v-if attributes on regular div tags
+      </div>
+      <p class="text-xs text-muted-foreground">Vue's <code class="bg-muted px-1 rounded text-xs">v-for</code> and <code class="bg-muted px-1 rounded text-xs">v-if</code> are not recognized. HTMXUI uses standard HTML <code class="bg-muted px-1 rounded text-xs">&lt;template&gt;</code> tags.</p>
+      <div class="p-3 bg-muted/50 rounded font-mono text-xs text-foreground">
+        <span class="text-destructive">Bad:</span> &lt;div hx-for="item in items"&gt;...&lt;/div&gt;<br>
+        <span class="text-emerald-500 font-bold">Good:</span> &lt;template hx-for="(item, idx) in items"&gt;&lt;div hx-text="item.name"&gt;&lt;/div&gt;&lt;/template&gt;
+      </div>
+    </div>
+
+    <!-- Item 4 -->
+    <div class="p-5 rounded-xl border border-border bg-card shadow-sm space-y-2">
+      <div class="font-semibold text-sm text-foreground flex items-center gap-2">
+        <span class="text-destructive font-mono">❌ Mistake 4:</span> Forgetting .number modifier on numeric inputs
+      </div>
+      <p class="text-xs text-muted-foreground">Without <code class="bg-muted px-1 rounded text-xs">.number</code>, input values remain strings ("5" + 1 = "51").</p>
+      <div class="p-3 bg-muted/50 rounded font-mono text-xs text-foreground">
+        <span class="text-destructive">Bad:</span> &lt;input type="number" hx-model="qty"&gt;<br>
+        <span class="text-emerald-500 font-bold">Good:</span> &lt;input type="number" hx-model.number="qty"&gt;
+      </div>
+    </div>
+  </div>
+</div>

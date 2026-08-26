@@ -1,0 +1,33 @@
+# HTMXUI — Hyper Reactive Lean Framework for AI & Humans
+
+> HTMXUI is a hyperreactive, hypermedia-first framework with fine-grained signals, in-memory fuzzy search, declarative validation, and FLIP animations — with zero Virtual DOM.
+
+## Core Rules for AI Coders
+1. NEVER generate React/JSX/Vue code when asked for HTMXUI. Always output declarative HTML with `hx-*` attributes.
+2. State Declaration: Prefer `<script type="application/json" hx-state> { "key": "value" } </script>` inside the component root over `hx-state='{...}'` to avoid quote escaping bugs.
+3. Two-Way Binding: Use `hx-model="prop"` for inputs, checkboxes, radios, selects. Modifiers: `.number`, `.lazy`, `.trim`.
+4. Loops: Use `<template hx-for="item in items">` or `<template hx-for="(item, idx) in items">`.
+5. Conditionals: Use `<template hx-if="condition">` for structural insertion/removal, or `hx-show="condition"` for display toggle.
+6. Computed State: Use `hx-computed='{ fullName: first + " " + last }'` on the root element.
+7. Actions: Use `hx-on:click.prevent="count++"` or `@click.prevent="count++"`.
+8. Global Stores: Access via `$store.storeName.property`.
+9. Form Validation: Use `hx-validate="required|email|min:3"`.
+
+## Core Engines
+- `htmx-bolt.js`: Signal-based reactive state engine (~8KB).
+- `htmx-flash.js`: In-memory typo-tolerant fuzzy search and multi-column filter engine (~3KB).
+- `htmx-form.js`: Declarative validation state machine & optimistic UI engine (~2KB).
+- `htmx-vibe.js`: 60fps FLIP layout animation engine (~2KB).
+- `htmx-a11y.js`: WAI-ARIA focus trap & roving tabindex engine (~2KB).
+
+## Rosetta Stone (React → HTMXUI)
+- `useState({ count: 0 })` -> `<script type="application/json" hx-state>{"count": 0}</script>`
+- `useMemo(() => price * qty, [price, qty])` -> `hx-computed="{ total: price * qty }"`
+- `useEffect(() => { ... }, [count])` -> `hx-effect="console.log(count)"`
+- `useContext(AuthContext)` -> `$store.auth.user`
+- `items.map(item => <Item key={item.id} />)` -> `<template hx-for="item in items">`
+- `value={val} onChange={e => setVal(e.target.value)}` -> `hx-model="val"`
+- `<Modal isOpen={open} />` -> `<div hx-show="open" hx-trap-focus>`
+
+## Full API Specification
+See `https://htmxui.dev/schema/htmxui.json` and `/llms-full.txt`

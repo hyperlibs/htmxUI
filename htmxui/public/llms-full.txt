@@ -1,0 +1,115 @@
+# HTMXUI — Complete Machine-Readable API Specification & Pattern Fixtures
+
+## 1. Syntax & Attribute Reference
+
+### `hx-state` / `<script type="application/json" hx-state>`
+Declares local reactive state for a component subtree.
+```html
+<!-- Recommended: Script block (prevents quote-escaping issues) -->
+<div class="card">
+  <script type="application/json" hx-state>
+  {
+    "count": 0,
+    "user": { "name": "Alice", "role": "admin" },
+    "items": ["Item A", "Item B"]
+  }
+  </script>
+  <button hx-on:click="count++">Count: <span hx-text="count">0</span></button>
+</div>
+
+<!-- Inline alternative -->
+<div hx-state='{ "count": 0 }'>
+  <button hx-on:click="count++">Count: <span hx-text="count">0</span></button>
+</div>
+```
+
+### `hx-computed`
+Declares reactive memoized derived properties. Automatically recomputes when dependencies change.
+```html
+<div hx-state='{ "price": 100, "qty": 2, "taxRate": 0.08 }'
+     hx-computed='{ "subtotal": price * qty, "total": (price * qty) * (1 + taxRate) }'>
+  <p>Total: $<span hx-text="total">0</span></p>
+</div>
+```
+
+### `hx-model`
+Two-way data binding for inputs, textareas, selects, checkboxes, radios.
+- Modifiers: `.number` (parses to float), `.lazy` (binds to change instead of input), `.trim` (trims whitespace).
+```html
+<input type="text" hx-model.trim="username">
+<input type="number" hx-model.number="price">
+<input type="checkbox" hx-model="isActive">
+<select hx-model="selectedRole">
+  <option value="admin">Admin</option>
+  <option value="editor">Editor</option>
+</select>
+```
+
+### `hx-for`
+Structural list rendering using standard `<template>` tags.
+```html
+<template hx-for="item in items">
+  <div class="item-row" hx-text="item.name"></div>
+</template>
+
+<!-- With index -->
+<template hx-for="(item, idx) in items">
+  <div>
+    <span hx-text="idx + 1"></span>: <span hx-text="item.title"></span>
+    <button hx-on:click="items.splice(idx, 1)">Delete</button>
+  </div>
+</template>
+```
+
+### `hx-if`
+Structural conditional mounting and unmounting of DOM elements.
+```html
+<template hx-if="user.isLoggedIn">
+  <div class="user-profile">Welcome, <span hx-text="user.name"></span></div>
+</template>
+```
+
+### `hx-show`
+Display toggle (`style.display`) with transition animations.
+```html
+<div hx-show="isOpen" hx-transition="fade" class="modal-content">
+  Modal Body
+</div>
+```
+
+### `hx-on:event` / `@event`
+Event listeners with modifiers.
+- Modifiers: `.prevent`, `.stop`, `.self`, `.once`, `.window`, `.document`, `.outside`, `.debounce.300ms`, `.throttle.500ms`, `.enter`, `.escape`.
+```html
+<button hx-on:click.prevent="submitForm()">Submit</button>
+<div hx-on:click.outside="isOpen = false">Dropdown Menu</div>
+<input hx-on:keydown.enter="addItem()" hx-on:input.debounce.300ms="search()">
+```
+
+### `hx-validate`
+Declarative client-side validation rules.
+- Rules: `required`, `email`, `url`, `min:<len>`, `max:<len>`, `numeric`, `alphanumeric`, `pattern:<regex>`, `match:<field>`.
+```html
+<form hx-ext="form">
+  <input name="email" hx-validate="required|email" hx-msg="Valid email required">
+  <span hx-error-for="email" class="text-red-500 text-xs"></span>
+  <button type="submit">Submit</button>
+</form>
+```
+
+## 2. Common AI Hallucinations & What to Avoid
+
+1. ❌ DO NOT write Vue's `v-for` or `v-if`.
+   ✅ ALWAYS write `<template hx-for="item in items">` and `<template hx-if="condition">`.
+
+2. ❌ DO NOT write React's `onClick={() => ...}` or `className="..."`.
+   ✅ ALWAYS write `hx-on:click="..."` and `class="..."` or `hx-class="{ 'active': isActive }"`.
+
+3. ❌ DO NOT write JSX syntax (`{variable}`) inside HTML text.
+   ✅ ALWAYS write `<span hx-text="variable"></span>`.
+
+4. ❌ DO NOT escape quotes inside attribute strings if it can be avoided.
+   ✅ ALWAYS write `<script type="application/json" hx-state>` inside the component wrapper.
+
+5. ❌ DO NOT import client-side frameworks (`import React`, `import Vue`, `import Alpine`).
+   ✅ HTMXUI runs natively via `<script src="/htmx-bolt.js"></script>`.

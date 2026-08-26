@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://htmxui.dev/schema/htmxui.json",
+  "title": "HTMXUI Framework Attribute & Grammar Specification",
+  "description": "Formal machine-readable grammar, attribute rules, element targets, and scope definitions for HTMXUI.",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "version": { "type": "string", "const": "1.0.0" },
+    "engines": {
+      "type": "object",
+      "properties": {
+        "bolt": { "type": "string", "description": "Signal-based fine-grained reactive state engine" },
+        "flash": { "type": "string", "description": "In-memory typo-tolerant fuzzy search and filtering engine" },
+        "form": { "type": "string", "description": "Declarative validation state machine & optimistic UI engine" },
+        "vibe": { "type": "string", "description": "60fps FLIP layout animation engine" },
+        "a11y": { "type": "string", "description": "WAI-ARIA focus trap and roving tabindex engine" },
+        "canvas": { "type": "string", "description": "Spatial node diagram engine" }
+      }
+    },
+    "attributes": {
+      "type": "object",
+      "properties": {
+        "hx-state": {
+          "description": "Declares local reactive component state context.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "formats": ["json", "js-object"],
+          "preferredAlternative": "<script type=\"application/json\" hx-state>...</script>",
+          "example": "hx-state=\"{ count: 0, open: false }\""
+        },
+        "hx-computed": {
+          "description": "Declares memoized derived reactive properties.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "requires": ["hx-state"],
+          "example": "hx-computed=\"{ total: price * qty, isValid: count > 0 }\""
+        },
+        "hx-effect": {
+          "description": "Runs a side effect function whenever tracked signal dependencies mutate.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-effect=\"console.log('Count updated:', count)\""
+        },
+        "hx-model": {
+          "description": "Two-way data binding for form controls.",
+          "type": "string",
+          "allowedElements": ["input", "textarea", "select"],
+          "modifiers": ["lazy", "number", "trim"],
+          "example": "hx-model.number=\"item.qty\""
+        },
+        "hx-text": {
+          "description": "Binds element innerText to a reactive expression.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-text=\"user.name\""
+        },
+        "hx-html": {
+          "description": "Binds element innerHTML to a reactive expression.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "securityWarning": "Ensure content is sanitized against XSS.",
+          "example": "hx-html=\"item.badgeHtml\""
+        },
+        "hx-show": {
+          "description": "Toggles element visibility using CSS display property with transition hooks.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-show=\"isOpen\""
+        },
+        "hx-if": {
+          "description": "Structural conditional mounting/unmounting of DOM elements.",
+          "type": "string",
+          "allowedElements": ["template", "*"],
+          "example": "<template hx-if=\"isLoggedIn\"><div>Welcome</div></template>"
+        },
+        "hx-for": {
+          "description": "Structural list loop rendering on template elements.",
+          "type": "string",
+          "allowedElements": ["template"],
+          "syntax": "item in items | (item, index) in items",
+          "example": "<template hx-for=\"(item, idx) in items\"><div>...</div></template>"
+        },
+        "hx-class": {
+          "description": "Conditionally applies CSS classes from an object map or string expression.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-class=\"{ 'bg-primary text-white': active, 'opacity-50': disabled }\""
+        },
+        "hx-style": {
+          "description": "Dynamically sets inline CSS styles from an object map.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-style=\"{ width: progress + '%', color: themeColor }\""
+        },
+        "hx-on": {
+          "description": "Attaches event listeners with modifiers. Short syntax: @event",
+          "type": "string",
+          "syntax": "hx-on:event.modifier=\"action\"",
+          "modifiers": ["prevent", "stop", "self", "once", "window", "document", "outside", "debounce.<ms>", "throttle.<ms>", "enter", "escape", "space", "tab"],
+          "example": "hx-on:click.prevent=\"count++\""
+        },
+        "hx-transition": {
+          "description": "Enables CSS enter/leave transitions.",
+          "type": "string",
+          "presets": ["fade", "slide", "scale"],
+          "customClasses": ["hx-transition:enter", "hx-transition:enter-start", "hx-transition:enter-end", "hx-transition:leave", "hx-transition:leave-start", "hx-transition:leave-end"],
+          "example": "hx-transition=\"fade\""
+        },
+        "hx-validate": {
+          "description": "Declarative input validation rules separated by pipes.",
+          "type": "string",
+          "allowedElements": ["input", "textarea", "select"],
+          "rules": ["required", "email", "url", "min:<len>", "max:<len>", "numeric", "alphanumeric", "pattern:<regex>", "match:<targetField>"],
+          "example": "hx-validate=\"required|email|min:5\""
+        },
+        "hx-flash-search": {
+          "description": "Binds an input to in-memory typo-tolerant fuzzy search.",
+          "type": "string",
+          "allowedElements": ["input"],
+          "example": "hx-flash-search hx-flash-db=\"users\" hx-target=\"#results\""
+        },
+        "hx-flash-filter": {
+          "description": "Binds a filter control to multi-column database filtering.",
+          "type": "string",
+          "allowedElements": ["select", "input"],
+          "example": "hx-flash-filter=\"status\" hx-flash-db=\"users\" hx-target=\"#results\""
+        },
+        "hx-flash-sort": {
+          "description": "Binds a clickable element to client-side column sorting.",
+          "type": "string",
+          "allowedElements": ["th", "button", "div"],
+          "example": "hx-flash-sort=\"created_at\" hx-flash-db=\"users\" hx-target=\"#results\""
+        },
+        "hx-vibe-flip": {
+          "description": "Enables 60fps FLIP layout animation during HTMX swaps or item reordering.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-flip"
+        },
+        "hx-vibe-stagger": {
+          "description": "Staggers animation delay across children elements.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-stagger=\"40ms\""
+        },
+        "hx-vibe-view": {
+          "description": "Scroll-triggered animation using IntersectionObserver.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-view=\"opacity-100 translate-y-0\" hx-vibe-initial=\"opacity-0 translate-y-4\""
+        },
+        "hx-trap-focus": {
+          "description": "WAI-ARIA compliant modal focus trapping for dialogs and sheets.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-trap-focus"
+        },
+        "scaleui": {
+          "description": "Enables fluid responsive component resizing testing.",
+          "type": "string",
+          "enum": ["1"],
+          "example": "scaleui=\"1\""
+        }
+      }
+    },
+    "scopeVariables": {
+      "description": "Variables accessible inside expressions and event actions",
+      "properties": {
+        "$store": { "description": "Global shared reactive stores (e.g. $store.auth.user)" },
+        "$refs": { "description": "Dictionary of elements tagged with hx-ref=\"name\"" },
+        "$el": { "description": "The current DOM element" },
+        "$event": { "description": "The native DOM event in actions" },
+        "$form": { "description": "Form state object: { valid, dirty, touched, errors }" }
+      }
+    },
+    "errorCatalog": {
+      "HTMXUI-BOLT-001": "Invalid JSON/JS syntax in hx-state or <script type=\"application/json\" hx-state>",
+      "HTMXUI-BOLT-002": "Circular dependency detected in hx-computed property",
+      "HTMXUI-BOLT-003": "Invalid hx-for expression syntax. Expected 'item in list' or '(item, index) in list'",
+      "HTMXUI-BOLT-004": "Referenced undefined property or store in expression",
+      "HTMXUI-BOLT-005": "Possible typo in attribute name (autocorrect suggestion provided)",
+      "HTMXUI-FORM-001": "Form validation failed on submit",
+      "HTMXUI-FLASH-001": "Flash database queried before initialization or fetch error"
+    }
+  }
+}

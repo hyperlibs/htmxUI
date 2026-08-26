@@ -16,6 +16,8 @@
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-emerald-500: oklch(69.6% 0.17 162.48);
+    --color-sky-500: oklch(68.5% 0.169 237.323);
     --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-blue-600: oklch(54.6% 0.245 262.881);
     --color-gray-300: oklch(87.2% 0.01 258.338);
@@ -536,6 +538,9 @@
   }
   .hidden {
     display: none;
+  }
+  .inline {
+    display: inline;
   }
   .inline-block {
     display: inline-block;
@@ -1824,6 +1829,9 @@
   .text-card-foreground {
     color: var(--color-card-foreground);
   }
+  .text-emerald-500 {
+    color: var(--color-emerald-500);
+  }
   .text-foreground {
     color: var(--color-foreground);
   }
@@ -1854,8 +1862,14 @@
   .text-primary-foreground {
     color: var(--color-primary-foreground);
   }
+  .text-red-500 {
+    color: var(--color-red-500);
+  }
   .text-red-600 {
     color: var(--color-red-600);
+  }
+  .text-sky-500 {
+    color: var(--color-sky-500);
   }
   .text-transparent {
     color: transparent;
@@ -2038,6 +2052,9 @@
   .select-none {
     -webkit-user-select: none;
     user-select: none;
+  }
+  .\[htmx-bolt\:debug\] {
+    htmx-bolt: debug;
   }
   .group-open\:rotate-90:is(:where(.group):is([open], :popover-open, :open) *) {
     rotate: 90deg;

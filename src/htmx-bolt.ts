@@ -943,14 +943,16 @@ export function unregisterModal(modalEl: HTMLElement): void {
   }
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && modalStack.length > 0) {
-    const topModal = modalStack[modalStack.length - 1];
-    topModal.style.display = 'none';
-    unregisterModal(topModal);
-    e.stopPropagation();
-  }
-});
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalStack.length > 0) {
+      const topModal = modalStack[modalStack.length - 1];
+      topModal.style.display = 'none';
+      unregisterModal(topModal);
+      e.stopPropagation();
+    }
+  });
+}
 
 // -----------------------------------------------------------------------------
 // Global Public HxBolt API

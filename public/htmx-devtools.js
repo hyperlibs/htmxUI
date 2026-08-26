@@ -41,7 +41,7 @@ class DevToolsPanel {
       </div>
       <div class="p-3 overflow-y-auto flex-1 space-y-3">
         <div>
-          <div class="text-[10px] text-slate-400 uppercase font-semibold mb-1">Active Signal Stores</div>
+          <div class="text-[10px] text-slate-400 uppercase font-semibold mb-1">Active Signal Stores &amp; State</div>
           <pre class="hx-dev-stores p-2 bg-slate-900 rounded border border-slate-800/80 text-[11px] text-emerald-400 overflow-x-auto">{}</pre>
         </div>
         <div>
@@ -56,12 +56,12 @@ class DevToolsPanel {
     document.body.appendChild(this.panelEl);
     this.panelEl.querySelector(".hx-dev-btn-close")?.addEventListener("click", () => this.toggle());
     this.panelEl.querySelector(".hx-dev-btn-undo")?.addEventListener("click", () => {
-      if (window.HxBolt)
+      if (window.HxBolt && window.HxBolt.undo)
         window.HxBolt.undo();
       this.refresh();
     });
     this.panelEl.querySelector(".hx-dev-btn-redo")?.addEventListener("click", () => {
-      if (window.HxBolt)
+      if (window.HxBolt && window.HxBolt.redo)
         window.HxBolt.redo();
       this.refresh();
     });
@@ -70,8 +70,33 @@ class DevToolsPanel {
     if (!this.panelEl)
       return;
     const storesEl = this.panelEl.querySelector(".hx-dev-stores");
-    if (storesEl && window.HxBolt) {
-      storesEl.textContent = JSON.stringify(window.HxBolt, null, 2);
+    if (storesEl && typeof window !== "undefined") {
+      const activeData = {};
+      if (window.HxBolt && window.HxBolt.getStore) {
+        const commonStores = ["auth", "cart", "app", "user", "theme", "filters", "settings"];
+        commonStores.forEach((name) => {
+          const s = window.HxBolt.getStore(name);
+          if (s) {
+            activeData[`$store.${name}`] = s.__raw || s;
+          }
+        });
+      }
+      document.querySelectorAll("[hx-state]").forEach((el, idx) => {
+        if (window.HxBolt && window.HxBolt.getState) {
+          const st = window.HxBolt.getState(el);
+          if (st) {
+            const raw = st.__raw || st;
+            const sanitized = {};
+            for (const [k, v] of Object.entries(raw)) {
+              if (k !== "__refs" && typeof v !== "function") {
+                sanitized[k] = v;
+              }
+            }
+            activeData[`Component[${el.id || idx}]`] = sanitized;
+          }
+        }
+      });
+      storesEl.textContent = JSON.stringify(activeData, null, 2);
     }
     const netEl = this.panelEl.querySelector(".hx-dev-net-status");
     const queueEl = this.panelEl.querySelector(".hx-dev-queue-count");

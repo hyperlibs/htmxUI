@@ -2,10 +2,10 @@
  * HTMX-DEVTOOLS — In-Browser Visual State Inspector & Profiler
  * 
  * Provides an on-screen floating debug overlay:
- * - Signal Graph & Reactive Store Inspector
+ * - Signal Graph & Reactive Store Inspector (Clean JSON serialization)
  * - 1-Click State Time-Travel (Undo / Redo)
  * - HTMX Swap & Mutation Telemetry Logger
- * - Offline Queue Status
+ * - Offline Queue & Network Status
  * - Shortcut: Ctrl+Shift+H
  */
 
@@ -53,7 +53,7 @@ class DevToolsPanel {
       </div>
       <div class="p-3 overflow-y-auto flex-1 space-y-3">
         <div>
-          <div class="text-[10px] text-slate-400 uppercase font-semibold mb-1">Active Signal Stores</div>
+          <div class="text-[10px] text-slate-400 uppercase font-semibold mb-1">Active Signal Stores &amp; State</div>
           <pre class="hx-dev-stores p-2 bg-slate-900 rounded border border-slate-800/80 text-[11px] text-emerald-400 overflow-x-auto">{}</pre>
         </div>
         <div>
@@ -71,11 +71,11 @@ class DevToolsPanel {
     // Bindings
     this.panelEl.querySelector('.hx-dev-btn-close')?.addEventListener('click', () => this.toggle());
     this.panelEl.querySelector('.hx-dev-btn-undo')?.addEventListener('click', () => {
-      if ((window as any).HxBolt) (window as any).HxBolt.undo();
+      if ((window as any).HxBolt && (window as any).HxBolt.undo) (window as any).HxBolt.undo();
       this.refresh();
     });
     this.panelEl.querySelector('.hx-dev-btn-redo')?.addEventListener('click', () => {
-      if ((window as any).HxBolt) (window as any).HxBolt.redo();
+      if ((window as any).HxBolt && (window as any).HxBolt.redo) (window as any).HxBolt.redo();
       this.refresh();
     });
   }
@@ -83,10 +83,40 @@ class DevToolsPanel {
   refresh(): void {
     if (!this.panelEl) return;
 
-    // Refresh Stores
+    // Clean JSON serialization of stores without proxy function bloat
     const storesEl = this.panelEl.querySelector('.hx-dev-stores');
-    if (storesEl && (window as any).HxBolt) {
-      storesEl.textContent = JSON.stringify((window as any).HxBolt, null, 2);
+    if (storesEl && typeof window !== 'undefined') {
+      const activeData: Record<string, any> = {};
+
+      // Inspect global HxBolt stores
+      if ((window as any).HxBolt && (window as any).HxBolt.getStore) {
+        const commonStores = ['auth', 'cart', 'app', 'user', 'theme', 'filters', 'settings'];
+        commonStores.forEach(name => {
+          const s = (window as any).HxBolt.getStore(name);
+          if (s) {
+            activeData[`$store.${name}`] = (s as any).__raw || s;
+          }
+        });
+      }
+
+      // Collect root component states
+      document.querySelectorAll('[hx-state]').forEach((el, idx) => {
+        if ((window as any).HxBolt && (window as any).HxBolt.getState) {
+          const st = (window as any).HxBolt.getState(el as HTMLElement);
+          if (st) {
+            const raw = (st as any).__raw || st;
+            const sanitized: Record<string, any> = {};
+            for (const [k, v] of Object.entries(raw)) {
+              if (k !== '__refs' && typeof v !== 'function') {
+                sanitized[k] = v;
+              }
+            }
+            activeData[`Component[${(el as HTMLElement).id || idx}]`] = sanitized;
+          }
+        }
+      });
+
+      storesEl.textContent = JSON.stringify(activeData, null, 2);
     }
 
     // Refresh Offline

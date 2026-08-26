@@ -1,8 +1,8 @@
 /**
- * HTMX-OFFLINE — Offline-First Engine, IndexedDB Queue & Auto-Replay
+ * HTMX-OFFLINE — Offline-First Engine, IndexedDB Queue & Conflict Resolution
  * 
  * Intercepts HTMX mutations when offline or network drops, queues them in IndexedDB,
- * and automatically replays requests with exponential backoff upon reconnection.
+ * and automatically replays requests with exponential backoff and 409 Conflict Resolution.
  */
 
 export interface QueuedMutation {
@@ -13,6 +13,7 @@ export interface QueuedMutation {
   body: string | null;
   timestamp: number;
   retries: number;
+  conflict?: any;
 }
 
 const DB_NAME = 'HTMXUI_OfflineDB';
@@ -23,6 +24,7 @@ class OfflineManager {
   private db: IDBDatabase | null = null;
   public isOnline: boolean = typeof navigator !== 'undefined' ? navigator.onLine : true;
   public queueCount: number = 0;
+  public isPausedForConflict: boolean = false;
 
   constructor() {
     if (typeof window === 'undefined') return;
@@ -57,7 +59,9 @@ class OfflineManager {
       this.isOnline = true;
       this.updateIndicators();
       console.log('[htmx-offline] 🌐 Connection restored. Replaying queued mutations...');
-      this.replayQueue();
+      if (!this.isPausedForConflict) {
+        this.replayQueue();
+      }
     });
 
     window.addEventListener('offline', () => {
@@ -122,7 +126,7 @@ class OfflineManager {
   }
 
   async replayQueue(): Promise<void> {
-    if (!this.db || !this.isOnline) return;
+    if (!this.db || !this.isOnline || this.isPausedForConflict) return;
 
     const tx = this.db.transaction(STORE_NAME, 'readwrite');
     const store = tx.objectStore(STORE_NAME);
@@ -146,19 +150,58 @@ class OfflineManager {
             body: item.body
           });
 
-          if (res.ok) {
-            // Remove successful mutation from DB
+          if (res.status === 409 || res.status === 422 || res.headers.has('HX-Offline-Conflict')) {
+            // 409 Conflict Handling
+            console.warn('[htmx-offline] ⚠️ Conflict detected during replay for mutation:', item.id);
+            this.isPausedForConflict = true;
+            const conflictData = await res.json().catch(() => ({}));
+            
+            // Dispatch conflict event for UI prompt
+            document.body.dispatchEvent(new CustomEvent('htmx:offlineConflict', {
+              detail: { mutation: item, serverResponse: conflictData }
+            }));
+            break; // Pause replay queue
+          } else if (res.ok) {
+            // Successful replay: remove from IndexedDB
             const deleteTx = this.db!.transaction(STORE_NAME, 'readwrite');
             deleteTx.objectStore(STORE_NAME).delete(item.id);
             console.log('[htmx-offline] ✅ Replayed & synced mutation:', item.id);
           }
         } catch (e) {
-          console.warn('[htmx-offline] Retry failed for mutation:', item.id);
+          console.warn('[htmx-offline] Network retry failed for mutation:', item.id);
         }
       }
 
       this.updateQueueCount();
     };
+  }
+
+  // Conflict Resolution Action (overwrite, discard, or custom merge payload)
+  async resolveConflict(mutationId: string, resolution: 'discard' | 'force' | 'merge', mergeBody?: any): Promise<void> {
+    if (!this.db) return;
+
+    if (resolution === 'discard') {
+      const tx = this.db.transaction(STORE_NAME, 'readwrite');
+      tx.objectStore(STORE_NAME).delete(mutationId);
+      tx.oncomplete = () => {
+        this.isPausedForConflict = false;
+        this.replayQueue();
+      };
+    } else if (resolution === 'force' || resolution === 'merge') {
+      const tx = this.db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.get(mutationId);
+      req.onsuccess = () => {
+        const item = req.result;
+        if (item) {
+          if (mergeBody) item.body = JSON.stringify(mergeBody);
+          item.headers['HX-Force-Sync'] = 'true';
+          store.put(item);
+        }
+        this.isPausedForConflict = false;
+        this.replayQueue();
+      };
+    }
   }
 
   private updateIndicators(): void {

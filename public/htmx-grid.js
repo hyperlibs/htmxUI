@@ -8,7 +8,7 @@ class EnterpriseDataGrid {
   sortField = null;
   sortDir = "asc";
   rowHeight = 40;
-  viewportHeight = 400;
+  activeCell = null;
   tableHeaderEl;
   tableBodyEl;
   topSpacerEl;
@@ -25,12 +25,14 @@ class EnterpriseDataGrid {
   }
   initDOM() {
     this.container.innerHTML = "";
-    this.container.className = "hx-grid-wrapper rounded-xl border border-border bg-card shadow-sm flex flex-col overflow-hidden text-card-foreground";
+    this.container.className = "hx-grid-wrapper rounded-xl border border-border bg-card shadow-sm flex flex-col overflow-hidden text-card-foreground outline-none";
+    this.container.setAttribute("role", "region");
+    this.container.setAttribute("aria-label", "Data Grid");
     const toolbar = document.createElement("div");
     toolbar.className = "hx-grid-toolbar p-3 border-b border-border flex items-center justify-between gap-4 bg-muted/30";
     toolbar.innerHTML = `
       <div class="flex items-center gap-2 flex-1 max-w-sm">
-        <input type="text" placeholder="Filter rows..." class="hx-grid-search px-3 py-1.5 text-xs bg-background border border-input rounded-md w-full">
+        <input type="text" placeholder="Filter rows..." aria-label="Filter grid rows" class="hx-grid-search px-3 py-1.5 text-xs bg-background border border-input rounded-md w-full">
       </div>
       <div class="flex items-center gap-2">
         <button class="hx-grid-btn-csv px-3 py-1.5 text-xs font-medium bg-background border border-border rounded-md hover:bg-accent transition-colors">Export CSV</button>
@@ -43,14 +45,20 @@ class EnterpriseDataGrid {
     const csvBtn = toolbar.querySelector(".hx-grid-btn-csv");
     csvBtn.addEventListener("click", () => this.exportCSV());
     const scrollContainer = document.createElement("div");
-    scrollContainer.className = "hx-grid-scroll-container overflow-auto flex-1 max-h-[500px] relative";
+    scrollContainer.className = "hx-grid-scroll-container overflow-auto flex-1 max-h-[500px] relative focus:outline-none";
+    scrollContainer.setAttribute("role", "grid");
+    scrollContainer.setAttribute("tabindex", "0");
+    scrollContainer.setAttribute("aria-rowcount", String(this.data.length));
+    scrollContainer.setAttribute("aria-colcount", String(this.columns.length + 1));
     this.tableHeaderEl = document.createElement("div");
     this.tableHeaderEl.className = "hx-grid-header sticky top-0 z-20 flex bg-muted/80 backdrop-blur border-b border-border font-semibold text-xs text-foreground divide-x divide-border";
+    this.tableHeaderEl.setAttribute("role", "row");
     scrollContainer.appendChild(this.tableHeaderEl);
     this.topSpacerEl = document.createElement("div");
     this.bottomSpacerEl = document.createElement("div");
     this.tableBodyEl = document.createElement("div");
     this.tableBodyEl.className = "hx-grid-body divide-y divide-border text-xs";
+    this.tableBodyEl.setAttribute("role", "rowgroup");
     scrollContainer.appendChild(this.topSpacerEl);
     scrollContainer.appendChild(this.tableBodyEl);
     scrollContainer.appendChild(this.bottomSpacerEl);
@@ -74,6 +82,7 @@ class EnterpriseDataGrid {
         });
       }
     }, { passive: true });
+    scrollContainer.addEventListener("keydown", (e) => this.handleKeyboardNav(e, scrollContainer));
     this.renderHeader();
     this.renderVirtualRows(scrollContainer);
   }
@@ -91,8 +100,10 @@ class EnterpriseDataGrid {
     if (countEl)
       countEl.textContent = String(data.length);
     const scrollContainer = this.container.querySelector(".hx-grid-scroll-container");
-    if (scrollContainer)
+    if (scrollContainer) {
+      scrollContainer.setAttribute("aria-rowcount", String(data.length));
       this.renderVirtualRows(scrollContainer);
+    }
   }
   filterData(query) {
     const q = query.toLowerCase().trim();
@@ -113,8 +124,9 @@ class EnterpriseDataGrid {
   renderHeader() {
     this.tableHeaderEl.innerHTML = "";
     const selectAllCol = document.createElement("div");
-    selectAllCol.className = "w-10 p-2 flex items-center justify-center";
-    selectAllCol.innerHTML = '<input type="checkbox" class="hx-grid-select-all rounded border-input">';
+    selectAllCol.className = "w-10 p-2 flex items-center justify-center sticky left-0 z-30 bg-muted/90 backdrop-blur";
+    selectAllCol.setAttribute("role", "columnheader");
+    selectAllCol.innerHTML = '<input type="checkbox" aria-label="Select all rows" class="hx-grid-select-all rounded border-input">';
     const selectAllCheckbox = selectAllCol.querySelector("input");
     selectAllCheckbox.addEventListener("change", (e) => {
       if (e.target.checked) {
@@ -127,19 +139,50 @@ class EnterpriseDataGrid {
     this.tableHeaderEl.appendChild(selectAllCol);
     this.columns.forEach((col, idx) => {
       const colEl = document.createElement("div");
-      colEl.className = "p-2 flex-1 flex items-center justify-between select-none cursor-pointer hover:bg-accent/40 transition-colors relative group";
+      colEl.draggable = true;
+      colEl.setAttribute("role", "columnheader");
+      colEl.setAttribute("data-col-idx", String(idx));
+      let pinnedClass = "";
+      if (col.pinned === "left")
+        pinnedClass = "sticky left-10 z-20 bg-muted/90 backdrop-blur";
+      if (col.pinned === "right")
+        pinnedClass = "sticky right-0 z-20 bg-muted/90 backdrop-blur";
+      colEl.className = `p-2 flex-1 flex items-center justify-between select-none cursor-move hover:bg-accent/40 transition-colors relative group ${pinnedClass}`;
       colEl.style.minWidth = `${col.minWidth || 120}px`;
       if (col.width)
         colEl.style.width = `${col.width}px`;
       colEl.innerHTML = `
         <span class="truncate">${col.header}</span>
-        <span class="hx-grid-sort-icon text-muted-foreground text-[10px] ml-1 opacity-0 group-hover:opacity-100">↕</span>
-        <div class="hx-grid-resizer absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary"></div>
+        <span class="hx-grid-sort-icon text-muted-foreground text-[10px] ml-1 opacity-0 group-hover:opacity-100 cursor-pointer">↕</span>
+        <div class="hx-grid-resizer absolute right-0 top-0 bottom-0 w-1 cursor-col-resize hover:bg-primary z-10"></div>
       `;
       colEl.addEventListener("click", (e) => {
         if (e.target.classList.contains("hx-grid-resizer"))
           return;
         this.sort(col.field);
+      });
+      colEl.addEventListener("dragstart", (e) => {
+        e.dataTransfer?.setData("text/plain", String(idx));
+      });
+      colEl.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        colEl.classList.add("bg-primary/20");
+      });
+      colEl.addEventListener("dragleave", () => {
+        colEl.classList.remove("bg-primary/20");
+      });
+      colEl.addEventListener("drop", (e) => {
+        e.preventDefault();
+        colEl.classList.remove("bg-primary/20");
+        const fromIdx = parseInt(e.dataTransfer?.getData("text/plain") || "-1", 10);
+        if (fromIdx !== -1 && fromIdx !== idx) {
+          const movedCol = this.columns.splice(fromIdx, 1)[0];
+          this.columns.splice(idx, 0, movedCol);
+          this.renderHeader();
+          const scrollContainer = this.container.querySelector(".hx-grid-scroll-container");
+          if (scrollContainer)
+            this.renderVirtualRows(scrollContainer);
+        }
       });
       const resizer = colEl.querySelector(".hx-grid-resizer");
       this.bindResizer(resizer, colEl, col);
@@ -193,6 +236,27 @@ class EnterpriseDataGrid {
     if (scrollContainer)
       this.renderVirtualRows(scrollContainer);
   }
+  handleKeyboardNav(e, scrollContainer) {
+    if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", " "].includes(e.key))
+      return;
+    if (!this.activeCell) {
+      this.activeCell = { rowIdx: 0, colIdx: 0 };
+    } else {
+      if (e.key === "ArrowDown")
+        this.activeCell.rowIdx = Math.min(this.filteredData.length - 1, this.activeCell.rowIdx + 1);
+      if (e.key === "ArrowUp")
+        this.activeCell.rowIdx = Math.max(0, this.activeCell.rowIdx - 1);
+      if (e.key === "ArrowRight")
+        this.activeCell.colIdx = Math.min(this.columns.length - 1, this.activeCell.colIdx + 1);
+      if (e.key === "ArrowLeft")
+        this.activeCell.colIdx = Math.max(0, this.activeCell.colIdx - 1);
+    }
+    const targetScroll = this.activeCell.rowIdx * this.rowHeight;
+    if (targetScroll < scrollContainer.scrollTop || targetScroll > scrollContainer.scrollTop + scrollContainer.clientHeight - 80) {
+      scrollContainer.scrollTop = targetScroll;
+    }
+    this.renderVirtualRows(scrollContainer);
+  }
   renderVirtualRows(scrollContainer) {
     const totalCount = this.filteredData.length;
     const scrollTop = scrollContainer.scrollTop;
@@ -208,11 +272,15 @@ class EnterpriseDataGrid {
       const rowId = row.id || JSON.stringify(row);
       const isSelected = this.selectedIds.has(rowId);
       const rowEl = document.createElement("div");
+      rowEl.setAttribute("role", "row");
+      rowEl.setAttribute("aria-rowindex", String(i + 1));
+      rowEl.setAttribute("aria-selected", isSelected ? "true" : "false");
       rowEl.className = `hx-grid-row flex items-center divide-x divide-border transition-colors hover:bg-muted/40 ${isSelected ? "bg-primary/10" : ""}`;
       rowEl.style.height = `${this.rowHeight}px`;
       const checkCol = document.createElement("div");
-      checkCol.className = "w-10 p-2 flex items-center justify-center";
-      checkCol.innerHTML = `<input type="checkbox" class="rounded border-input" ${isSelected ? "checked" : ""}>`;
+      checkCol.setAttribute("role", "gridcell");
+      checkCol.className = "w-10 p-2 flex items-center justify-center sticky left-0 z-10 bg-background/95 backdrop-blur";
+      checkCol.innerHTML = `<input type="checkbox" aria-label="Select row ${i + 1}" class="rounded border-input" ${isSelected ? "checked" : ""}>`;
       checkCol.querySelector("input").addEventListener("change", (e) => {
         if (e.target.checked) {
           this.selectedIds.add(rowId);
@@ -222,9 +290,18 @@ class EnterpriseDataGrid {
         this.updateSelectionUI();
       });
       rowEl.appendChild(checkCol);
-      this.columns.forEach((col) => {
+      this.columns.forEach((col, colIdx) => {
         const cellEl = document.createElement("div");
-        cellEl.className = "p-2 flex-1 truncate select-text";
+        cellEl.setAttribute("role", "gridcell");
+        cellEl.setAttribute("tabindex", "-1");
+        let pinnedClass = "";
+        if (col.pinned === "left")
+          pinnedClass = "sticky left-10 z-10 bg-background/95 backdrop-blur";
+        if (col.pinned === "right")
+          pinnedClass = "sticky right-0 z-10 bg-background/95 backdrop-blur";
+        const isCellFocused = this.activeCell?.rowIdx === i && this.activeCell?.colIdx === colIdx;
+        const focusClass = isCellFocused ? "ring-2 ring-primary ring-inset bg-accent/40" : "";
+        cellEl.className = `p-2 flex-1 truncate select-text ${pinnedClass} ${focusClass}`;
         cellEl.style.minWidth = `${col.minWidth || 120}px`;
         if (col.width)
           cellEl.style.width = `${col.width}px`;

@@ -7,6 +7,7 @@ class OfflineManager {
   db = null;
   isOnline = typeof navigator !== "undefined" ? navigator.onLine : true;
   queueCount = 0;
+  isPausedForConflict = false;
   constructor() {
     if (typeof window === "undefined")
       return;
@@ -36,7 +37,9 @@ class OfflineManager {
       this.isOnline = true;
       this.updateIndicators();
       console.log("[htmx-offline] \uD83C\uDF10 Connection restored. Replaying queued mutations...");
-      this.replayQueue();
+      if (!this.isPausedForConflict) {
+        this.replayQueue();
+      }
     });
     window.addEventListener("offline", () => {
       this.isOnline = false;
@@ -97,7 +100,7 @@ class OfflineManager {
     });
   }
   async replayQueue() {
-    if (!this.db || !this.isOnline)
+    if (!this.db || !this.isOnline || this.isPausedForConflict)
       return;
     const tx = this.db.transaction(STORE_NAME, "readwrite");
     const store = tx.objectStore(STORE_NAME);
@@ -118,17 +121,52 @@ class OfflineManager {
             },
             body: item.body
           });
-          if (res.ok) {
+          if (res.status === 409 || res.status === 422 || res.headers.has("HX-Offline-Conflict")) {
+            console.warn("[htmx-offline] ⚠️ Conflict detected during replay for mutation:", item.id);
+            this.isPausedForConflict = true;
+            const conflictData = await res.json().catch(() => ({}));
+            document.body.dispatchEvent(new CustomEvent("htmx:offlineConflict", {
+              detail: { mutation: item, serverResponse: conflictData }
+            }));
+            break;
+          } else if (res.ok) {
             const deleteTx = this.db.transaction(STORE_NAME, "readwrite");
             deleteTx.objectStore(STORE_NAME).delete(item.id);
             console.log("[htmx-offline] ✅ Replayed & synced mutation:", item.id);
           }
         } catch (e) {
-          console.warn("[htmx-offline] Retry failed for mutation:", item.id);
+          console.warn("[htmx-offline] Network retry failed for mutation:", item.id);
         }
       }
       this.updateQueueCount();
     };
+  }
+  async resolveConflict(mutationId, resolution, mergeBody) {
+    if (!this.db)
+      return;
+    if (resolution === "discard") {
+      const tx = this.db.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).delete(mutationId);
+      tx.oncomplete = () => {
+        this.isPausedForConflict = false;
+        this.replayQueue();
+      };
+    } else if (resolution === "force" || resolution === "merge") {
+      const tx = this.db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.get(mutationId);
+      req.onsuccess = () => {
+        const item = req.result;
+        if (item) {
+          if (mergeBody)
+            item.body = JSON.stringify(mergeBody);
+          item.headers["HX-Force-Sync"] = "true";
+          store.put(item);
+        }
+        this.isPausedForConflict = false;
+        this.replayQueue();
+      };
+    }
   }
   updateIndicators() {
     document.querySelectorAll("[hx-offline-indicator]").forEach((el) => {

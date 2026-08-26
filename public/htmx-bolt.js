@@ -879,14 +879,16 @@ function unregisterModal(modalEl) {
     modalStack.splice(idx, 1);
   }
 }
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && modalStack.length > 0) {
-    const topModal = modalStack[modalStack.length - 1];
-    topModal.style.display = "none";
-    unregisterModal(topModal);
-    e.stopPropagation();
-  }
-});
+if (typeof document !== "undefined") {
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modalStack.length > 0) {
+      const topModal = modalStack[modalStack.length - 1];
+      topModal.style.display = "none";
+      unregisterModal(topModal);
+      e.stopPropagation();
+    }
+  });
+}
 var HxBolt = {
   config,
   errors: ERROR_CATALOG,

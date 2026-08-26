@@ -53,6 +53,129 @@ function validateInput(input, form) {
   }
   return { valid: true, error: null };
 }
+function initCascadingFields(form) {
+  const dependentFields = form.querySelectorAll("[hx-depends]");
+  dependentFields.forEach((el) => {
+    const spec = el.getAttribute("hx-depends");
+    if (!spec)
+      return;
+    const [parentName, childrenStr] = spec.split("->");
+    if (!parentName || !childrenStr)
+      return;
+    const parentInput = form.querySelector(`[name="${parentName.trim()}"], #${parentName.trim()}`);
+    if (!parentInput)
+      return;
+    const childNames = childrenStr.split(",").map((s) => s.trim());
+    parentInput.addEventListener("change", () => {
+      childNames.forEach((childName) => {
+        const childInput = form.querySelector(`[name="${childName}"], #${childName}`);
+        if (childInput) {
+          childInput.value = "";
+          childInput.dispatchEvent(new Event("change", { bubbles: true }));
+          if (childInput.hasAttribute("hx-get") && typeof window.htmx !== "undefined") {
+            window.htmx.trigger(childInput, "change");
+          }
+        }
+      });
+    });
+  });
+}
+function initFormWizard(form) {
+  if (!form.hasAttribute("hx-wizard") && !form.classList.contains("hx-wizard"))
+    return;
+  const steps = Array.from(form.querySelectorAll("fieldset[hx-step], [hx-step]"));
+  if (steps.length === 0)
+    return;
+  let currentStep = 1;
+  const totalSteps = steps.length;
+  function updateWizardUI() {
+    steps.forEach((stepEl, idx) => {
+      const stepNum = parseInt(stepEl.getAttribute("hx-step") || String(idx + 1), 10);
+      if (stepNum === currentStep) {
+        stepEl.style.display = "";
+        stepEl.removeAttribute("disabled");
+      } else {
+        stepEl.style.display = "none";
+        stepEl.setAttribute("disabled", "true");
+      }
+    });
+    form.querySelectorAll(".hx-wizard-current-step").forEach((el) => el.textContent = String(currentStep));
+    form.querySelectorAll(".hx-wizard-total-steps").forEach((el) => el.textContent = String(totalSteps));
+    form.querySelectorAll(".hx-wizard-progress-bar").forEach((el) => {
+      el.style.width = `${currentStep / totalSteps * 100}%`;
+    });
+    const prevBtn2 = form.querySelector("[hx-wizard-prev]");
+    if (prevBtn2)
+      prevBtn2.disabled = currentStep === 1;
+    const nextBtn2 = form.querySelector("[hx-wizard-next]");
+    if (nextBtn2) {
+      if (currentStep === totalSteps) {
+        nextBtn2.textContent = nextBtn2.getAttribute("hx-wizard-submit-text") || "Submit";
+      } else {
+        nextBtn2.textContent = nextBtn2.getAttribute("hx-wizard-next-text") || "Next →";
+      }
+    }
+    if (typeof window.HxBolt !== "undefined") {
+      const state = window.HxBolt.getState(form);
+      if (state) {
+        state.$wizard = {
+          currentStep,
+          totalSteps,
+          isFirst: currentStep === 1,
+          isLast: currentStep === totalSteps
+        };
+      }
+    }
+  }
+  const nextBtn = form.querySelector("[hx-wizard-next]");
+  if (nextBtn) {
+    nextBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const currentFieldset = steps.find((s) => parseInt(s.getAttribute("hx-step") || "1", 10) === currentStep);
+      if (currentFieldset) {
+        const stepInputs = currentFieldset.querySelectorAll("input[hx-validate], select[hx-validate], textarea[hx-validate]");
+        let stepValid = true;
+        stepInputs.forEach((input) => {
+          const res = validateInput(input, form);
+          if (!res.valid) {
+            stepValid = false;
+            const name = input.name || input.id;
+            const errorEl = form.querySelector(`[hx-error-for="${name}"]`);
+            if (errorEl) {
+              errorEl.innerText = res.error || "";
+              errorEl.style.display = "";
+            }
+            input.setAttribute("aria-invalid", "true");
+            input.classList.add("border-destructive");
+          }
+        });
+        if (!stepValid) {
+          const firstErr = currentFieldset.querySelector('[aria-invalid="true"]');
+          if (firstErr)
+            firstErr.focus();
+          return;
+        }
+      }
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateWizardUI();
+      } else {
+        form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      }
+    });
+  }
+  const prevBtn = form.querySelector("[hx-wizard-prev]");
+  if (prevBtn) {
+    prevBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (currentStep > 1) {
+        currentStep--;
+        updateWizardUI();
+      }
+    });
+  }
+  updateWizardUI();
+}
 function initForm(form) {
   if (form._hxFormInit)
     return form._hxFormState;
@@ -150,6 +273,8 @@ function initForm(form) {
       }
     });
   }
+  initCascadingFields(form);
+  initFormWizard(form);
   updateFormState();
   return state;
 }

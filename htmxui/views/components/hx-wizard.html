@@ -1,0 +1,107 @@
+<div class="space-y-8 max-w-4xl py-4">
+  <div class="space-y-2">
+    <h1 class="text-3xl font-bold tracking-tight text-foreground">Form Wizard &amp; Cascading Fields</h1>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Multi-step form orchestration (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">&lt;form hx-wizard&gt;</code>) with step validation gates, progress tracking, and cascading field dependencies (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-depends="country-&gt;state,city"</code>).
+    </p>
+  </div>
+
+  <!-- Interactive Wizard Demo -->
+  <div class="p-6 rounded-xl border border-border bg-card shadow-sm space-y-6">
+    <div class="space-y-2 border-b border-border pb-4">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-semibold text-primary uppercase tracking-wider">Step <span class="hx-wizard-current-step">1</span> of <span class="hx-wizard-total-steps">3</span></span>
+        <span class="text-xs text-muted-foreground font-medium">ERP Onboarding Wizard</span>
+      </div>
+      <!-- Progress Bar -->
+      <div class="w-full h-2 bg-muted rounded-full overflow-hidden">
+        <div class="hx-wizard-progress-bar h-full bg-primary transition-all duration-300 w-1/3"></div>
+      </div>
+    </div>
+
+    <!-- Wizard Form -->
+    <form hx-wizard class="space-y-6">
+      <!-- Step 1: Account Information -->
+      <fieldset hx-step="1" class="space-y-4">
+        <h3 class="text-base font-semibold text-foreground">1. Account Details</h3>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-foreground mb-1">Company Name *</label>
+            <input type="text" name="company" hx-validate="required|min:3" placeholder="Acme Logistics Inc." class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md">
+            <span hx-error-for="company" class="text-destructive text-xs mt-1 block"></span>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-foreground mb-1">Business Email *</label>
+            <input type="email" name="email" hx-validate="required|email" placeholder="admin@acme.com" class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md">
+            <span hx-error-for="email" class="text-destructive text-xs mt-1 block"></span>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Step 2: Location & Cascading Dropdowns -->
+      <fieldset hx-step="2" class="space-y-4" style="display:none;" disabled>
+        <h3 class="text-base font-semibold text-foreground">2. Operating Region &amp; Cascading Fields</h3>
+        <div class="grid grid-cols-2 gap-4" hx-depends="country->state">
+          <div>
+            <label class="block text-xs font-medium text-foreground mb-1">Country *</label>
+            <select name="country" id="country" hx-validate="required" class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md">
+              <option value="">Select Country...</option>
+              <option value="us">United States</option>
+              <option value="ca">Canada</option>
+              <option value="uk">United Kingdom</option>
+            </select>
+            <span hx-error-for="country" class="text-destructive text-xs mt-1 block"></span>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-foreground mb-1">State / Province *</label>
+            <select name="state" id="state" hx-validate="required" class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md">
+              <option value="">Select State...</option>
+              <option value="ca_state">California</option>
+              <option value="ny_state">New York</option>
+              <option value="tx_state">Texas</option>
+              <option value="on_state">Ontario</option>
+            </select>
+            <span hx-error-for="state" class="text-destructive text-xs mt-1 block"></span>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Step 3: Confirmation -->
+      <fieldset hx-step="3" class="space-y-4" style="display:none;" disabled>
+        <h3 class="text-base font-semibold text-foreground">3. Review &amp; Confirm</h3>
+        <div class="p-4 rounded-lg bg-muted/40 text-xs space-y-1">
+          <p class="text-foreground font-medium">Ready to initialize your ERP workspace.</p>
+          <p class="text-muted-foreground">Click Submit to finalize account setup.</p>
+        </div>
+      </fieldset>
+
+      <!-- Wizard Navigation Controls -->
+      <div class="flex items-center justify-between pt-4 border-t border-border">
+        <button type="button" hx-wizard-prev class="px-4 py-2 text-xs font-medium bg-background border border-border rounded-md hover:bg-accent disabled:opacity-50">← Back</button>
+        <button type="button" hx-wizard-next class="px-4 py-2 text-xs font-medium bg-primary text-primary-foreground rounded-md hover:bg-primary/90">Next →</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Declarative Code Example -->
+  <div class="space-y-4 pt-4 border-t border-border">
+    <h2 class="text-xl font-bold text-foreground">Usage Specification</h2>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>&lt;!-- Multi-step Wizard Form with Cascading Fields --&gt;
+&lt;form hx-wizard&gt;
+  &lt;fieldset hx-step="1"&gt;
+    &lt;input name="company" hx-validate="required"&gt;
+    &lt;span hx-error-for="company"&gt;&lt;/span&gt;
+  &lt;/fieldset&gt;
+
+  &lt;fieldset hx-step="2" hx-depends="country-&gt;state,city"&gt;
+    &lt;select name="country"&gt;...&lt;/select&gt;
+    &lt;select name="state"&gt;...&lt;/select&gt;
+  &lt;/fieldset&gt;
+
+  &lt;button type="button" hx-wizard-prev&gt;Back&lt;/button&gt;
+  &lt;button type="button" hx-wizard-next&gt;Next&lt;/button&gt;
+&lt;/form&gt;</pre>
+    </div>
+  </div>
+</div>

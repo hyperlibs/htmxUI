@@ -60,7 +60,11 @@ const KNOWN_ATTRIBUTES = new Set([
   'hx-show', 'hx-if', 'hx-for', 'hx-class', 'hx-style', 'hx-ref',
   'hx-transition', 'hx-transition:enter', 'hx-transition:enter-start', 'hx-transition:enter-end',
   'hx-transition:leave', 'hx-transition:leave-start', 'hx-transition:leave-end',
-  'hx-validate', 'hx-error-for', 'hx-optimistic',
+  'hx-validate', 'hx-error-for', 'hx-optimistic', 'hx-wizard', 'hx-step', 'hx-depends',
+  'hx-wizard-next', 'hx-wizard-prev', 'hx-wizard-next-text', 'hx-wizard-submit-text',
+  'hx-undoable', 'hx-undo', 'hx-redo', 'hx-can', 'hx-role', 'hx-modal',
+  'hx-virtual', 'hx-virtual-item', 'hx-virtual-height', 'hx-virtual-buffer', 'hx-virtual-src',
+  'hx-grid', 'hx-grid-src', 'hx-grid-row-height',
   'hx-flash-src', 'hx-flash-db', 'hx-flash-search', 'hx-flash-filter', 'hx-flash-sort', 'hx-flash-limit', 'hx-flash-empty',
   'hx-vibe-flip', 'hx-vibe-stagger', 'hx-vibe-view', 'hx-vibe-initial', 'hx-vibe-once',
   'hx-motion-flip', 'hx-motion-stagger', 'hx-motion-view', 'hx-motion-initial', 'hx-motion-once',
@@ -208,6 +212,7 @@ export function createReactiveObject<T extends object>(
       const result = Reflect.set(obj, prop, wrappedVal, receiver);
       if (typeof prop === 'string') {
         getSignal(prop).notify();
+        recordStateSnapshot(obj);
         if (config.debug) {
           console.log(`[htmx-bolt:debug] ⚡ Signal mutated: "${path ? path + '.' : ''}${String(prop)}"`, { oldVal, newVal: value });
         }
@@ -856,10 +861,111 @@ function bindEvents(rootEl: HTMLElement, state: any): void {
   });
 }
 
+// -----------------------------------------------------------------------------
+// Command Pattern: Undo / Redo History Stack
+// -----------------------------------------------------------------------------
+interface HistoryEntry {
+  targetState: any;
+  snapshot: string;
+}
+
+const historyUndoStack: HistoryEntry[] = [];
+const historyRedoStack: HistoryEntry[] = [];
+let isApplyingHistory = false;
+
+export function recordStateSnapshot(state: any): void {
+  if (isApplyingHistory) return;
+  try {
+    const raw = (state as any).__raw || state;
+    const snapshot = JSON.stringify(raw);
+    historyUndoStack.push({ targetState: state, snapshot });
+    if (historyUndoStack.length > 50) historyUndoStack.shift();
+    historyRedoStack.length = 0; // Clear redo on new action
+  } catch (e) {
+    // Ignore circular or un-serializable references
+  }
+}
+
+export function undoState(): boolean {
+  if (historyUndoStack.length <= 1) return false;
+  const current = historyUndoStack.pop()!;
+  historyRedoStack.push(current);
+
+  const prev = historyUndoStack[historyUndoStack.length - 1];
+  if (prev) {
+    isApplyingHistory = true;
+    try {
+      const data = JSON.parse(prev.snapshot);
+      for (const [k, v] of Object.entries(data)) {
+        if (k !== '__refs') prev.targetState[k] = v;
+      }
+    } finally {
+      isApplyingHistory = false;
+    }
+    return true;
+  }
+  return false;
+}
+
+export function redoState(): boolean {
+  if (historyRedoStack.length === 0) return false;
+  const next = historyRedoStack.pop()!;
+  historyUndoStack.push(next);
+
+  isApplyingHistory = true;
+  try {
+    const data = JSON.parse(next.snapshot);
+    for (const [k, v] of Object.entries(data)) {
+      if (k !== '__refs') next.targetState[k] = v;
+    }
+  } finally {
+    isApplyingHistory = false;
+  }
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+// Modal Stack Manager (hx-modal with Escape Unstacking)
+// -----------------------------------------------------------------------------
+const modalStack: HTMLElement[] = [];
+
+export function registerModal(modalEl: HTMLElement): void {
+  if (!modalStack.includes(modalEl)) {
+    modalStack.push(modalEl);
+    modalEl.style.zIndex = String(1000 + modalStack.length * 10);
+  }
+}
+
+export function unregisterModal(modalEl: HTMLElement): void {
+  const idx = modalStack.indexOf(modalEl);
+  if (idx !== -1) {
+    modalStack.splice(idx, 1);
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modalStack.length > 0) {
+    const topModal = modalStack[modalStack.length - 1];
+    topModal.style.display = 'none';
+    unregisterModal(topModal);
+    e.stopPropagation();
+  }
+});
+
+// -----------------------------------------------------------------------------
 // Global Public HxBolt API
+// -----------------------------------------------------------------------------
 export const HxBolt: HxBoltAPI = {
   config,
   errors: ERROR_CATALOG,
+  history: {
+    undo: undoState,
+    redo: redoState,
+    canUndo: () => historyUndoStack.length > 1,
+    canRedo: () => historyRedoStack.length > 0
+  },
+  undo: undoState,
+  redo: redoState,
   store<T extends object = Record<string, any>>(name: string, initialValue?: T): ReactiveProxy<T> {
     if (initialValue !== undefined) {
       stores[name] = createReactiveObject(initialValue);

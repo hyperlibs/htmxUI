@@ -760,30 +760,73 @@
       camera.position.set(0, 45, 80);
       if (controls) controls.update();
 
-      // 1. Multi-Color Particle Starfield (20,000 stars)
+      // 1. Multi-Color Particle Starfield (25,000 stars + Volumetric Nebula Clouds)
       const starsGeo = new THREE.BufferGeometry();
-      const starCount = 20000;
+      const starCount = 25000;
       const starPos = new Float32Array(starCount * 3);
       const starColors = new Float32Array(starCount * 3);
       for (let i = 0; i < starCount * 3; i += 3) {
-        starPos[i] = (Math.random() - 0.5) * 1600;
-        starPos[i + 1] = (Math.random() - 0.5) * 1600;
-        starPos[i + 2] = (Math.random() - 0.5) * 1600;
+        starPos[i] = (Math.random() - 0.5) * 2000;
+        starPos[i + 1] = (Math.random() - 0.5) * 2000;
+        starPos[i + 2] = (Math.random() - 0.5) * 2000;
 
-        // Stellar temperature colors (Blue giants, Yellow dwarfs, Red stars)
         const rand = Math.random();
-        if (rand > 0.8) { starColors[i] = 0.6; starColors[i+1] = 0.8; starColors[i+2] = 1.0; } // Blue
-        else if (rand > 0.5) { starColors[i] = 1.0; starColors[i+1] = 0.95; starColors[i+2] = 0.8; } // Yellow/White
-        else { starColors[i] = 1.0; starColors[i+1] = 0.5; starColors[i+2] = 0.4; } // Red
+        if (rand > 0.85) { starColors[i] = 0.5; starColors[i+1] = 0.8; starColors[i+2] = 1.0; } // Blue Giant
+        else if (rand > 0.6) { starColors[i] = 1.0; starColors[i+1] = 0.95; starColors[i+2] = 0.8; } // White
+        else if (rand > 0.4) { starColors[i] = 0.9; starColors[i+1] = 0.4; starColors[i+2] = 0.9; } // Purple Nebula Star
+        else { starColors[i] = 1.0; starColors[i+1] = 0.5; starColors[i+2] = 0.3; } // Red Dwarf
       }
       starsGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
       starsGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
-      const starMat = new THREE.PointsMaterial({ size: 1.0, vertexColors: true, transparent: true, opacity: 0.9 });
+      const starMat = new THREE.PointsMaterial({ size: 1.2, vertexColors: true, transparent: true, opacity: 0.95 });
       const starField = new THREE.Points(starsGeo, starMat);
       scene.add(starField);
 
+      // Volumetric Glowing Nebula Dust Clouds
+      const nebulaGeo = new THREE.BufferGeometry();
+      const nebulaCount = 4000;
+      const nebulaPos = new Float32Array(nebulaCount * 3);
+      const nebulaColors = new Float32Array(nebulaCount * 3);
+      for (let i = 0; i < nebulaCount * 3; i += 3) {
+        nebulaPos[i] = (Math.random() - 0.5) * 600 + 100;
+        nebulaPos[i + 1] = (Math.random() - 0.5) * 200 - 30;
+        nebulaPos[i + 2] = (Math.random() - 0.5) * 600 - 50;
+        // Cyan-Purple-Magenta Volumetric Palette
+        nebulaColors[i] = 0.6 + Math.random() * 0.4;
+        nebulaColors[i+1] = 0.2 + Math.random() * 0.4;
+        nebulaColors[i+2] = 0.8 + Math.random() * 0.2;
+      }
+      nebulaGeo.setAttribute('position', new THREE.BufferAttribute(nebulaPos, 3));
+      nebulaGeo.setAttribute('color', new THREE.BufferAttribute(nebulaColors, 3));
+      const nebulaMat = new THREE.PointsMaterial({ 
+        size: 8.0, 
+        vertexColors: true, 
+        transparent: true, 
+        opacity: 0.45, 
+        blending: THREE.AdditiveBlending 
+      });
+      const nebulaField = new THREE.Points(nebulaGeo, nebulaMat);
+      scene.add(nebulaField);
+
+      // Solar Prominence Flare Particles around Sun
+      const flareGeo = new THREE.BufferGeometry();
+      const flareCount = 1200;
+      const flarePos = new Float32Array(flareCount * 3);
+      for (let i = 0; i < flareCount * 3; i += 3) {
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(Math.random() * 2 - 1);
+        const r = 3.6 + Math.random() * 1.8;
+        flarePos[i] = r * Math.sin(phi) * Math.cos(theta);
+        flarePos[i+1] = r * Math.sin(phi) * Math.sin(theta);
+        flarePos[i+2] = r * Math.cos(phi);
+      }
+      flareGeo.setAttribute('position', new THREE.BufferAttribute(flarePos, 3));
+      const flareMat = new THREE.PointsMaterial({ color: 0xff6600, size: 2.5, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending });
+      const solarFlares = new THREE.Points(flareGeo, flareMat);
+      scene.add(solarFlares);
+
       // 2. High-Contrast Solar Point Light & Space Ambient
-      const ambientLight = new THREE.AmbientLight(0x1a202c, 0.4); // Deep space shadow
+      const ambientLight = new THREE.AmbientLight(0x1a202c, 0.45);
       scene.add(ambientLight);
       
       const sunPointLight = new THREE.PointLight(0xffffff, 2.5, 1000);
@@ -901,7 +944,41 @@
         }
       });
 
-      // 4. Interactive 3D Raycasting (Clicking any 3D Planet in Viewport)
+      // 4. Sci-Fi Camera Warp / Fly-Through System
+      let warpInProgress = false;
+      let warpStartTime = 0;
+      const warpDuration = 1400; // 1.4s smooth hyperdrive warp
+      let warpStartCamPos = new THREE.Vector3();
+      let warpStartTarget = new THREE.Vector3();
+      let warpDestOffset = new THREE.Vector3();
+
+      window.warpToBody = function(id) {
+        const target = celestialMeshes[id];
+        if (!target) return;
+
+        warpInProgress = true;
+        warpStartTime = performance.now();
+        warpStartCamPos.copy(camera.position);
+        if (controls) warpStartTarget.copy(controls.target);
+
+        // Optimal closeup offset based on body size
+        const dist = target.data.size * 3.8 + 2.5;
+        warpDestOffset.set(0, dist * 0.45, dist);
+
+        // Trigger Procedural Warp Sound
+        if (window.HyperFX && window.HyperFX.sound) {
+          window.HyperFX.sound('whoosh');
+        }
+      };
+
+      // Hook warp into selectCelestialBody
+      const originalSelect = window.selectCelestialBody;
+      window.selectCelestialBody = function(id) {
+        if (originalSelect) originalSelect(id);
+        window.warpToBody(id);
+      };
+
+      // 5. Interactive 3D Raycasting
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
 
@@ -962,12 +1039,8 @@
           lastFpsTime = time;
         }
 
-        // Check if selectedId changed
         const activeId = (state && state.selectedId) ? state.selectedId : 'earth';
-        if (activeId !== lastSelected) {
-          lastSelected = activeId;
-          updatePropertiesPanel(lastSelected);
-        }
+        const targetObj = celestialMeshes[activeId];
 
         const warp = (state && state.timeWarp !== undefined) ? state.timeWarp : 1.0;
         const paused = state && state.isPaused;
@@ -983,20 +1056,53 @@
           obj.sphere.rotation.y += 0.008 * (paused ? 0.2 : warp);
         });
 
-        // Rotate Earth 3D Cloud Layer Independently
+        // Rotate Solar Flares & Earth Clouds
+        solarFlares.rotation.y += 0.005;
+        solarFlares.rotation.z += 0.003;
         if (earthCloudMesh) {
           earthCloudMesh.rotation.y += 0.012 * (paused ? 0.2 : warp);
         }
+
+        // Rotate Volumetric Nebula Slowly
+        nebulaField.rotation.y += 0.0003;
 
         // Toggle Orbit Visibility
         const orbitsVisible = !state || state.showOrbits !== false;
         orbitLines.forEach(l => l.visible = orbitsVisible);
 
-        // Camera Tracking
-        const targetObj = celestialMeshes[activeId];
-        const isTracking = !state || state.cameraTracking !== false;
-        if (targetObj && isTracking && controls) {
-          currentTrackedPos.lerp(targetObj.group.position, 0.05);
+        // 🚀 Sci-Fi Warp Fly-Through Camera Animation
+        if (warpInProgress && targetObj) {
+          const elapsed = time - warpStartTime;
+          const t = Math.min(elapsed / warpDuration, 1.0);
+          // Smooth Hermite Cubic Easing: 3t^2 - 2t^3
+          const ease = t * t * (3 - 2 * t);
+
+          // Target Body World Position
+          const targetWorldPos = targetObj.group.position;
+          const destCamPos = targetWorldPos.clone().add(warpDestOffset);
+
+          // Arc through space: zoom out slightly mid-flight for dramatic sci-fi sensation
+          const midArcY = Math.sin(t * Math.PI) * 15.0;
+
+          camera.position.lerpVectors(warpStartCamPos, destCamPos, ease);
+          camera.position.y += midArcY;
+
+          // Expand FOV during high-speed warp for optical stretch effect
+          camera.fov = 50 + Math.sin(t * Math.PI) * 20;
+          camera.updateProjectionMatrix();
+
+          if (controls) {
+            controls.target.lerpVectors(warpStartTarget, targetWorldPos, ease);
+          }
+
+          if (t >= 1.0) {
+            warpInProgress = false;
+            camera.fov = 50;
+            camera.updateProjectionMatrix();
+          }
+        } else if (targetObj && (!state || state.cameraTracking !== false) && controls) {
+          // Normal Orbital Tracking
+          currentTrackedPos.lerp(targetObj.group.position, 0.08);
           controls.target.copy(currentTrackedPos);
         }
 
@@ -1019,7 +1125,7 @@
             return () => cancelAnimationFrame(animId);
           })();
 
-      // Initial Panel Update
+      // Initial Fly-Through Mount
       window.selectCelestialBody((state && state.selectedId) || 'earth');
 
       onCleanup(() => {

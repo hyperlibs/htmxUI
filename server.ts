@@ -13,7 +13,7 @@ const COMPONENTS = [
   "select","separator","sheet","sidebar","skeleton","slider","slider-range","snackbar","splitter",
   "stat-card","stepper","submenu","switch","table","tabs","tag","text","textarea","timeline",
   "time-picker","toast","toggle","toggle-group","toggle-switch","toolbar","tooltip","tree-view","user-card",
-  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual","hx-offline"
+  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual","hx-offline","hollywood-webfx"
 ];
 
 function formatName(slug: string): string {

@@ -1155,7 +1155,8 @@ function startTickerLoop(): void {
   lastTickTime = performance.now();
 
   function loop(now: number) {
-    const dt = (now - lastTickTime) / 1000;
+    const rawDt = (now - lastTickTime) / 1000;
+    const dt = Math.min(rawDt, 0.1); // Clamp to max 100ms to prevent tab-switching physics spikes
     lastTickTime = now;
 
     tickerCallbacks.forEach(cb => {

@@ -1080,7 +1080,8 @@ function startTickerLoop() {
   tickerRunning = true;
   lastTickTime = performance.now();
   function loop(now) {
-    const dt = (now - lastTickTime) / 1000;
+    const rawDt = (now - lastTickTime) / 1000;
+    const dt = Math.min(rawDt, 0.1);
     lastTickTime = now;
     tickerCallbacks.forEach((cb) => {
       try {

@@ -1,4 +1,4 @@
-const GETTING_STARTED = ["introduction", "installation", "rosetta-stone", "common-ai-hallucinations"];
+const GETTING_STARTED = ["introduction", "installation", "rosetta-stone", "common-ai-hallucinations", "directives-guide"];
 const COMPONENTS = [
   "accordion","alert","alert-dialog","aspect-ratio","avatar","avatar-group","badge","banner",
   "breadcrumb","button","button-group","calendar","card","carousel","checkbox","checkbox-group",

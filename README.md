@@ -92,6 +92,22 @@ HTMXUI = HTMX (Hypermedia Core)
 
 ---
 
+## 🎯 Scope & Honest Architectural Boundaries
+
+HTMXUI is a **radically lean, hyperreactive foundational framework (~40KB)**. It does not attempt to be a monolithic game engine, GIS mapping suite, or medical imaging workstation out of the box. Instead, it provides the **reactive substrate and clean extension hooks** so developers can attach specialized libraries without friction:
+
+| 🎯 Built-in Native Core Scope (~40KB) | 🔌 Extension Scope (`HTMXUI.directive`) |
+|---|---|
+| • **Fine-Grained Proxy Signals** (`<script hx-state>`, `HxBolt`) | • **3D WebGL / Scene Graphs** (Three.js, Babylon.js) |
+| • **100k-Row Virtualized Data Grid** (`<hx-grid>`, `hx-virtual`) | • **Complex GIS Mapping** (Leaflet, Mapbox, OpenLayers) |
+| • **Multi-Step Form Wizards** (`<form hx-wizard>`, `hx-depends`) | • **Custom Physics Engines** (Rapier, Cannon.js, Ammo.js) |
+| • **Offline Mutation Queues** (`hx-offline`, IndexedDB) | • **Multi-Track Audio DSP** (Tone.js, AudioWorklets) |
+| • **Kinetic Motion & Springs** (`hx-vibe-tilt`, `hx-vibe-spring`) | • **Specialized Medical / Scientific Renderers** (DICOM) |
+| • **High-Velocity Action Helpers** (`HyperFX`: `$copy`, `$toast`, `$sound`) | • **Custom WebGPU Compute Pipelines** |
+| • **120 FPS High-Frequency Game Loop Ticker** (`HxBolt.ticker`) | • **Third-Party Canvas / Animation Libraries** |
+
+---
+
 ## 🚀 Quick Start
 
 ### 1. Include the Scripts

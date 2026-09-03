@@ -255,15 +255,149 @@ function createReactiveObject(target, rootNotify = null, path = "") {
   });
   return proxy;
 }
+var audioCtx = null;
+function getAudioContext() {
+  if (typeof window === "undefined")
+    return null;
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass)
+      audioCtx = new AudioContextClass;
+  }
+  return audioCtx;
+}
+function playProceduralSound(name = "click") {
+  const ctx = getAudioContext();
+  if (!ctx)
+    return;
+  if (ctx.state === "suspended")
+    ctx.resume();
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  if (name === "ping") {
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+    osc.start(now);
+    osc.stop(now + 0.15);
+  } else if (name === "click") {
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(120, now + 0.05);
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    osc.start(now);
+    osc.stop(now + 0.05);
+  } else if (name === "whoosh") {
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(150, now);
+    osc.frequency.exponentialRampToValueAtTime(600, now + 0.2);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+    osc.start(now);
+    osc.stop(now + 0.2);
+  } else if (name === "success") {
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(523.25, now);
+    osc.frequency.setValueAtTime(659.25, now + 0.08);
+    osc.frequency.setValueAtTime(783.99, now + 0.16);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    osc.start(now);
+    osc.stop(now + 0.35);
+  } else if (name === "error") {
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.setValueAtTime(160, now + 0.1);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.start(now);
+    osc.stop(now + 0.25);
+  }
+}
+var HyperFX = {
+  copy(text) {
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      return navigator.clipboard.writeText(String(text)).then(() => true).catch(() => false);
+    }
+    return Promise.resolve(false);
+  },
+  toast(message, type = "info") {
+    if (typeof document !== "undefined") {
+      document.body.dispatchEvent(new CustomEvent("htmx:toast", { detail: { message, type } }));
+      let container = document.getElementById("htmxui-toast-container");
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "htmxui-toast-container";
+        container.className = "fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none";
+        document.body.appendChild(container);
+      }
+      const toastEl = document.createElement("div");
+      toastEl.className = "px-4 py-2 rounded-xl text-xs font-medium shadow-2xl transition-all transform translate-y-4 opacity-0 pointer-events-auto flex items-center gap-2 border " + (type === "success" ? "bg-emerald-950 text-emerald-200 border-emerald-800" : type === "error" ? "bg-rose-950 text-rose-200 border-rose-800" : type === "warning" ? "bg-amber-950 text-amber-200 border-amber-800" : "bg-slate-900 text-slate-100 border-slate-800");
+      toastEl.innerHTML = `<span>${type === "success" ? "✓" : type === "error" ? "✕" : "ℹ"}</span><span>${message}</span>`;
+      container.appendChild(toastEl);
+      requestAnimationFrame(() => {
+        toastEl.classList.remove("translate-y-4", "opacity-0");
+        toastEl.classList.add("translate-y-0", "opacity-100");
+      });
+      setTimeout(() => {
+        toastEl.classList.add("opacity-0", "translate-y-2");
+        setTimeout(() => toastEl.remove(), 300);
+      }, 3000);
+    }
+  },
+  sound: playProceduralSound,
+  blast(el, opts) {
+    if (typeof window !== "undefined" && window.HxVibe && window.HxVibe.triggerBlast) {
+      window.HxVibe.triggerBlast(el, opts?.radius || 250, opts?.force || 40);
+    }
+  },
+  focus(selector) {
+    if (typeof document !== "undefined") {
+      const target = document.querySelector(selector);
+      if (target)
+        target.focus();
+    }
+  },
+  undo: undoState,
+  redo: redoState,
+  exportCSV(gridSelector, filename) {
+    if (typeof document !== "undefined") {
+      const gridEl = document.querySelector(gridSelector);
+      if (gridEl && gridEl._hxGrid) {
+        gridEl._hxGrid.exportCSV(filename);
+      }
+    }
+  }
+};
 function evaluateExpression(expr, context, extraScope = {}) {
   try {
-    const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(context), ...Object.keys(extraScope)];
+    const fxScope = {
+      $copy: HyperFX.copy,
+      $toast: HyperFX.toast,
+      $sound: HyperFX.sound,
+      $blast: (opts) => HyperFX.blast(extraScope.$el, opts),
+      $focus: HyperFX.focus,
+      $undo: HyperFX.undo,
+      $redo: HyperFX.redo,
+      $exportCSV: HyperFX.exportCSV,
+      $toggle: (key) => {
+        context[key] = !context[key];
+      }
+    };
+    const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(fxScope), ...Object.keys(context), ...Object.keys(extraScope)];
     const scopeValues = [
       stores,
       context.__refs || {},
       extraScope.$el || null,
       extraScope.$event || null,
       context.$form || {},
+      ...Object.values(fxScope),
       ...Object.values(context),
       ...Object.values(extraScope)
     ];
@@ -272,13 +406,27 @@ function evaluateExpression(expr, context, extraScope = {}) {
     return fn(...scopeValues);
   } catch (e) {
     try {
-      const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(context), ...Object.keys(extraScope)];
+      const fxScope = {
+        $copy: HyperFX.copy,
+        $toast: HyperFX.toast,
+        $sound: HyperFX.sound,
+        $blast: (opts) => HyperFX.blast(extraScope.$el, opts),
+        $focus: HyperFX.focus,
+        $undo: HyperFX.undo,
+        $redo: HyperFX.redo,
+        $exportCSV: HyperFX.exportCSV,
+        $toggle: (key) => {
+          context[key] = !context[key];
+        }
+      };
+      const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(fxScope), ...Object.keys(context), ...Object.keys(extraScope)];
       const scopeValues = [
         stores,
         context.__refs || {},
         extraScope.$el || null,
         extraScope.$event || null,
         context.$form || {},
+        ...Object.values(fxScope),
         ...Object.values(context),
         ...Object.values(extraScope)
       ];
@@ -294,13 +442,27 @@ function evaluateExpression(expr, context, extraScope = {}) {
 }
 function executeAction(expr, context, extraScope = {}) {
   try {
-    const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(context), ...Object.keys(extraScope)];
+    const fxScope = {
+      $copy: HyperFX.copy,
+      $toast: HyperFX.toast,
+      $sound: HyperFX.sound,
+      $blast: (opts) => HyperFX.blast(extraScope.$el, opts),
+      $focus: HyperFX.focus,
+      $undo: HyperFX.undo,
+      $redo: HyperFX.redo,
+      $exportCSV: HyperFX.exportCSV,
+      $toggle: (key) => {
+        context[key] = !context[key];
+      }
+    };
+    const scopeKeys = ["$store", "$refs", "$el", "$event", "$form", ...Object.keys(fxScope), ...Object.keys(context), ...Object.keys(extraScope)];
     const scopeValues = [
       stores,
       context.__refs || {},
       extraScope.$el || null,
       extraScope.$event || null,
       context.$form || {},
+      ...Object.values(fxScope),
       ...Object.values(context),
       ...Object.values(extraScope)
     ];
@@ -959,6 +1121,7 @@ var HxBolt = {
   },
   undo: undoState,
   redo: redoState,
+  fx: HyperFX,
   ticker: {
     subscribe(cb) {
       tickerCallbacks.add(cb);
@@ -1014,11 +1177,12 @@ if (typeof window !== "undefined") {
     config,
     errors: ERROR_CATALOG,
     bolt: HxBolt,
+    fx: HyperFX,
     directive(name, handler) {
       customDirectives.set(name.startsWith("hx-") ? name : `hx-${name}`, handler);
     },
     defineEngine(name, factory) {
-      const engine = factory({ bolt: HxBolt, ticker: HxBolt.ticker });
+      const engine = factory({ bolt: HxBolt, ticker: HxBolt.ticker, fx: HyperFX });
       customEngines.set(name, engine);
       return engine;
     }
@@ -1115,6 +1279,7 @@ export {
   registerModal,
   redoState,
   recordStateSnapshot,
+  playProceduralSound,
   initComponent,
   executeAction,
   evaluateExpression,
@@ -1122,6 +1287,7 @@ export {
   config,
   applyTransition,
   SignalTracker,
+  HyperFX,
   HxBolt,
   ERROR_CATALOG
 };

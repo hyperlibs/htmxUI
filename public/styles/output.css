@@ -11,17 +11,23 @@
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-orange-500: oklch(70.5% 0.213 47.604);
+    --color-amber-200: oklch(92.4% 0.12 95.746);
     --color-amber-400: oklch(82.8% 0.189 84.429);
     --color-amber-500: oklch(76.9% 0.188 70.08);
     --color-amber-600: oklch(66.6% 0.179 58.318);
+    --color-amber-800: oklch(47.3% 0.137 46.201);
+    --color-amber-950: oklch(27.9% 0.077 45.635);
     --color-yellow-500: oklch(79.5% 0.184 86.047);
     --color-yellow-600: oklch(68.1% 0.162 75.834);
     --color-green-500: oklch(72.3% 0.219 149.579);
     --color-green-600: oklch(62.7% 0.194 149.214);
     --color-green-700: oklch(52.7% 0.154 150.069);
+    --color-emerald-200: oklch(90.5% 0.093 164.15);
     --color-emerald-400: oklch(76.5% 0.177 163.223);
     --color-emerald-500: oklch(69.6% 0.17 162.48);
     --color-emerald-600: oklch(59.6% 0.145 163.225);
+    --color-emerald-800: oklch(43.2% 0.095 166.913);
+    --color-emerald-950: oklch(26.2% 0.051 172.552);
     --color-teal-600: oklch(60% 0.118 184.704);
     --color-cyan-800: oklch(45% 0.085 224.283);
     --color-sky-400: oklch(74.6% 0.16 232.661);
@@ -33,6 +39,9 @@
     --color-purple-500: oklch(62.7% 0.265 303.9);
     --color-purple-600: oklch(55.8% 0.288 302.321);
     --color-pink-500: oklch(65.6% 0.241 354.308);
+    --color-rose-200: oklch(89.2% 0.058 10.001);
+    --color-rose-800: oklch(45.5% 0.188 13.697);
+    --color-rose-950: oklch(27.1% 0.105 12.094);
     --color-slate-100: oklch(96.8% 0.007 247.896);
     --color-slate-200: oklch(92.9% 0.013 255.508);
     --color-slate-300: oklch(86.9% 0.022 252.894);
@@ -932,6 +941,10 @@
     --tw-translate-y: 0px;
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
+  .translate-y-2 {
+    --tw-translate-y: calc(var(--spacing) * 2);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
   .translate-y-4 {
     --tw-translate-y: calc(var(--spacing) * 4);
     translate: var(--tw-translate-x) var(--tw-translate-y);
@@ -1353,6 +1366,9 @@
       border-color: color-mix(in oklab, var(--color-amber-500) 30%, transparent);
     }
   }
+  .border-amber-800 {
+    border-color: var(--color-amber-800);
+  }
   .border-background {
     border-color: var(--color-background);
   }
@@ -1367,6 +1383,9 @@
   }
   .border-border {
     border-color: var(--color-border);
+  }
+  .border-emerald-800 {
+    border-color: var(--color-emerald-800);
   }
   .border-gray-300 {
     border-color: var(--color-gray-300);
@@ -1409,6 +1428,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-red-500) 20%, transparent);
     }
+  }
+  .border-rose-800 {
+    border-color: var(--color-rose-800);
   }
   .border-slate-700 {
     border-color: var(--color-slate-700);
@@ -1473,6 +1495,9 @@
       background-color: color-mix(in oklab, var(--color-amber-500) 10%, transparent);
     }
   }
+  .bg-amber-950 {
+    background-color: var(--color-amber-950);
+  }
   .bg-background {
     background-color: var(--color-background);
   }
@@ -1535,6 +1560,9 @@
   }
   .bg-emerald-600 {
     background-color: var(--color-emerald-600);
+  }
+  .bg-emerald-950 {
+    background-color: var(--color-emerald-950);
   }
   .bg-foreground {
     background-color: var(--color-foreground);
@@ -1652,6 +1680,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-red-500) 10%, transparent);
     }
+  }
+  .bg-rose-950 {
+    background-color: var(--color-rose-950);
   }
   .bg-sky-500\/20 {
     background-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 20%, transparent);
@@ -2088,6 +2119,9 @@
   .text-accent-foreground {
     color: var(--color-accent-foreground);
   }
+  .text-amber-200 {
+    color: var(--color-amber-200);
+  }
   .text-amber-400 {
     color: var(--color-amber-400);
   }
@@ -2108,6 +2142,9 @@
   }
   .text-card-foreground {
     color: var(--color-card-foreground);
+  }
+  .text-emerald-200 {
+    color: var(--color-emerald-200);
   }
   .text-emerald-400 {
     color: var(--color-emerald-400);
@@ -2153,6 +2190,9 @@
   }
   .text-red-600 {
     color: var(--color-red-600);
+  }
+  .text-rose-200 {
+    color: var(--color-rose-200);
   }
   .text-sky-400 {
     color: var(--color-sky-400);

@@ -14,13 +14,23 @@
 9. Form Validation: Use `hx-validate="required|email|min:3"`.
 
 ## Core Engines
-- `htmx-bolt.js`: Signal-based reactive state engine (~8KB).
+- `htmx-bolt.js`: Signal-based reactive state engine (~8KB) + HyperFX action utilities (`$copy`, `$toast`, `$sound`, `$blast`, `$focus`, `$toggle`, `$undo`, `$exportCSV`).
 - `htmx-flash.js`: In-memory typo-tolerant fuzzy search and multi-column filter engine (~3KB).
 - `htmx-form.js`: Declarative validation state machine & optimistic UI engine (~2KB).
 - `htmx-vibe.js`: Kinetic motion, spring physics (`hx-vibe-spring`), 3D tilt (`hx-vibe-tilt`), magnetic pull (`hx-vibe-magnetic`), split-text (`hx-vibe-split`), and blast shockwaves (`hx-vpx-blast`).
 - `htmx-a11y.js`: WAI-ARIA focus trap & roving tabindex engine (~2KB).
 - `HxBolt.ticker`: High-frequency 120 FPS game-loop ticker (`hx-tick="x += 0.01 * dt"`).
 - `HTMXUI.directive(name, handler)`: Custom declarative directive compiler for community 3D/game engines.
+
+## HyperFX Action Helpers (Usable inside any hx-on / @event)
+- `$copy('str')` -> Copies text to clipboard
+- `$toast('msg', 'success'|'error'|'info')` -> Shows instant notification
+- `$sound('ping'|'click'|'whoosh'|'success'|'error')` -> Web Audio synthesizer
+- `$toggle('modalOpen')` -> Inverts boolean state
+- `$focus('#target')` -> Focuses element
+- `$undo()` / `$redo()` -> History time-travel
+- `$blast({ radius: 300, force: 50 })` -> Radial shockwave
+- `$exportCSV('#grid', 'data.csv')` -> Instant CSV download
 
 ## Rosetta Stone (React → HTMXUI)
 - `useState({ count: 0 })` -> `<script type="application/json" hx-state>{"count": 0}</script>`

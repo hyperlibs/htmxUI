@@ -202,13 +202,22 @@
       }
     },
     "scopeVariables": {
-      "description": "Variables accessible inside expressions and event actions",
+      "description": "Variables and HyperFX action helpers accessible inside expressions and event actions",
       "properties": {
         "$store": { "description": "Global shared reactive stores (e.g. $store.auth.user)" },
         "$refs": { "description": "Dictionary of elements tagged with hx-ref=\"name\"" },
         "$el": { "description": "The current DOM element" },
         "$event": { "description": "The native DOM event in actions" },
-        "$form": { "description": "Form state object: { valid, dirty, touched, errors }" }
+        "$form": { "description": "Form state object: { valid, dirty, touched, errors }" },
+        "$copy": { "description": "HyperFX: Copies string to clipboard ($copy('text'))" },
+        "$toast": { "description": "HyperFX: Emits global toast notification ($toast('Saved!', 'success'))" },
+        "$sound": { "description": "HyperFX: Synthesizes Web Audio tone ($sound('ping' | 'click' | 'whoosh' | 'success' | 'error'))" },
+        "$blast": { "description": "HyperFX: Triggers radial explosive shockwave ($blast({ radius: 300, force: 50 }))" },
+        "$focus": { "description": "HyperFX: Focuses target element ($focus('#input'))" },
+        "$toggle": { "description": "HyperFX: Inverts boolean state ($toggle('open'))" },
+        "$undo": { "description": "HyperFX: Triggers state history undo ($undo())" },
+        "$redo": { "description": "HyperFX: Triggers state history redo ($redo())" },
+        "$exportCSV": { "description": "HyperFX: Triggers instant client-side CSV download ($exportCSV('#grid', 'data.csv'))" }
       }
     },
     "errorCatalog": {

@@ -425,6 +425,10 @@ const server = Bun.serve({
       return new Response(Bun.file("views/app-erp.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
+    if (url.pathname === "/app/universe" || url.pathname === "/demo/universe" || url.pathname === "/cosmos") {
+      return new Response(Bun.file("views/app-universe.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
+
     if (url.pathname === "/styles.css") {
       return new Response(Bun.file("public/styles/output.css"), { headers: { "Content-Type": "text/css" } });
     }

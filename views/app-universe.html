@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmos — 3D Universe Browser &amp; Physics Sandbox — HTMXUI</title>
+  
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  
+  <!-- HTMX & HTMXUI Suite -->
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  
+  <!-- Three.js & OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* Custom Scrollbar for Glass Panes */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+    ::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.4); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.8); }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 h-screen w-screen overflow-hidden select-none font-sans antialiased"
+      hx-state='{
+        "selectedId": "earth",
+        "category": "all",
+        "searchQuery": "",
+        "timeWarp": 1.0,
+        "isPaused": false,
+        "gravityFactor": 1.0,
+        "showOrbits": true,
+        "cameraTracking": true,
+        "fps": 60,
+        "epochDays": 0
+      }'>
+
+  <!-- Top App Navigation Bar -->
+  <header class="h-14 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md flex items-center justify-between px-6 z-30 relative">
+    <div class="flex items-center gap-3">
+      <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+        <span class="text-white text-base">🪐</span>
+      </div>
+      <div>
+        <div class="font-extrabold text-sm tracking-tight text-white flex items-center gap-2">
+          <span>KOSMOS 3D</span>
+          <span class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-mono border border-indigo-500/30">HTMXUI + Three.js</span>
+        </div>
+        <div class="text-[10px] text-slate-400">Interactive 3D Universe Browser &amp; Orbital Physics Sandbox</div>
+      </div>
+    </div>
+
+    <!-- Center Time & Physics Controls -->
+    <div class="flex items-center gap-3 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-800 text-xs">
+      <button hx-on:click="$toggle('isPaused'); $sound('click')" 
+              class="h-7 px-3 rounded-full font-bold flex items-center gap-1.5 transition-all"
+              hx-class="{ 'bg-amber-500 text-slate-950': isPaused, 'bg-slate-800 text-slate-200 hover:bg-slate-700': !isPaused }">
+        <span hx-text="isPaused ? '▶ Resume' : '⏸ Pause'">⏸ Pause</span>
+      </button>
+
+      <div class="h-4 w-px bg-slate-800"></div>
+
+      <!-- Time Warp Multiplier -->
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] text-slate-400 uppercase font-mono">Warp:</span>
+        <select hx-model.number="timeWarp" class="bg-slate-950 border border-slate-700 rounded px-2 py-0.5 text-xs text-indigo-300 font-mono font-bold focus:outline-none">
+          <option value="0.1">0.1x (Slow-Mo)</option>
+          <option value="1.0" selected>1.0x (Real-Time)</option>
+          <option value="10.0">10x (Orbital Day)</option>
+          <option value="100.0">100x (Fast)</option>
+          <option value="500.0">500x (Hyper Warp)</option>
+        </select>
+      </div>
+
+      <div class="h-4 w-px bg-slate-800"></div>
+
+      <!-- Orbit Trails Toggle -->
+      <label class="flex items-center gap-1.5 cursor-pointer text-[11px] text-slate-300 hover:text-white">
+        <input type="checkbox" hx-model="showOrbits" class="rounded accent-indigo-500">
+        <span>Orbit Trails</span>
+      </label>
+    </div>
+
+    <!-- Right Header Actions -->
+    <div class="flex items-center gap-3">
+      <div class="text-[11px] font-mono text-emerald-400 bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-800/50 flex items-center gap-1.5">
+        <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span hx-text="fps + ' FPS'">60 FPS</span>
+      </div>
+      <a href="/" class="text-xs text-slate-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg border border-slate-800 hover:bg-slate-900">
+        Exit to Docs
+      </a>
+    </div>
+  </header>
+
+  <!-- Main 3-Column Workspace -->
+  <div class="flex h-[calc(100vh-3.5rem)] w-full relative">
+
+    <!-- 1. LEFT SIDEBAR: Cosmic Objects Catalog -->
+    <aside class="w-80 h-full border-r border-slate-800/80 bg-slate-950/90 backdrop-blur-md flex flex-col z-20 shrink-0">
+      <!-- Search Box -->
+      <div class="p-4 border-b border-slate-800 space-y-3">
+        <div class="relative">
+          <span class="absolute left-3 top-2.5 text-slate-500 text-xs">🔍</span>
+          <input type="text" 
+                 hx-model="searchQuery" 
+                 placeholder="Search celestial bodies..." 
+                 class="w-full pl-8 pr-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors">
+        </div>
+
+        <!-- Filter Categories -->
+        <div class="flex gap-1 overflow-x-auto pb-1 text-[11px]">
+          <button hx-on:click="category = 'all'; $sound('click')" 
+                  class="px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-colors"
+                  hx-class="{ 'bg-indigo-600 text-white font-bold': category === 'all', 'bg-slate-900 text-slate-400 hover:bg-slate-800': category !== 'all' }">
+            All (12)
+          </button>
+          <button hx-on:click="category = 'star'; $sound('click')" 
+                  class="px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-colors"
+                  hx-class="{ 'bg-indigo-600 text-white font-bold': category === 'star', 'bg-slate-900 text-slate-400 hover:bg-slate-800': category !== 'star' }">
+            Stars
+          </button>
+          <button hx-on:click="category = 'terrestrial'; $sound('click')" 
+                  class="px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-colors"
+                  hx-class="{ 'bg-indigo-600 text-white font-bold': category === 'terrestrial', 'bg-slate-900 text-slate-400 hover:bg-slate-800': category !== 'terrestrial' }">
+            Terrestrial
+          </button>
+          <button hx-on:click="category = 'gas'; $sound('click')" 
+                  class="px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-colors"
+                  hx-class="{ 'bg-indigo-600 text-white font-bold': category === 'gas', 'bg-slate-900 text-slate-400 hover:bg-slate-800': category !== 'gas' }">
+            Gas Giants
+          </button>
+          <button hx-on:click="category = 'exoplanet'; $sound('click')" 
+                  class="px-2.5 py-1 rounded-lg font-medium whitespace-nowrap transition-colors"
+                  hx-class="{ 'bg-indigo-600 text-white font-bold': category === 'exoplanet', 'bg-slate-900 text-slate-400 hover:bg-slate-800': category !== 'exoplanet' }">
+            Exoplanets
+          </button>
+        </div>
+      </div>
+
+      <!-- Celestial Body List -->
+      <div class="flex-1 overflow-y-auto p-3 space-y-1.5" id="celestial-list">
+        
+        <!-- Sun -->
+        <div hx-on:click="selectedId = 'sun'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'sun', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'sun' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-lg shadow-md shadow-amber-500/20">☀️</div>
+            <div>
+              <div class="font-bold text-xs text-white">Sun (Sol)</div>
+              <div class="text-[10px] text-amber-400 font-mono">Yellow Dwarf G2V</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">0.00 AU</span>
+        </div>
+
+        <!-- Mercury -->
+        <div hx-on:click="selectedId = 'mercury'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'mercury', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'mercury' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-slate-700/20 border border-slate-600 flex items-center justify-center text-base">☿</div>
+            <div>
+              <div class="font-bold text-xs text-white">Mercury</div>
+              <div class="text-[10px] text-slate-400 font-mono">Terrestrial Planet</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">0.39 AU</span>
+        </div>
+
+        <!-- Venus -->
+        <div hx-on:click="selectedId = 'venus'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'venus', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'venus' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-amber-700/20 border border-amber-600 flex items-center justify-center text-base">♀</div>
+            <div>
+              <div class="font-bold text-xs text-white">Venus</div>
+              <div class="text-[10px] text-amber-300 font-mono">Dense Greenhouse</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">0.72 AU</span>
+        </div>
+
+        <!-- Earth -->
+        <div hx-on:click="selectedId = 'earth'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'earth', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'earth' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-blue-600/20 border border-blue-500 flex items-center justify-center text-base shadow-sm shadow-blue-500/30">🌍</div>
+            <div>
+              <div class="font-bold text-xs text-white">Earth (Terra)</div>
+              <div class="text-[10px] text-emerald-400 font-mono">Habitable Oasis</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">1.00 AU</span>
+        </div>
+
+        <!-- Mars -->
+        <div hx-on:click="selectedId = 'mars'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'mars', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'mars' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-rose-700/20 border border-rose-600 flex items-center justify-center text-base">🔴</div>
+            <div>
+              <div class="font-bold text-xs text-white">Mars</div>
+              <div class="text-[10px] text-rose-400 font-mono">Red Desert Planet</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">1.52 AU</span>
+        </div>
+
+        <!-- Jupiter -->
+        <div hx-on:click="selectedId = 'jupiter'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'jupiter', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'jupiter' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-orange-700/20 border border-orange-500 flex items-center justify-center text-base">🪐</div>
+            <div>
+              <div class="font-bold text-xs text-white">Jupiter</div>
+              <div class="text-[10px] text-orange-400 font-mono">Gas Giant (318 M⊕)</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">5.20 AU</span>
+        </div>
+
+        <!-- Saturn -->
+        <div hx-on:click="selectedId = 'saturn'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'saturn', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'saturn' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-amber-600/20 border border-amber-500 flex items-center justify-center text-base">🪐</div>
+            <div>
+              <div class="font-bold text-xs text-white">Saturn</div>
+              <div class="text-[10px] text-amber-300 font-mono">Ringed Giant</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">9.58 AU</span>
+        </div>
+
+        <!-- TRAPPIST-1e -->
+        <div hx-on:click="selectedId = 'trappist'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'trappist', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'trappist' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-cyan-700/20 border border-cyan-500 flex items-center justify-center text-base">🔭</div>
+            <div>
+              <div class="font-bold text-xs text-white">TRAPPIST-1e</div>
+              <div class="text-[10px] text-cyan-400 font-mono">Exoplanet (39.5 ly)</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">0.03 AU</span>
+        </div>
+
+        <!-- Gargantua -->
+        <div hx-on:click="selectedId = 'gargantua'; $sound('ping')" 
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
+             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'gargantua', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'gargantua' }">
+          <div class="flex items-center gap-3">
+            <div class="h-9 w-9 rounded-full bg-purple-950 border border-purple-500 flex items-center justify-center text-base">🌌</div>
+            <div>
+              <div class="font-bold text-xs text-white">Gargantua</div>
+              <div class="text-[10px] text-purple-400 font-mono">Black Hole Anomaly</div>
+            </div>
+          </div>
+          <span class="text-[10px] font-mono text-purple-400">Singularity</span>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- 2. MIDDLE VIEW: 3D WebGL Physics Render Viewport -->
+    <main class="flex-1 h-full relative bg-black overflow-hidden">
+      <!-- 3D Canvas mounted via HTMXUI directive -->
+      <canvas id="cosmos-canvas" hx-cosmos class="w-full h-full block"></canvas>
+
+      <!-- Overlay Viewport Guide Tooltip -->
+      <div class="absolute bottom-6 left-6 z-10 flex items-center gap-3 bg-slate-950/80 backdrop-blur-md px-4 py-2 rounded-2xl border border-slate-800 text-[11px] text-slate-300 pointer-events-none">
+        <span class="text-indigo-400 font-bold">🕹️ Controls:</span>
+        <span>Left-click + Drag to rotate</span>
+        <span class="text-slate-600">•</span>
+        <span>Scroll to Zoom</span>
+        <span class="text-slate-600">•</span>
+        <span>Right-click to Pan</span>
+      </div>
+
+      <!-- Quick Target Cam Center Button -->
+      <button hx-on:click="$toggle('cameraTracking'); $sound('click')" 
+              class="absolute top-6 right-6 z-10 px-3.5 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 backdrop-blur text-xs font-semibold text-slate-200 hover:text-white hover:bg-slate-800 transition-all shadow-lg">
+        <span hx-text="cameraTracking ? '🎯 Camera Locked to Body' : '🔓 Free Camera View'">🎯 Camera Locked to Body</span>
+      </button>
+    </main>
+
+    <!-- 3. RIGHT SIDEBAR: Properties of Selected Cosmic Object -->
+    <aside class="w-96 h-full border-l border-slate-800/80 bg-slate-950/90 backdrop-blur-md flex flex-col z-20 shrink-0 p-5 overflow-y-auto space-y-5"
+           id="properties-panel">
+      
+      <!-- Planet Header Profile -->
+      <div class="space-y-2 border-b border-slate-800 pb-4">
+        <div class="flex items-center justify-between">
+          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-mono"
+                id="prop-type">Terrestrial Planet</span>
+          <span class="text-[10px] text-emerald-400 font-mono font-bold" id="prop-habitability">Habitable (ESI: 0.94)</span>
+        </div>
+        <h2 class="text-2xl font-black tracking-tight text-white" id="prop-name">Earth (Terra)</h2>
+        <p class="text-xs text-slate-400 leading-relaxed" id="prop-desc">
+          The third planet from the Sun and the only astronomical object known to harbor life. Possesses a nitrogen-oxygen atmosphere and liquid surface oceans.
+        </p>
+      </div>
+
+      <!-- Physical Metrics Grid -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Astrophysical Metrics</h4>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80">
+            <div class="text-[10px] text-slate-400">Mass ($M$)</div>
+            <div class="font-mono font-bold text-white mt-0.5" id="prop-mass">5.972 × 10²⁴ kg</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80">
+            <div class="text-[10px] text-slate-400">Equatorial Radius</div>
+            <div class="font-mono font-bold text-white mt-0.5" id="prop-radius">6,371 km</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80">
+            <div class="text-[10px] text-slate-400">Orbital Velocity</div>
+            <div class="font-mono font-bold text-indigo-300 mt-0.5" id="prop-velocity">29.78 km/s</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80">
+            <div class="text-[10px] text-slate-400">Surface Gravity ($g$)</div>
+            <div class="font-mono font-bold text-white mt-0.5" id="prop-gravity">9.807 m/s²</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80">
+            <div class="text-[10px] text-slate-400">Escape Velocity</div>
+            <div class="font-mono font-bold text-white mt-0.5" id="prop-escape">11.18 km/s</div>
+          </div>
+          <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800/80">
+            <div class="text-[10px] text-slate-400">Mean Temp</div>
+            <div class="font-mono font-bold text-emerald-400 mt-0.5" id="prop-temp">15°C (288 K)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Atmospheric Composition Bars -->
+      <div class="space-y-2">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Atmospheric Composition</h4>
+        <div class="space-y-1.5 text-xs font-mono" id="prop-atmosphere">
+          <div>
+            <div class="flex justify-between text-[11px] mb-0.5"><span>Nitrogen (N₂)</span><span>78.08%</span></div>
+            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width: 78.08%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[11px] mb-0.5"><span>Oxygen (O₂)</span><span>20.95%</span></div>
+            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-emerald-500 rounded-full" style="width: 20.95%"></div></div>
+          </div>
+          <div>
+            <div class="flex justify-between text-[11px] mb-0.5"><span>Argon &amp; Trace (Ar, CO₂)</span><span>0.97%</span></div>
+            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden"><div class="h-full bg-purple-500 rounded-full" style="width: 5%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="pt-2 space-y-2">
+        <button hx-on:click="$copy(document.getElementById('prop-name').innerText + ' | Mass: ' + document.getElementById('prop-mass').innerText + ' | Radius: ' + document.getElementById('prop-radius').innerText); $toast('Astronomical data copied to clipboard!', 'success'); $sound('ping')"
+                class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2">
+          <span>📋</span> Copy Celestial Telemetry
+        </button>
+        <button hx-on:click="$undo(); $toast('Reverted orbital timestep'); $sound('click')"
+                class="w-full py-2 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-semibold text-xs transition-colors flex items-center justify-center gap-2">
+          <span>⏪</span> Rewind Orbital Step ($undo)
+        </button>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- 4. Celestial Data Dictionary & Three.js Directive Engine -->
+  <script>
+    const CELESTIAL_DATA = {
+      sun: {
+        name: "Sun (Sol)",
+        type: "Yellow Dwarf Star (G2V)",
+        habitability: "Host Star (T_eff: 5778 K)",
+        desc: "The central star of the Solar System. Accounts for 99.86% of the total mass of the solar system, generating energy through nuclear fusion of hydrogen into helium.",
+        mass: "1.989 × 10³⁰ kg",
+        radius: "696,340 km",
+        velocity: "0.00 km/s (Center)",
+        gravity: "274.0 m/s²",
+        escape: "617.5 km/s",
+        temp: "5,505°C (Surface)",
+        atmosphere: [
+          { name: "Hydrogen (H₂)", pct: 73.46, color: "bg-amber-500" },
+          { name: "Helium (He)", pct: 24.85, color: "bg-orange-500" },
+          { name: "Oxygen & Heavy Elements", pct: 1.69, color: "bg-rose-500" }
+        ],
+        color: 0xffaa00,
+        size: 3.5,
+        orbitRadius: 0,
+        orbitSpeed: 0
+      },
+      mercury: {
+        name: "Mercury",
+        type: "Terrestrial Planet",
+        habitability: "Sterile (No Atmosphere)",
+        desc: "The smallest planet in the Solar System and closest to the Sun. Its orbit has the highest eccentricity of all planets with extreme temperature fluctuations.",
+        mass: "3.285 × 10²³ kg",
+        radius: "2,439.7 km",
+        velocity: "47.36 km/s",
+        gravity: "3.7 m/s²",
+        escape: "4.25 km/s",
+        temp: "167°C (-173 to 427°C)",
+        atmosphere: [
+          { name: "Oxygen (O₂)", pct: 42.0, color: "bg-blue-400" },
+          { name: "Sodium (Na)", pct: 29.0, color: "bg-amber-400" },
+          { name: "Hydrogen (H₂)", pct: 22.0, color: "bg-cyan-400" }
+        ],
+        color: 0x9ca3af,
+        size: 0.8,
+        orbitRadius: 7,
+        orbitSpeed: 0.04
+      },
+      venus: {
+        name: "Venus",
+        type: "Terrestrial Planet",
+        habitability: "Supercritical Runaway",
+        desc: "Often called Earth's 'sister planet' due to similar size and mass, but enveloped in dense clouds of sulfuric acid with crushing atmospheric pressure of 92 bar.",
+        mass: "4.867 × 10²⁴ kg",
+        radius: "6,051.8 km",
+        velocity: "35.02 km/s",
+        gravity: "8.87 m/s²",
+        escape: "10.36 km/s",
+        temp: "464°C (Uniform)",
+        atmosphere: [
+          { name: "Carbon Dioxide (CO₂)", pct: 96.5, color: "bg-amber-600" },
+          { name: "Nitrogen (N₂)", pct: 3.5, color: "bg-blue-600" }
+        ],
+        color: 0xeab308,
+        size: 1.2,
+        orbitRadius: 11,
+        orbitSpeed: 0.025
+      },
+      earth: {
+        name: "Earth (Terra)",
+        type: "Terrestrial Planet",
+        habitability: "Habitable (ESI: 0.94)",
+        desc: "The third planet from the Sun and the only astronomical object known to harbor life. Possesses a nitrogen-oxygen atmosphere and liquid surface oceans.",
+        mass: "5.972 × 10²⁴ kg",
+        radius: "6,371.0 km",
+        velocity: "29.78 km/s",
+        gravity: "9.807 m/s²",
+        escape: "11.18 km/s",
+        temp: "15°C (288 K)",
+        atmosphere: [
+          { name: "Nitrogen (N₂)", pct: 78.08, color: "bg-blue-500" },
+          { name: "Oxygen (O₂)", pct: 20.95, color: "bg-emerald-500" },
+          { name: "Argon & Trace", pct: 0.97, color: "bg-purple-500" }
+        ],
+        color: 0x3b82f6,
+        size: 1.3,
+        orbitRadius: 16,
+        orbitSpeed: 0.015
+      },
+      mars: {
+        name: "Mars",
+        type: "Terrestrial Planet",
+        habitability: "Marginal Candidate",
+        desc: "The Red Planet. Home to Olympus Mons, the largest volcano in the solar system, and vast subsurface water ice reserves.",
+        mass: "6.39 × 10²³ kg",
+        radius: "3,389.5 km",
+        velocity: "24.07 km/s",
+        gravity: "3.721 m/s²",
+        escape: "5.03 km/s",
+        temp: "-63°C (210 K)",
+        atmosphere: [
+          { name: "Carbon Dioxide (CO₂)", pct: 95.32, color: "bg-rose-500" },
+          { name: "Nitrogen (N₂)", pct: 2.6, color: "bg-blue-400" },
+          { name: "Argon (Ar)", pct: 1.9, color: "bg-slate-400" }
+        ],
+        color: 0xef4444,
+        size: 0.9,
+        orbitRadius: 21,
+        orbitSpeed: 0.012
+      },
+      jupiter: {
+        name: "Jupiter",
+        type: "Gas Giant",
+        habitability: "Hostile (Gas Envelope)",
+        desc: "The giant of the Solar System. 2.5 times the mass of all other planets combined, with 95 recognized moons including Europa and Ganymede.",
+        mass: "1.898 × 10²⁷ kg",
+        radius: "69,911 km",
+        velocity: "13.07 km/s",
+        gravity: "24.79 m/s²",
+        escape: "59.5 km/s",
+        temp: "-110°C (Cloud Top)",
+        atmosphere: [
+          { name: "Hydrogen (H₂)", pct: 89.8, color: "bg-orange-400" },
+          { name: "Helium (He)", pct: 10.2, color: "bg-amber-500" }
+        ],
+        color: 0xf97316,
+        size: 2.4,
+        orbitRadius: 28,
+        orbitSpeed: 0.007
+      },
+      saturn: {
+        name: "Saturn",
+        type: "Gas Giant (Ringed)",
+        habitability: "Hostile (Gas Envelope)",
+        desc: "Famous for its spectacular planetary ring system composed mostly of ice particles and rocky debris. Has 146 known moons including Titan.",
+        mass: "5.683 × 10²⁶ kg",
+        radius: "58,232 km",
+        velocity: "9.68 km/s",
+        gravity: "10.44 m/s²",
+        escape: "35.5 km/s",
+        temp: "-140°C",
+        atmosphere: [
+          { name: "Hydrogen (H₂)", pct: 96.3, color: "bg-amber-300" },
+          { name: "Helium (He)", pct: 3.25, color: "bg-orange-300" }
+        ],
+        color: 0xfde047,
+        size: 2.0,
+        orbitRadius: 36,
+        orbitSpeed: 0.005,
+        hasRings: true
+      },
+      trappist: {
+        name: "TRAPPIST-1e",
+        type: "Exoplanet (Super-Earth)",
+        habitability: "High Potential (ESI: 0.85)",
+        desc: "An Earth-sized exoplanet orbiting within the habitable zone of the ultra-cool dwarf star TRAPPIST-1, approximately 39.5 light-years away in Aquarius.",
+        mass: "4.13 × 10²⁴ kg",
+        radius: "5,861 km",
+        velocity: "54.2 km/s",
+        gravity: "9.12 m/s²",
+        escape: "9.8 km/s",
+        temp: "-22°C (251 K)",
+        atmosphere: [
+          { name: "Nitrogen (N₂)", pct: 85.0, color: "bg-cyan-500" },
+          { name: "Water Vapor & CO₂", pct: 15.0, color: "bg-blue-400" }
+        ],
+        color: 0x06b6d4,
+        size: 1.1,
+        orbitRadius: 43,
+        orbitSpeed: 0.02
+      },
+      gargantua: {
+        name: "Gargantua",
+        type: "Supermassive Black Hole",
+        habitability: "Extreme Gravitational Lensing",
+        desc: "A Kerr spinning supermassive black hole with an accretion disk emitting intense synchrotron radiation and extreme relativistic time dilation.",
+        mass: "1.989 × 10³⁸ kg (100M M☉)",
+        radius: "295,000,000 km (Event Horizon)",
+        velocity: "c (Light Speed at Horizon)",
+        gravity: "∞ (Singularity)",
+        escape: "≥ 299,792 km/s",
+        temp: "0.000000001 K (Hawking)",
+        atmosphere: [
+          { name: "Relativistic Plasma", pct: 100.0, color: "bg-purple-600" }
+        ],
+        color: 0x8b5cf6,
+        size: 2.8,
+        orbitRadius: 52,
+        orbitSpeed: 0.002,
+        isBlackHole: true
+      }
+    };
+
+    // Update Right Sidebar Properties
+    function updatePropertiesPanel(id) {
+      const data = CELESTIAL_DATA[id] || CELESTIAL_DATA['earth'];
+      document.getElementById('prop-name').innerText = data.name;
+      document.getElementById('prop-type').innerText = data.type;
+      document.getElementById('prop-habitability').innerText = data.habitability;
+      document.getElementById('prop-desc').innerText = data.desc;
+      document.getElementById('prop-mass').innerText = data.mass;
+      document.getElementById('prop-radius').innerText = data.radius;
+      document.getElementById('prop-velocity').innerText = data.velocity;
+      document.getElementById('prop-gravity').innerText = data.gravity;
+      document.getElementById('prop-escape').innerText = data.escape;
+      document.getElementById('prop-temp').innerText = data.temp;
+
+      // Render atmosphere bars
+      const atmosContainer = document.getElementById('prop-atmosphere');
+      atmosContainer.innerHTML = data.atmosphere.map(a => `
+        <div>
+          <div class="flex justify-between text-[11px] mb-0.5">
+            <span>${a.name}</span>
+            <span>${a.pct}%</span>
+          </div>
+          <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full ${a.color} rounded-full" style="width: ${a.pct}%"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Register 3D Cosmos Directive
+    HTMXUI.directive('hx-cosmos', (canvasEl, _, { state, onCleanup }) => {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, canvasEl.clientWidth / canvasEl.clientHeight, 0.1, 2000);
+      const renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, alpha: true });
+      renderer.setSize(canvasEl.clientWidth, canvasEl.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.maxDistance = 300;
+      controls.minDistance = 3;
+
+      camera.position.set(0, 30, 45);
+      controls.update();
+
+      // 1. Particle Starfield
+      const starsGeometry = new THREE.BufferGeometry();
+      const starsCount = 12000;
+      const starsPositions = new Float32Array(starsCount * 3);
+      for (let i = 0; i < starsCount * 3; i += 3) {
+        starsPositions[i] = (Math.random() - 0.5) * 800;
+        starsPositions[i + 1] = (Math.random() - 0.5) * 800;
+        starsPositions[i + 2] = (Math.random() - 0.5) * 800;
+      }
+      starsGeometry.setAttribute('position', new THREE.BufferAttribute(starsPositions, 3));
+      const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.8 });
+      const starField = new THREE.Points(starsGeometry, starsMaterial);
+      scene.add(starField);
+
+      // 2. Ambient & Point Lighting
+      const ambientLight = new THREE.AmbientLight(0x333333);
+      scene.add(ambientLight);
+      const sunLight = new THREE.PointLight(0xffffff, 2, 500);
+      scene.add(sunLight);
+
+      // 3. Create Celestial Meshes & Orbit Lines
+      const celestialMeshes = {};
+      const orbitLines = [];
+
+      Object.entries(CELESTIAL_DATA).forEach(([id, data]) => {
+        const group = new THREE.Group();
+
+        // Sphere Mesh
+        let geometry = new THREE.SphereGeometry(data.size, 32, 32);
+        let material;
+
+        if (id === 'sun') {
+          material = new THREE.MeshBasicMaterial({ color: data.color });
+          // Sun Corona Glow
+          const coronaGeo = new THREE.SphereGeometry(data.size * 1.25, 32, 32);
+          const coronaMat = new THREE.MeshBasicMaterial({ color: 0xffdd44, transparent: true, opacity: 0.25 });
+          group.add(new THREE.Mesh(coronaGeo, coronaMat));
+        } else if (data.isBlackHole) {
+          material = new THREE.MeshBasicMaterial({ color: 0x050505 });
+          // Accretion Disk Ring
+          const diskGeo = new THREE.RingGeometry(data.size * 1.4, data.size * 3.0, 64);
+          const diskMat = new THREE.MeshBasicMaterial({ color: 0xa855f7, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
+          const disk = new THREE.Mesh(diskGeo, diskMat);
+          disk.rotation.x = Math.PI / 2.5;
+          group.add(disk);
+        } else {
+          material = new THREE.MeshStandardMaterial({ 
+            color: data.color, 
+            roughness: 0.7, 
+            metalness: 0.1 
+          });
+        }
+
+        const sphere = new THREE.Mesh(geometry, material);
+        group.add(sphere);
+
+        // Saturn Rings
+        if (data.hasRings) {
+          const ringGeo = new THREE.RingGeometry(data.size * 1.4, data.size * 2.4, 64);
+          const ringMat = new THREE.MeshStandardMaterial({ color: 0xd97706, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+          const ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.rotation.x = Math.PI / 2;
+          group.add(ring);
+        }
+
+        scene.add(group);
+        celestialMeshes[id] = { group, angle: Math.random() * Math.PI * 2, data };
+
+        // Orbit Line Trace
+        if (data.orbitRadius > 0) {
+          const orbitGeo = new THREE.BufferGeometry();
+          const points = [];
+          for (let a = 0; a <= Math.PI * 2; a += 0.05) {
+            points.push(new THREE.Vector3(Math.cos(a) * data.orbitRadius, 0, Math.sin(a) * data.orbitRadius));
+          }
+          orbitGeo.setFromPoints(points);
+          const orbitMat = new THREE.LineBasicMaterial({ color: 0x334155, transparent: true, opacity: 0.4 });
+          const line = new THREE.LineLoop(orbitGeo, orbitMat);
+          scene.add(line);
+          orbitLines.push(line);
+        }
+      });
+
+      // Window Resize Listener
+      const onResize = () => {
+        camera.aspect = canvasEl.clientWidth / canvasEl.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(canvasEl.clientWidth, canvasEl.clientHeight);
+      };
+      window.addEventListener('resize', onResize);
+
+      // Animation & Physics Loop (HxBolt.ticker)
+      let currentTrackedPos = new THREE.Vector3();
+      let lastSelected = 'earth';
+      let frameCounter = 0;
+      let lastFpsTime = performance.now();
+
+      const unsub = HxBolt.ticker.subscribe((dt, time) => {
+        // Measure FPS
+        frameCounter++;
+        if (time - lastFpsTime >= 1000) {
+          state.fps = frameCounter;
+          frameCounter = 0;
+          lastFpsTime = time;
+        }
+
+        // Check if selectedId changed
+        if (state.selectedId !== lastSelected) {
+          lastSelected = state.selectedId;
+          updatePropertiesPanel(lastSelected);
+        }
+
+        const effectiveDt = state.isPaused ? 0 : dt * (state.timeWarp || 1.0);
+
+        // Update Planetary Positions
+        Object.entries(celestialMeshes).forEach(([id, obj]) => {
+          if (obj.data.orbitRadius > 0) {
+            obj.angle += obj.data.orbitSpeed * effectiveDt;
+            obj.group.position.x = Math.cos(obj.angle) * obj.data.orbitRadius;
+            obj.group.position.z = Math.sin(obj.angle) * obj.data.orbitRadius;
+          }
+          obj.group.rotation.y += 0.01 * (state.isPaused ? 0.2 : (state.timeWarp || 1.0));
+        });
+
+        // Toggle Orbit Visibility
+        orbitLines.forEach(l => l.visible = state.showOrbits !== false);
+
+        // Camera Tracking
+        const targetObj = celestialMeshes[state.selectedId || 'earth'];
+        if (targetObj && state.cameraTracking) {
+          currentTrackedPos.lerp(targetObj.group.position, 0.05);
+          controls.target.copy(currentTrackedPos);
+        }
+
+        controls.update();
+        renderer.render(scene, camera);
+      });
+
+      // Initial Panel Update
+      updatePropertiesPanel(state.selectedId || 'earth');
+
+      onCleanup(() => {
+        unsub();
+        window.removeEventListener('resize', onResize);
+        renderer.dispose();
+      });
+    });
+  </script>
+
+</body>
+</html>

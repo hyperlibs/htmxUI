@@ -138,6 +138,43 @@
           "allowedElements": ["*"],
           "example": "hx-vibe-flip"
         },
+        "hx-vibe-tilt": {
+          "description": "Enables 3D perspective gyroscopic mouse tilt.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-tilt=\"20\" hx-vlt-glare"
+        },
+        "hx-vlt-glare": {
+          "description": "Enables dynamic specular light glare on 3D tilt elements.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-vlt-glare"
+        },
+        "hx-vibe-magnetic": {
+          "description": "Enables elastic magnetic snapping to cursor pointer.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-magnetic=\"0.4\""
+        },
+        "hx-vibe-split": {
+          "description": "Kinetic typography engine splitting text into staggered 3D span reveals.",
+          "type": "string",
+          "enum": ["chars", "words", "lines"],
+          "allowedElements": ["h1", "h2", "h3", "p", "span", "div"],
+          "example": "hx-vibe-split=\"chars\""
+        },
+        "hx-vpx-blast": {
+          "description": "Explosive radial shockwave dispersing surrounding elements with physics impulses.",
+          "type": "boolean",
+          "allowedElements": ["button", "div"],
+          "example": "hx-vpx-blast hx-vpx-radius=\"300\" hx-vpx-force=\"50\""
+        },
+        "hx-tick": {
+          "description": "Evaluates a reactive expression on every frame of the 120 FPS game loop ticker.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-tick=\"angle += 0.02 * dt\""
+        },
         "hx-vibe-stagger": {
           "description": "Staggers animation delay across children elements.",
           "type": "string",

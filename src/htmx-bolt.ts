@@ -762,6 +762,27 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
       executeAction(`${propPath} = $eventValue`, state, { $el: el, $eventValue: val });
     });
   });
+
+  // Custom community directives
+  customDirectives.forEach((handler, dirName) => {
+    const matchedEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll(`[${dirName}]`) : []) as HTMLElement[];
+    if (rootEl.hasAttribute && rootEl.hasAttribute(dirName)) matchedEls.unshift(rootEl);
+    matchedEls.forEach(el => {
+      const val = el.getAttribute(dirName) || '';
+      try {
+        handler(el, val, {
+          state,
+          execute: (expr: string, extra?: any) => executeAction(expr, state, { $el: el, ...extra }),
+          onCleanup: (cb: () => void) => {
+            (el as any)._cleanups = (el as any)._cleanups || [];
+            (el as any)._cleanups.push(cb);
+          }
+        });
+      } catch (err) {
+        console.error(`[htmxui:directive ${dirName}]`, err);
+      }
+    });
+  });
 }
 
 function bindEvents(rootEl: HTMLElement, state: any): void {
@@ -955,6 +976,57 @@ if (typeof document !== 'undefined') {
 }
 
 // -----------------------------------------------------------------------------
+// High-Frequency 120 FPS Ticker & Game Loop
+// -----------------------------------------------------------------------------
+type TickerCallback = (dt: number, time: number) => void;
+const tickerCallbacks = new Set<TickerCallback>();
+let lastTickTime = 0;
+let tickerRunning = false;
+
+function startTickerLoop(): void {
+  if (tickerRunning || typeof window === 'undefined') return;
+  tickerRunning = true;
+  lastTickTime = performance.now();
+
+  function loop(now: number) {
+    const dt = (now - lastTickTime) / 1000;
+    lastTickTime = now;
+
+    tickerCallbacks.forEach(cb => {
+      try { cb(dt, now); } catch (err) { console.error('[htmx-bolt:ticker]', err); }
+    });
+
+    // Process hx-tick bindings
+    if (typeof document !== 'undefined') {
+      document.querySelectorAll('[hx-tick]').forEach(el => {
+        const expr = el.getAttribute('hx-tick');
+        const state = elementStates.get(el as HTMLElement) || (el.closest('[hx-state]') ? elementStates.get(el.closest('[hx-state]') as HTMLElement) : null);
+        if (expr && state) {
+          try {
+            executeAction(expr, state, el as HTMLElement, { dt, time: now });
+          } catch (e) {}
+        }
+      });
+    }
+
+    if (tickerCallbacks.size > 0 || (typeof document !== 'undefined' && document.querySelector('[hx-tick]'))) {
+      requestAnimationFrame(loop);
+    } else {
+      tickerRunning = false;
+    }
+  }
+
+  requestAnimationFrame(loop);
+}
+
+// -----------------------------------------------------------------------------
+// Community Directive & Engine Registry
+// -----------------------------------------------------------------------------
+type DirectiveHandler = (el: HTMLElement, value: string, ctx: { state: any; execute: Function; onCleanup: (cb: () => void) => void }) => void;
+const customDirectives = new Map<string, DirectiveHandler>();
+const customEngines = new Map<string, any>();
+
+// -----------------------------------------------------------------------------
 // Global Public HxBolt API
 // -----------------------------------------------------------------------------
 export const HxBolt: HxBoltAPI = {
@@ -968,6 +1040,16 @@ export const HxBolt: HxBoltAPI = {
   },
   undo: undoState,
   redo: redoState,
+  ticker: {
+    subscribe(cb: TickerCallback): () => void {
+      tickerCallbacks.add(cb);
+      if (!tickerRunning) startTickerLoop();
+      return () => {
+        tickerCallbacks.delete(cb);
+      };
+    },
+    now: () => performance.now()
+  },
   store<T extends object = Record<string, any>>(name: string, initialValue?: T): ReactiveProxy<T> {
     if (initialValue !== undefined) {
       stores[name] = createReactiveObject(initialValue);
@@ -986,12 +1068,27 @@ export const HxBolt: HxBoltAPI = {
     if ((root as HTMLElement).hasAttribute && ((root as HTMLElement).hasAttribute('hx-state') || (root as HTMLElement).getAttribute('hx-ext') === 'reactive')) {
       initComponent(root as HTMLElement);
     }
+    if (typeof document !== 'undefined' && document.querySelector('[hx-tick]') && !tickerRunning) {
+      startTickerLoop();
+    }
   }
 };
 
 if (typeof window !== 'undefined') {
   (window as any).HxBolt = HxBolt;
-  (window as any).HTMXUI = { config, errors: ERROR_CATALOG, bolt: HxBolt };
+  (window as any).HTMXUI = {
+    config,
+    errors: ERROR_CATALOG,
+    bolt: HxBolt,
+    directive(name: string, handler: DirectiveHandler) {
+      customDirectives.set(name.startsWith('hx-') ? name : `hx-${name}`, handler);
+    },
+    defineEngine(name: string, factory: (api: any) => any) {
+      const engine = factory({ bolt: HxBolt, ticker: HxBolt.ticker });
+      customEngines.set(name, engine);
+      return engine;
+    }
+  };
 
   // Server-driven sync
   document.body.addEventListener('hxStateUpdate', function (evt: any) {

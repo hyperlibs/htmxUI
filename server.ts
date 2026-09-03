@@ -275,7 +275,10 @@ const server = Bun.serve({
           Built for human developers <em>and</em> agentic AI coders who need predictable, composable, server-driven UIs.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-          <a href="/docs/components/introduction" class="inline-flex items-center justify-center h-14 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-lg transition-colors hover:bg-primary/90 shadow-lg hover:shadow-xl w-full sm:w-auto">
+          <a href="/app/erp" class="inline-flex items-center justify-center h-14 px-8 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-lg transition-all shadow-lg hover:shadow-emerald-500/20 w-full sm:w-auto">
+            🚀 Launch Flagship ERP Demo
+          </a>
+          <a href="/docs/components/introduction" class="inline-flex items-center justify-center h-14 px-8 rounded-md bg-primary text-primary-foreground font-semibold text-lg transition-colors hover:bg-primary/90 shadow-lg w-full sm:w-auto">
             Get Started
           </a>
           <a href="/docs/components/button" class="inline-flex items-center justify-center h-14 px-8 rounded-md border border-input bg-background font-semibold text-lg transition-colors hover:bg-muted shadow-sm w-full sm:w-auto">
@@ -416,6 +419,10 @@ const server = Bun.serve({
 
 </body>
 </html>`, { headers: { "Content-Type": "text/html" } });
+    }
+
+    if (url.pathname === "/app/erp" || url.pathname === "/demo/erp") {
+      return new Response(Bun.file("views/app-erp.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
     if (url.pathname === "/styles.css") {

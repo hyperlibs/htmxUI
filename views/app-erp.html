@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Logistics ERP — Powered by HTMXUI</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-virtual.js"></script>
+  <script src="/htmx-grid.js"></script>
+  <script src="/htmx-offline.js"></script>
+  <script src="/htmx-devtools.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    @layer base {
+      :root {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        --card: 222.2 84% 6.5%;
+        --card-foreground: 210 40% 98%;
+        --primary: 217.2 91.2% 59.8%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+      }
+    }
+  </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-primary/30"
+      hx-state='{
+        "currentTab": "dashboard",
+        "sidebarOpen": true,
+        "theme": "dark",
+        "notifications": [
+          { "id": 1, "title": "System Online", "msg": "HTMXUI 9 Engines Initialized", "time": "Just now" }
+        ],
+        "kpis": {
+          "revenue": 1284500,
+          "activeOrders": 1420,
+          "invoicesCount": 10000,
+          "syncStatus": "Connected"
+        }
+      }'>
+
+  <!-- Top Global App Bar -->
+  <header class="h-14 border-b border-slate-800 bg-slate-900/80 backdrop-blur px-4 flex items-center justify-between z-30 sticky top-0">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-primary text-slate-950 font-extrabold flex items-center justify-center text-sm shadow-md shadow-primary/20">
+        ▲
+      </div>
+      <div>
+        <span class="font-bold text-sm tracking-tight text-white">Apex Logistics ERP</span>
+        <span class="ml-2 text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-primary/20 text-primary border border-primary/30">HTMXUI Flagship</span>
+      </div>
+    </div>
+
+    <!-- Center Offline Indicator Badge -->
+    <div hx-offline-indicator style="display:none;" class="px-3 py-1 bg-amber-500/10 border border-amber-500/30 rounded-full flex items-center gap-2 text-amber-400 text-xs animate-pulse">
+      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+      <span>Offline Mode (<strong class="hx-offline-queue-count">0</strong> queued)</span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- DevTools Shortcut Trigger -->
+      <button onclick="window.HxDevTools.toggle()" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md font-mono flex items-center gap-1 text-slate-300">
+        <span>🛠️ DevTools</span>
+        <kbd class="text-[10px] bg-slate-900 px-1 rounded text-slate-400">Ctrl+Shift+H</kbd>
+      </button>
+
+      <!-- Back to Docs -->
+      <a href="/docs/components/introduction" class="px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-md text-slate-300">
+        ← Framework Docs
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Workspace Body -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-60 border-r border-slate-800 bg-slate-900/40 p-3 flex flex-col justify-between">
+      <div class="space-y-1">
+        <div class="px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Modules</div>
+
+        <button hx-on:click="currentTab = 'dashboard'"
+                hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'dashboard', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'dashboard' }"
+                class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors">
+          <span>📊</span> Dashboard
+        </button>
+
+        <button hx-on:click="currentTab = 'invoices'"
+                hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'invoices', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'invoices' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors">
+          <div class="flex items-center gap-2.5">
+            <span>📋</span> Invoices Data Grid
+          </div>
+          <span class="text-[10px] font-mono px-1.5 py-0.2 bg-slate-800 rounded text-slate-400">10k</span>
+        </button>
+
+        <button hx-on:click="currentTab = 'wizard'"
+                hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'wizard', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'wizard' }"
+                class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors">
+          <span>🧙</span> Create Invoice Wizard
+        </button>
+
+        <button hx-on:click="currentTab = 'offline'"
+                hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'offline', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'offline' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors">
+          <div class="flex items-center gap-2.5">
+            <span>📴</span> Offline &amp; Sync Hub
+          </div>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </button>
+
+        <button hx-on:click="currentTab = 'settings'"
+                hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'settings', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'settings' }"
+                class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors">
+          <span>⚙️</span> Workspace Settings
+        </button>
+      </div>
+
+      <!-- Quick Status Card -->
+      <div class="p-3 rounded-xl border border-slate-800 bg-slate-900/80 space-y-1">
+        <div class="text-[10px] text-slate-400 font-semibold uppercase">Engine Status</div>
+        <div class="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 9 Engines Active
+        </div>
+        <div class="text-[10px] text-slate-400 font-mono">0ms Local Reactivity</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Work Area -->
+    <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+      <!-- SCREEN 1: EXECUTIVE DASHBOARD -->
+      <div hx-show="currentTab === 'dashboard'" class="space-y-6">
+        <div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">Executive Performance Overview</h2>
+          <p class="text-xs text-slate-400">Real-time enterprise metrics rendered with zero virtual DOM overhead.</p>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="grid grid-cols-4 gap-4">
+          <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/60 shadow-sm space-y-1">
+            <div class="text-xs font-semibold text-slate-400">Total Revenue</div>
+            <div class="text-2xl font-bold text-white tracking-tight">$1,284,500.00</div>
+            <div class="text-[11px] text-emerald-400 font-medium">↑ +14.2% this month</div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/60 shadow-sm space-y-1">
+            <div class="text-xs font-semibold text-slate-400">Active Orders</div>
+            <div class="text-2xl font-bold text-white tracking-tight">1,420</div>
+            <div class="text-[11px] text-sky-400 font-medium">98.4% on schedule</div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/60 shadow-sm space-y-1">
+            <div class="text-xs font-semibold text-slate-400">Invoices In Memory</div>
+            <div class="text-2xl font-bold text-white tracking-tight">10,000</div>
+            <div class="text-[11px] text-purple-400 font-medium">Windowed at 60 FPS</div>
+          </div>
+
+          <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/60 shadow-sm space-y-1">
+            <div class="text-xs font-semibold text-slate-400">Sync Engine</div>
+            <div class="text-2xl font-bold text-emerald-400 tracking-tight">Zero-Drop</div>
+            <div class="text-[11px] text-slate-400 font-medium">IndexedDB active</div>
+          </div>
+        </div>
+
+        <!-- Recent Activity Feed -->
+        <div class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 space-y-3">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-white">Live Transaction Stream</h3>
+            <span class="text-[11px] font-mono text-slate-400">Auto-refresh via SSE</span>
+          </div>
+
+          <div class="divide-y divide-slate-800/80 text-xs">
+            <div class="py-2.5 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[10px]">✓</span>
+                <div>
+                  <span class="font-medium text-white">INV-100492 approved for payout</span>
+                  <span class="text-slate-400 ml-2">Cyberdyne Systems</span>
+                </div>
+              </div>
+              <span class="font-mono text-emerald-400 font-semibold">$4,850.00</span>
+            </div>
+
+            <div class="py-2.5 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold text-[10px]">🚚</span>
+                <div>
+                  <span class="font-medium text-white">Shipment dispatched to Rotterdam warehouse</span>
+                  <span class="text-slate-400 ml-2">Globex Logistics</span>
+                </div>
+              </div>
+              <span class="font-mono text-slate-300">420 containers</span>
+            </div>
+
+            <div class="py-2.5 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-[10px]">✎</span>
+                <div>
+                  <span class="font-medium text-white">Invoice #100881 modified offline</span>
+                  <span class="text-slate-400 ml-2">Tablet #4</span>
+                </div>
+              </div>
+              <span class="font-mono text-purple-400 font-semibold">$1,200.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: 10,000-ROW DATA GRID -->
+      <div hx-show="currentTab === 'invoices'" class="space-y-4" style="display:none;">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-white tracking-tight">Enterprise Invoices Data Grid</h2>
+            <p class="text-xs text-slate-400">10,000 virtualized records with column resize, drag &amp; drop reorder, inline edit, and CSV export.</p>
+          </div>
+          <button hx-on:click="currentTab = 'wizard'" class="px-3.5 py-1.5 bg-primary text-slate-950 font-semibold text-xs rounded-md shadow hover:bg-primary/90">
+            + New Invoice
+          </button>
+        </div>
+
+        <!-- The 10,000-Row Grid Primitive -->
+        <div hx-grid hx-grid-src="/api/erp-invoices.json?count=10000" hx-grid-row-height="40" class="w-full"></div>
+      </div>
+
+      <!-- SCREEN 3: CREATE INVOICE WIZARD -->
+      <div hx-show="currentTab === 'wizard'" class="space-y-6 max-w-3xl" style="display:none;">
+        <div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">Create Invoice Wizard</h2>
+          <p class="text-xs text-slate-400">Multi-step orchestration (<code class="bg-slate-800 px-1 py-0.5 rounded text-xs">&lt;form hx-wizard&gt;</code>) with step validation gates and cascading dropdowns.</p>
+        </div>
+
+        <div class="p-6 rounded-xl border border-slate-800 bg-slate-900/60 shadow-sm space-y-6">
+          <div class="space-y-2 border-b border-slate-800 pb-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold text-primary uppercase tracking-wider">Step <span class="hx-wizard-current-step">1</span> of <span class="hx-wizard-total-steps">3</span></span>
+              <span class="text-xs text-slate-400 font-medium">New Billing Record</span>
+            </div>
+            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div class="hx-wizard-progress-bar h-full bg-primary transition-all duration-300 w-1/3"></div>
+            </div>
+          </div>
+
+          <form hx-wizard class="space-y-6">
+            <!-- Step 1: Customer Details -->
+            <fieldset hx-step="1" class="space-y-4">
+              <h3 class="text-base font-semibold text-white">1. Client &amp; Billing Entity</h3>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-medium text-slate-300 mb-1">Company / Customer Name *</label>
+                  <input type="text" name="customer" hx-validate="required|min:3" placeholder="Acme Logistics Inc." class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-md text-white">
+                  <span hx-error-for="customer" class="text-destructive text-xs mt-1 block"></span>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-slate-300 mb-1">Billing Email *</label>
+                  <input type="email" name="email" hx-validate="required|email" placeholder="billing@acme.com" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-md text-white">
+                  <span hx-error-for="email" class="text-destructive text-xs mt-1 block"></span>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Step 2: Cascading Line Item -->
+            <fieldset hx-step="2" class="space-y-4" style="display:none;" disabled>
+              <h3 class="text-base font-semibold text-white">2. Shipping Destination &amp; Cascading Fields</h3>
+              <div class="grid grid-cols-2 gap-4" hx-depends="country->state">
+                <div>
+                  <label class="block text-xs font-medium text-slate-300 mb-1">Country *</label>
+                  <select name="country" id="country" hx-validate="required" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-md text-white">
+                    <option value="">Select Country...</option>
+                    <option value="us">United States</option>
+                    <option value="ca">Canada</option>
+                    <option value="uk">United Kingdom</option>
+                  </select>
+                  <span hx-error-for="country" class="text-destructive text-xs mt-1 block"></span>
+                </div>
+                <div>
+                  <label class="block text-xs font-medium text-slate-300 mb-1">State / Province *</label>
+                  <select name="state" id="state" hx-validate="required" class="w-full px-3 py-2 text-xs bg-slate-950 border border-slate-800 rounded-md text-white">
+                    <option value="">Select State...</option>
+                    <option value="ca_state">California</option>
+                    <option value="ny_state">New York</option>
+                    <option value="tx_state">Texas</option>
+                    <option value="on_state">Ontario</option>
+                  </select>
+                  <span hx-error-for="state" class="text-destructive text-xs mt-1 block"></span>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- Step 3: Confirmation -->
+            <fieldset hx-step="3" class="space-y-4" style="display:none;" disabled>
+              <h3 class="text-base font-semibold text-white">3. Final Verification &amp; Submit</h3>
+              <div class="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-1">
+                <p class="text-white font-medium">Ready to record invoice into ERP ledger.</p>
+                <p class="text-slate-400">All fields validated. Click Finish to save.</p>
+              </div>
+            </fieldset>
+
+            <!-- Navigation Controls -->
+            <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+              <button type="button" hx-wizard-prev class="px-4 py-2 text-xs font-medium bg-slate-900 border border-slate-700 rounded-md hover:bg-slate-800 disabled:opacity-50">← Back</button>
+              <button type="button" hx-wizard-next class="px-4 py-2 text-xs font-medium bg-primary text-slate-950 font-bold rounded-md hover:bg-primary/90">Next →</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: OFFLINE & SYNC HUB -->
+      <div hx-show="currentTab === 'offline'" class="space-y-6 max-w-4xl" style="display:none;">
+        <div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">Offline Resilience &amp; Mutation Sync Hub</h2>
+          <p class="text-xs text-slate-400">IndexedDB local mutation queue with 409 conflict detection and background replay.</p>
+        </div>
+
+        <div class="p-6 rounded-xl border border-slate-800 bg-slate-900/60 shadow-sm space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="text-sm font-semibold text-white">IndexedDB Storage Driver</span>
+            </div>
+            <div class="text-xs font-mono text-slate-400">
+              Queue: <strong class="hx-offline-queue-count text-primary">0</strong> pending mutations
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <button onclick="window.HxOffline.queueRequest({ id: 'inv_' + Date.now(), url: '/api/erp-invoices.json', method: 'POST', headers: {}, body: JSON.stringify({ customer: 'Stark Industries', amount: 8900 }), timestamp: Date.now(), retries: 0 })" class="p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/80 text-left transition-colors">
+              <div class="text-sm font-semibold text-white mb-1">➕ Simulate Offline Invoice Mutation</div>
+              <p class="text-xs text-slate-400">Queues an invoice creation into IndexedDB.</p>
+            </button>
+
+            <button onclick="window.HxOffline.replayQueue()" class="p-4 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/80 text-left transition-colors">
+              <div class="text-sm font-semibold text-white mb-1">🔄 Replay Mutation Queue</div>
+              <p class="text-xs text-slate-400">Processes all queued mutations with HTTP headers.</p>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: WORKSPACE SETTINGS -->
+      <div hx-show="currentTab === 'settings'" class="space-y-6 max-w-3xl" style="display:none;">
+        <div>
+          <h2 class="text-2xl font-bold text-white tracking-tight">Workspace &amp; ERP Settings</h2>
+          <p class="text-xs text-slate-400">Reactive settings bound directly to local Bolt signal state.</p>
+        </div>
+
+        <div class="p-6 rounded-xl border border-slate-800 bg-slate-900/60 shadow-sm space-y-4">
+          <div class="flex items-center justify-between py-2 border-b border-slate-800">
+            <div>
+              <div class="text-xs font-semibold text-white">Default Ledger Currency</div>
+              <div class="text-[11px] text-slate-400">Used for financial summaries and exports</div>
+            </div>
+            <select class="px-3 py-1.5 text-xs bg-slate-950 border border-slate-800 rounded-md text-white">
+              <option value="usd">USD ($)</option>
+              <option value="eur">EUR (€)</option>
+              <option value="gbp">GBP (£)</option>
+            </select>
+          </div>
+
+          <div class="flex items-center justify-between py-2 border-b border-slate-800">
+            <div>
+              <div class="text-xs font-semibold text-white">Undo / Redo History Depth</div>
+              <div class="text-[11px] text-slate-400">Maximum snapshots stored in memory</div>
+            </div>
+            <span class="text-xs font-mono text-primary font-bold">50 Steps</span>
+          </div>
+
+          <div class="pt-2 flex justify-end">
+            <button onclick="alert('Settings saved into local Bolt state!')" class="px-4 py-2 bg-primary text-slate-950 font-bold text-xs rounded-md hover:bg-primary/90">
+              Save Preferences
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</body>
+</html>

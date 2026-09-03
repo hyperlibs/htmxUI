@@ -1,0 +1,105 @@
+<div class="space-y-12 max-w-5xl py-6 text-foreground" hx-state='{ "blastCount": 0, "activeTab": "overview" }'>
+  <!-- Header Title -->
+  <div>
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3">
+      <span>🎬</span> Hollywood WebFX &amp; Kinetic Motion
+    </div>
+    <h1 class="text-4xl font-extrabold tracking-tight">Kinetic Motion, Spring Physics &amp; WebFX</h1>
+    <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+      Hardware-accelerated WAAPI animations, 3D gyroscopic tilt, specular glare, magnetic pointer pull, kinetic typography, and explosive shockwaves — in pure declarative HTML.
+    </p>
+  </div>
+
+  <!-- Interactive Demo 1: 3D Tilt & Specular Glare -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">1. 3D Gyroscopic Tilt &amp; Specular Glare (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vibe-tilt</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vlt-glare</code>)</h2>
+    <p class="text-xs text-muted-foreground">Hover your mouse over the card below. Notice the 3D perspective rotation and dynamic reflection following your cursor.</p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div hx-vibe-tilt="20" hx-vlt-glare class="p-8 rounded-3xl bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-700 text-white shadow-2xl cursor-pointer flex flex-col justify-between h-64 border border-white/20">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold uppercase tracking-widest text-white/80">PIXAR-GRADE 3D TILT</span>
+          <span class="text-2xl">✨</span>
+        </div>
+        <div>
+          <h3 class="text-2xl font-black tracking-tight mb-1">Hyperreactive Canvas</h3>
+          <p class="text-xs text-white/80">Hardware-accelerated perspective matrix with real-time specular highlights.</p>
+        </div>
+      </div>
+
+      <div hx-vibe-tilt="15" hx-vlt-glare class="p-8 rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-800 text-white shadow-2xl cursor-pointer flex flex-col justify-between h-64 border border-white/20">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold uppercase tracking-widest text-white/80">MADBOX OPTICS</span>
+          <span class="text-2xl">🎮</span>
+        </div>
+        <div>
+          <h3 class="text-2xl font-black tracking-tight mb-1">Optical Glass Refraction</h3>
+          <p class="text-xs text-white/80">Smooth 60fps WAAPI transforms without Virtual DOM reflows.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Demo 2: Magnetic Snapping & Kinetic Split Typography -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">2. Magnetic Snapping &amp; Kinetic Typography (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vibe-magnetic</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vibe-split</code>)</h2>
+    
+    <div class="p-8 rounded-2xl border border-border bg-card flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+      <div>
+        <div class="text-xs text-muted-foreground font-mono mb-1">Character-Split Animation</div>
+        <h3 hx-vibe-split="chars" class="text-3xl font-black tracking-tight text-foreground">
+          REACTIVE MOTION ON STEROIDS
+        </h3>
+      </div>
+
+      <!-- Magnetic Button -->
+      <button hx-vibe-magnetic="0.4" class="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-xl hover:shadow-primary/30 transition-shadow">
+        🧲 Magnetic Pull Me
+      </button>
+    </div>
+  </section>
+
+  <!-- Interactive Demo 3: Explosive Blast Physics Arena -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold tracking-tight">3. Explosive Radial Shockwave Arena (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vpx-blast</code>)</h2>
+        <p class="text-xs text-muted-foreground">Click the central detonator to trigger a physical radial shockwave that blasts surrounding particles outward.</p>
+      </div>
+      <button hx-vpx-blast hx-vpx-radius="350" hx-vpx-force="60" hx-on:click="blastCount++" class="px-5 py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-xs shadow-lg hover:bg-destructive/90 transition-all">
+        💥 Detonate Shockwave (<span hx-text="blastCount">0</span>)
+      </button>
+    </div>
+
+    <div class="p-10 rounded-2xl border border-border bg-slate-950 flex items-center justify-center relative min-h-[220px] overflow-hidden">
+      <!-- Surrounding targets with hx-vpx-target -->
+      <div class="grid grid-cols-4 gap-6 w-full max-w-xl">
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element A</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element B</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element C</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element D</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element E</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element F</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element G</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element H</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Extension Guide -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">4. Extending HTMXUI: Building Community 3D / Game Engines</h2>
+    <p class="text-xs text-muted-foreground">Community developers can connect external WebGL / Three.js / Canvas engines in under 15 lines of code:</p>
+
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-5 font-mono text-xs overflow-x-auto space-y-2 border border-slate-700">
+      <span class="text-slate-400">// Register a custom declarative 3D directive</span>
+      <div><span class="text-purple-400">HTMXUI</span>.<span class="text-sky-400">directive</span>(<span class="text-emerald-400">'hx-three-cube'</span>, (el, config, { state }) =&gt; {</div>
+      <div class="pl-4"><span class="text-slate-400">// Hook into HTMXUI's 120 FPS high-frequency game loop</span></div>
+      <div class="pl-4"><span class="text-purple-400">HxBolt</span>.<span class="text-sky-400">ticker</span>.<span class="text-sky-400">subscribe</span>((dt) =&gt; {</div>
+      <div class="pl-8">mesh.rotation.x += <span class="text-amber-400">0.01</span>;</div>
+      <div class="pl-8">mesh.position.y = state.height; <span class="text-slate-400">// Reactive 2-way sync</span></div>
+      <div class="pl-4">});</div>
+      <div>});</div>
+    </div>
+  </section>
+</div>

@@ -17,8 +17,10 @@
 - `htmx-bolt.js`: Signal-based reactive state engine (~8KB).
 - `htmx-flash.js`: In-memory typo-tolerant fuzzy search and multi-column filter engine (~3KB).
 - `htmx-form.js`: Declarative validation state machine & optimistic UI engine (~2KB).
-- `htmx-vibe.js`: 60fps FLIP layout animation engine (~2KB).
+- `htmx-vibe.js`: Kinetic motion, spring physics (`hx-vibe-spring`), 3D tilt (`hx-vibe-tilt`), magnetic pull (`hx-vibe-magnetic`), split-text (`hx-vibe-split`), and blast shockwaves (`hx-vpx-blast`).
 - `htmx-a11y.js`: WAI-ARIA focus trap & roving tabindex engine (~2KB).
+- `HxBolt.ticker`: High-frequency 120 FPS game-loop ticker (`hx-tick="x += 0.01 * dt"`).
+- `HTMXUI.directive(name, handler)`: Custom declarative directive compiler for community 3D/game engines.
 
 ## Rosetta Stone (React → HTMXUI)
 - `useState({ count: 0 })` -> `<script type="application/json" hx-state>{"count": 0}</script>`
@@ -28,6 +30,8 @@
 - `items.map(item => <Item key={item.id} />)` -> `<template hx-for="item in items">`
 - `value={val} onChange={e => setVal(e.target.value)}` -> `hx-model="val"`
 - `<Modal isOpen={open} />` -> `<div hx-show="open" hx-trap-focus>`
+- `<motion.div whileHover={{ scale: 1.05 }} />` -> `<div hx-vibe-tilt="15" hx-vlt-glare>`
 
 ## Full API Specification
 See `https://htmxui.dev/schema/htmxui.json` and `/llms-full.txt`
+

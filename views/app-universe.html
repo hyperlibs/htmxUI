@@ -88,6 +88,10 @@
 
     <!-- Right Header Actions -->
     <div class="flex items-center gap-3">
+      <div id="gpu-badge" class="text-[11px] font-mono text-cyan-400 bg-cyan-950/50 px-2.5 py-1 rounded-full border border-cyan-800/50 flex items-center gap-1.5">
+        <span>⚡</span>
+        <span id="gpu-mode-text">WebGPU (Default)</span>
+      </div>
       <div class="text-[11px] font-mono text-emerald-400 bg-emerald-950/50 px-2.5 py-1 rounded-full border border-emerald-800/50 flex items-center gap-1.5">
         <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
         <span hx-text="fps + ' FPS'">60 FPS</span>
@@ -147,9 +151,8 @@
       <div class="flex-1 overflow-y-auto p-3 space-y-1.5" id="celestial-list">
         
         <!-- Sun -->
-        <div hx-on:click="selectedId = 'sun'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'sun', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'sun' }">
+        <div onclick="selectCelestialBody('sun')" data-body-id="sun"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-lg shadow-md shadow-amber-500/20">☀️</div>
             <div>
@@ -161,9 +164,8 @@
         </div>
 
         <!-- Mercury -->
-        <div hx-on:click="selectedId = 'mercury'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'mercury', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'mercury' }">
+        <div onclick="selectCelestialBody('mercury')" data-body-id="mercury"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-slate-700/20 border border-slate-600 flex items-center justify-center text-base">☿</div>
             <div>
@@ -175,9 +177,8 @@
         </div>
 
         <!-- Venus -->
-        <div hx-on:click="selectedId = 'venus'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'venus', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'venus' }">
+        <div onclick="selectCelestialBody('venus')" data-body-id="venus"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-amber-700/20 border border-amber-600 flex items-center justify-center text-base">♀</div>
             <div>
@@ -189,9 +190,8 @@
         </div>
 
         <!-- Earth -->
-        <div hx-on:click="selectedId = 'earth'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'earth', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'earth' }">
+        <div onclick="selectCelestialBody('earth')" data-body-id="earth"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-indigo-950/80 border-indigo-500 shadow-lg shadow-indigo-500/20">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-blue-600/20 border border-blue-500 flex items-center justify-center text-base shadow-sm shadow-blue-500/30">🌍</div>
             <div>
@@ -203,9 +203,8 @@
         </div>
 
         <!-- Mars -->
-        <div hx-on:click="selectedId = 'mars'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'mars', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'mars' }">
+        <div onclick="selectCelestialBody('mars')" data-body-id="mars"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-rose-700/20 border border-rose-600 flex items-center justify-center text-base">🔴</div>
             <div>
@@ -217,9 +216,8 @@
         </div>
 
         <!-- Jupiter -->
-        <div hx-on:click="selectedId = 'jupiter'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'jupiter', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'jupiter' }">
+        <div onclick="selectCelestialBody('jupiter')" data-body-id="jupiter"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-orange-700/20 border border-orange-500 flex items-center justify-center text-base">🪐</div>
             <div>
@@ -231,9 +229,8 @@
         </div>
 
         <!-- Saturn -->
-        <div hx-on:click="selectedId = 'saturn'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'saturn', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'saturn' }">
+        <div onclick="selectCelestialBody('saturn')" data-body-id="saturn"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-amber-600/20 border border-amber-500 flex items-center justify-center text-base">🪐</div>
             <div>
@@ -245,9 +242,8 @@
         </div>
 
         <!-- TRAPPIST-1e -->
-        <div hx-on:click="selectedId = 'trappist'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'trappist', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'trappist' }">
+        <div onclick="selectCelestialBody('trappist')" data-body-id="trappist"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-cyan-700/20 border border-cyan-500 flex items-center justify-center text-base">🔭</div>
             <div>
@@ -259,9 +255,8 @@
         </div>
 
         <!-- Gargantua -->
-        <div hx-on:click="selectedId = 'gargantua'; $sound('ping')" 
-             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between"
-             hx-class="{ 'bg-indigo-950/60 border-indigo-500/80 shadow-lg shadow-indigo-500/10': selectedId === 'gargantua', 'bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700': selectedId !== 'gargantua' }">
+        <div onclick="selectCelestialBody('gargantua')" data-body-id="gargantua"
+             class="p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-full bg-purple-950 border border-purple-500 flex items-center justify-center text-base">🌌</div>
             <div>
@@ -570,6 +565,37 @@
       }
     };
 
+    // Universal Celestial Body Selector (Syncs Left Pane, 3D Canvas, and Right Pane)
+    window.selectCelestialBody = function(id) {
+      if (!id || !CELESTIAL_DATA[id]) return;
+      
+      // 1. Update Right Sidebar Info
+      updatePropertiesPanel(id);
+
+      // 2. Update Reactive Bolt State
+      if (window.HxBolt) {
+        const rootState = window.HxBolt.getState(document.body);
+        if (rootState) rootState.selectedId = id;
+      }
+
+      // 3. Update Left Sidebar Active Highlight Styles
+      document.querySelectorAll('#celestial-list > div').forEach(el => {
+        const bodyId = el.getAttribute('data-body-id');
+        if (bodyId === id) {
+          el.className = 'p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-indigo-950/80 border-indigo-500 shadow-lg shadow-indigo-500/20';
+        } else {
+          el.className = 'p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between bg-slate-900/50 border-slate-800/80 hover:bg-slate-900 hover:border-slate-700';
+        }
+      });
+
+      // 4. Play Procedural Audio Tone
+      if (window.HyperFX && window.HyperFX.sound) {
+        window.HyperFX.sound('ping');
+      } else if (window.playProceduralSound) {
+        window.playProceduralSound('ping');
+      }
+    };
+
     // Update Right Sidebar Properties
     function updatePropertiesPanel(id) {
       const data = CELESTIAL_DATA[id] || CELESTIAL_DATA['earth'];
@@ -875,6 +901,42 @@
         }
       });
 
+      // 4. Interactive 3D Raycasting (Clicking any 3D Planet in Viewport)
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      canvasEl.addEventListener('click', (event) => {
+        const rect = canvasEl.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const clickableSpheres = Object.values(celestialMeshes).map(m => m.sphere);
+        const intersects = raycaster.intersectObjects(clickableSpheres, false);
+
+        if (intersects.length > 0) {
+          const hitSphere = intersects[0].object;
+          for (const [id, m] of Object.entries(celestialMeshes)) {
+            if (m.sphere === hitSphere || m.group === hitSphere.parent) {
+              window.selectCelestialBody(id);
+              break;
+            }
+          }
+        }
+      });
+
+      // Hover Pointer Cursor
+      canvasEl.addEventListener('mousemove', (event) => {
+        const rect = canvasEl.getBoundingClientRect();
+        mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+        const clickableSpheres = Object.values(celestialMeshes).map(m => m.sphere);
+        const intersects = raycaster.intersectObjects(clickableSpheres, false);
+        canvasEl.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+      });
+
       // Window Resize Listener
       const onResize = () => {
         const w = container.clientWidth || (window.innerWidth - 640);
@@ -958,7 +1020,7 @@
           })();
 
       // Initial Panel Update
-      updatePropertiesPanel((state && state.selectedId) || 'earth');
+      window.selectCelestialBody((state && state.selectedId) || 'earth');
 
       onCleanup(() => {
         unsub();

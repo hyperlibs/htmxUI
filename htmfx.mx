@@ -1,0 +1,116 @@
+@meta
+  project: htmFX
+  title: Declarative 3D, WebGPU & Spatial Simulation Companion for htmxUI
+  version: 1.0.0
+  runtime: hmlr@1.0
+  repo: github.com/hyperlibs/htmFX
+  license: MIT
+  architecture: Decoupled Spatial Companion Layer
+
+@type CameraMode = orbit* | first_person | third_person | cinematic | fly
+@type EnvPreset = space* | outdoor | cyberpunk | underwater | dungeon | desert | arctic | laboratory
+@type AtmosPreset = clear* | cloudy | rainy | stormy | foggy | windy | snowy | sandstorm | nebula
+@type EmitterType = burn | flare | radiate | splash | splatter | explode | implode | splinter | zap | slime | wave
+
+@model EnvConfig
+  preset: EnvPreset
+  atmos: AtmosPreset
+  camera: CameraMode
+  fog_density: float
+  wind_speed_ms: float
+  altitude_m: float
+
+@model SpatialEntity
+  id: string
+  mesh_src: string
+  xyz: [float, float, float]
+  rotation: [float, float, float]
+  scale: [float, float, float]
+  material: string
+
+# htmFX: Declarative 3D & Spatial Engine Specification
+A lightweight (~35KB), declarative WebGL/WebGPU companion for htmxUI. 
+Eliminates 400-line Three.js boilerplate in favor of declarative HTML components (<hx-viewport>, <hx-mesh>) and flat .mx spatial coordinate grammar.
+
+## Core Directives & Macros | @model EnvConfig
+| preset     | atmos       | camera       | fog_density | wind_speed_ms | altitude_m |
+| $space     | $nebula     | $orbit       |        0.00 |          0.00 |  1000000.0 |
+| $outdoor   | $foggy      | $first_person|        0.08 |         12.50 |      500.0 |
+| $cyberpunk | $rainy      | $cinematic   |        0.04 |          8.00 |       50.0 |
+| $desert    | $sandstorm  | $orbit       |        0.15 |         25.00 |     1200.0 |
+| $dungeon   | $clear      | $first_person|        0.02 |          0.00 |     -200.0 |
+
+## Spatial Physics & Mathematical Foundations
+
+### 1. Volumetric Exponential Height Fog Field
+Equation: ρ(y) = ρ₀ · e^(-(y - y₀) / H)
+- In valleys (y = 500m), air is dense (ρ ≈ 0.85).
+- On mountain peaks (y = 2000m), air clears (ρ ≈ 0.02), creating a volumetric sea of clouds below the camera.
+
+### 2. Inverse-Square Distance Attenuation for Point/Volume Emitters
+Equation: I(d) = I₀ / (1 + k₁·d + k₂·d²)
+- Applied to $burn, $explode, $zap, spatial 3D audio, and heat haze vertex distortion.
+
+### 3. Supersonic Ballistics & Altitude Drag Solver
+Equation: F_drag = -0.5 · ρ(y) · C_d(Mach) · A · ||v|| · v
+- Trajectory integrated via 4th-Order Runge-Kutta (RK4) accounting for crosswind shear and material ricochet matrices.
+
+## Declarative Web Component API
+
+```html
+<!-- Instant AAA 3D Scene in 3 Lines of HTML -->
+<script src="/htmx.js"></script>
+<script src="/htmx-bolt.js"></script>
+<script src="/htmfx.js"></script>
+
+<hx-viewport 3denv="$outdoor" 
+             3datmos="$foggy(density: 0.06), $windy(15m/s)" 
+             3dcamera="$orbit">
+  <hx-mesh id="target-mesh" src="/models/drone.gltf" xyz="0, 10, -50"></hx-mesh>
+  <hx-particle type="nebula" count="5000" color="#6366f1"></hx-particle>
+  <hx-light type="sun" direction="[1, -2, 1]" intensity="1.5"></hx-light>
+</hx-viewport>
+```
+
+## Flat .mx Spatial Coordinate Representation (Zero Div Soup)
+
+```mx
+@viewport 1920x1080
+
+# 3D Scene Declarations
+@3d[0, 0, 0]:           3D.Env(preset: "$space", atmos: "$nebula")
+@3d[0, 5, -20]:         3D.Mesh("/models/satellite.gltf", spin: 0.01)
+@3d[0, 5, -20]:         3D.Emitter(type: "$burn", intensity: 0.8)
+
+# 2D Screen Anchors (HTMXUI HUD)
+@pin[top-left]:         Panel.HUD("Satellite Telemetry", sub: "WebGPU Active")
+@pin[bottom-bar]:       ActionBar(
+                          Button("⚡ Pulse Thruster", action: $flare('#target'); $sound('ping')),
+                          Button("🛑 Emergency Halt", action: $freeze(), color: "rose")
+                        )
+@pin[top-right]:        TelemetryBadge("120 FPS", color: "emerald", pulse: true)
+```
+
+## Functional Engine Kernel (.fx Implementation Blueprint)
+
+```fsharp
+// src/math/spatial_solver.fx
+module HtmFX.SpatialSolver
+
+type Vector3 = { x: float; y: float; z: float }
+type Altitude = float
+type Intensity = float
+
+let computeHeightFog (y: Altitude) (baseDensity: float) (scaleHeight: float) : float =
+    let deltaY = max 0.0 y
+    baseDensity * exp (-deltaY / scaleHeight)
+
+let computeDistanceFalloff (dist: float) (i0: Intensity) (k1: float) (k2: float) : Intensity =
+    let d = max 0.1 dist
+    i0 / (1.0 + (k1 * d) + (k2 * d * d))
+```
+
+## Exported Bundle & Bridge
+- Standalone Library: `dist/htmfx.js` (~35KB gzipped)
+- HTMXUI Directive Hook: `HTMXUI.directive('3d', (el, binding) => HtmFX.mount(el, binding))`
+- Fallback Pipeline: Auto-detects WebGPU (`navigator.gpu`) with seamless WebGL2 fallback.

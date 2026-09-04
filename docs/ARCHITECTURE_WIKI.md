@@ -195,22 +195,50 @@ Single-line declarative coordinate addresses:
 
 ---
 
-### 📖 Module 4: Compiler Diagnostics for Autonomous AI Healing
+### 📖 Module 4: Native `.mx` Compiler Diagnostics (Replacing JSON for AI Healing)
 
-```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                      STRUCTURED DIAGNOSTIC SPECIFICATION                         │
-├──────────────────────────────────────────────────────────────────────────────────┤
-│ Error Code:      FX-04012                                                        │
-│ Error Type:      UnresolvedRouteTarget                                           │
-│ Target:          @pin[nav-bar] -> Link("/dashboard/analyticss")                 │
-│ Exact Cause:     Typo in route segment 'analyticss'                              │
-│ Valid Routes:    ["/dashboard/analytics", "/dashboard/settings"]                │
-│ Fix Replacement: Link("/dashboard/analytics")                                   │
-└──────────────────────────────────────────────────────────────────────────────────┘
+#### The Problem with Legacy JSON Error Payloads:
+JSON error diagnostics bloat compiler streams with redundant quotes, keys, and curly braces (110+ tokens per error):
+
+```json
+// ❌ Legacy JSON Diagnostic (High Token Overhead)
+{
+  "code": "FX-04012",
+  "type": "UnresolvedRouteTarget",
+  "file": "routes/dashboard.mx",
+  "line": 14,
+  "col": 8,
+  "description": "Typo in route target '/analyticss'",
+  "culprit": "/analyticss",
+  "candidates": ["/analytics", "/settings"],
+  "fix": "/analytics"
+}
 ```
 
-When an AI compiler reads this structured diagnostic, it repairs the link in **under 10ms with zero token guessing**.
+#### The Native `.mx` Diagnostic Way (28 tokens, 75% savings):
+
+```mx
+<!-- ✅ Native .mx Diagnostic Stream (Single Diagnostic) -->
+@diag FX-04012: UnresolvedRouteTarget
+  file: routes/dashboard.mx:14:8
+  cause: Typo in route target '/analyticss'
+  candidates: /analytics | /settings
+  fix: /analytics
+```
+
+#### Dense Multi-Error Batch Diagnostics in `.mx`:
+
+```mx
+<!-- ✅ Native .mx Batch Diagnostics Matrix -->
+@model BuildDiagnostic { code: string, severity: error* | warning, file_pos: string, culprit: string, fix: string }
+
+## Build Diagnostics | @model BuildDiagnostic
+| FX-04012 | error   | routes/dashboard.mx:14:8 | /analyticss | /analytics             |
+| FX-01089 | warning | components/radar.mx:42:3 | pulseSpeed  | pulse_speed (snake_case)|
+| FX-09231 | error   | math/ballistics.fx:88:12 | null        | Option.None            |
+```
+
+When an AI agent or compiler parses this `.mx` diagnostic table, it repairs every single compiler issue across the entire project in a **single, sub-second deterministic pass**.
 
 ---
 

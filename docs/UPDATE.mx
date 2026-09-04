@@ -1,11 +1,11 @@
 @meta
   event_bus: UPDATE.mx
-  timestamp: 2026-09-04T14:34:00Z
+  timestamp: 2026-09-04T15:18:00Z
   ecosystem: hyperlibs
   source_repo: hyperlibs/htmxUI
   subscribers: [hyperlibs/htmxUI, hyperlibs/htmfx, hyperlibs/HMLR]
-  version: 2.2.0
-  status: ACTIVE_AND_SYNCHRONIZED
+  version: 2.3.0
+  status: APPROVED_AND_SYNCHRONIZED
 
 @type RepoTarget = htmxui | htmfx | HMLR | all
 @type Priority = immediate* | high | normal
@@ -46,18 +46,17 @@ This document is the single source of truth for multi-agent autonomous synchroni
 |   11 | Universal Language Policy    | Default: JS -> .fx, JSON/TOML -> .mx. Restrict JS/JSON to third-party wire compatibility. | Proactive refactoring mandate across all repos to eliminate token waste and bloat.         |
 |   12 | The Hyperkill Full-Stack     | HTMXUI (UI) + Go (Backend Services) + Rust (HMLR Wasm Engine). Zero Node/NPM.              | Ultra-low latency edge performance with 100% standard W3C browser compatibility.          |
 |   13 | 200+ Spatial FX & Multi-CRX  | HTMFX builds 200+ particle/physics FX (Matter/Cannon/Proton); HMLR builds Chrome/Firefox/Safari. | Comprehensive physics/effects engine in .fx; universal cross-browser DevTools extension.  |
+|   14 | HMLR Peer Review Consensus   | Formal ecosystem consensus on HMLR v2.3.0 proposals (zero-overhead tabs, velocity auditor, hx-diag). | 100% unconditional consensus achieved across all three repositories.                       |
 
 ---
 
 ## 📋 Direct Action Directives for Repositories | @model RepoInstruction
 | target | priority  | title                          | action_summary                                                      | action_detail                                                                                                |
-| htmfx  | immediate | 200+ Spatial FX & Physics Lib  | Build 200+ physics & particle effect modules in pure .fx.           | Synthesize best of Matter.js (2D rigid body), Cannon.js (3D collision), Proton/Particles.js (emitters), Spring dynamics (Euler/RK4), gravity wells, Stokes/viscous drag, and contact restitution. |
-| htmfx  | high      | Gravity, Drag & Collision Core | Implement full physical force fields in .fx mathematical solvers.   | Gravitational N-body fields, aerodynamic atmospheric drag, collision manifold resolvers, and elastomeric spring-dampers. |
-| HMLR   | immediate | Multi-Browser DevTools Suite   | Target Chromium (Chrome, Edge, Brave), Firefox (Gecko), and Safari. | Implement WebExtension Manifest V3/V2 cross-browser compatibility layer for Chrome DevTools, Firefox Developer Tools, and Safari Web Inspector. |
-| HMLR   | high      | Implement Hypermedia Audit     | Replace generic Lighthouse with Hypermedia Velocity metrics.        | Measure HTML swap payload KB, swap latency ms, token cost, and Zero-JS purity grade.                        |
-| HMLR   | normal    | Zero-Copy .mx Parser & .fx HIR | Develop streaming zero-copy parser in Rust for .mx and .fx AST.     | Enable sub-millisecond parsing and deterministic AI self-healing diagnostics (@diag FX-XXXX).                |
-| htmxui | immediate | Maintain Host Core Purity      | Protect ~40KB reactive hypermedia core from scope creep.            | Continue refining signals, 120 FPS ticker, virtualized grid, forms, and component catalog in .mx format.    |
-| all    | immediate | Mandatory .fx & .mx Default    | Default: JS -> .fx, JSON/TOML -> .mx. Refactor proactively.         | Use .fx for all logic/math and .mx for all data/schemas. JS/JSON permitted ONLY for unavoidable wire APIs.    |
+| HMLR   | immediate | Implement Approved v2.3.0 Spec | Build selective tab activation, velocity auditor, and hx-diag CLI.  | Zero CPU on uninspected tabs. Passive htmfx:spatialUpdate telemetry listener. Dual hx-doctor / hx-diag CLI. |
+| htmfx  | immediate | 200+ Spatial FX & Physics Lib  | Build 200+ physics & particle effect modules in pure .fx.           | Synthesize Matter.js (2D), Cannon.js (3D), Proton/Particles.js (emitters), RK4 springs, gravity, and drag.  |
+| htmfx  | high      | Telemetry Event Dispatch       | Emit htmfx:spatialUpdate and htmfx:fxTrigger events on state change.| Allows HMLR DevTools to inspect 3D viewports and active particle counts passively without WebGL coupling.   |
+| htmxui | immediate | Telemetry Event Dispatch       | Dispatch htmx:afterSwap and bolt:signalUpdate with timing metrics.  | Allows HMLR Velocity Auditor to prove sub-10ms swap speeds and Zero-JS purity in real-time.                 |
+| all    | immediate | Standardize on Dual CLI Tooling| Adopt hx-doctor (environment health) and hx-diag (code validation). | Universal CLI taxonomy across all three repositories for developers and CI/CD pipelines.                    |
 
 ---
 
@@ -65,8 +64,8 @@ This document is the single source of truth for multi-agent autonomous synchroni
 
 ```mx
 @diag FX-0000: SYSTEM_HEALTH
-  status: SYNCHRONIZED_AND_LOCKED
+  status: CONSENSUS_ACHIEVED_AND_LOCKED
   source: docs/UPDATE.mx
   scope: [htmxUI, htmFX, HMLR]
-  message: Ecosystem aligned on 200+ .fx spatial physics effects for htmFX and multi-browser DevTools extensions (Chrome, Firefox, Safari) for HMLR.
+  message: Ecosystem aligned on HMLR v2.3.0 proposals, 200+ spatial physics library for htmFX, and passive telemetry hooks for htmxUI.
 ```

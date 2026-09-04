@@ -4,22 +4,35 @@ This master document defines the **strategic milestones, architectural justifica
 
 ---
 
-## 🗺️ Master Milestone Roadmap
+## 🏛️ The Triad Multi-Repository Architecture (`github.com/hyperlibs/`)
+
+To prevent monolithic bloat and guarantee 10-year stability, the ecosystem is strictly partitioned across **three independent, decoupled repositories**:
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                              THE 5-PHASE ECOSYSTEM ROADMAP                                     │
-├────────────────────────────┬─────────────────────────────┬─────────────────────────────────────┤
-│ PHASE 1: LEAN CORE STABILITY│ PHASE 2: SPATIAL HTMFX      │ PHASE 3: THE .MX FLAT SPECIFICATION │
-│ • ~40KB Hypermedia Core    │ • Declarative 3D Components │ • Flat Spatial Grammar (@pin, @3d)  │
-│ • Signals, Grids & Forms   │ • Volumetric Height Fog     │ • BAML-style Out-of-Prompt Types    │
-│ • 100% Passing Unit & E2E  │ • Distance Attenuation Emitters│ • TSV Dense Data Matrices        │
-├────────────────────────────┼─────────────────────────────┼─────────────────────────────────────┤
-│ PHASE 4: HMLR RUNTIME (WASM│ PHASE 5: THE AGENTIC WIKI   │ THE ENDGAME                         │
-│ • Cloudflare Workers Target│ • React-to-Hypermedia Guide │ • Deterministic AI Generation       │
-│ • Structured JSON Errors   │ • 50+ Real World Benchmarks │ • Zero-Build Runtime Nirvana        │
-│ • Single-pass Zero-Copy    │ • Token Efficiency Proofs   │ • Standardized Web Platform VM      │
-└────────────────────────────┴─────────────────────────────┴─────────────────────────────────────┘
+github.com/hyperlibs/
+│
+├── 🏛️ htmxUI (Current Repository) ─── "The Reactive Hypermedia Foundation" (~40KB)
+│   ├── Forked htmx core (request / swap / SSE / history)
+│   ├── HxBolt (~2KB Proxy Reactive Signals & Computed Values)
+│   ├── HxBolt.ticker (120 FPS high-frequency game/physics loop)
+│   ├── HxFlash & HxGrid (Levenshtein search & 100k-row virtualized tables)
+│   ├── HxForm, HxVibe, HxA11y, HxOffline
+│   ├── HyperFX Core Utility Helpers ($copy, $toast, $sound, $toggle, $undo)
+│   └── 100+ Copy-Paste Shadcn-quality Tailwind Components
+│
+├── 🪐 htmFX (Dedicated Spatial Repository) ─── "Declarative 3D & Physics Extension"
+│   ├── <hx-viewport>, <hx-mesh>, <hx-particle>, <hx-light>
+│   ├── Declarative Macros: 3denv="$space", 3datmos="$foggy", 3dcamera="$orbit"
+│   ├── Spatial Volumetric Atmospheric Fields (Height Fog, Wind Shear Profiles)
+│   ├── Inverse-Square Distance-Attenuated Emitters ($burn, $flare, $zap, $explode)
+│   └── Plugs into htmxUI via lightweight directive hook (<script src="htmfx.js"></script>)
+│
+└── ⚙️ HMLR (Dedicated Runtime Repository) ─── "HyperMedia Language Runtime"
+    ├── Unified Wasm / Native Virtual Machine targeting Cloudflare Workers & Browsers
+    ├── HyperFX (.fx) Functional Programming Language Compiler (F#-inspired)
+    ├── .mx Flat Spatial Coordinate Document Parser (@pin, @3d, TSV matrices)
+    ├── Structured JSON Diagnostic Engine (Auto-healing error streams for AI coders)
+    └── Ternary-capable Intermediate Representation (IR) for future non-binary silicon
 ```
 
 ---

@@ -37,7 +37,29 @@ github.com/hyperlibs/
 
 ---
 
-## 📋 Milestone Breakdown & Architectural Reasoning
+## 🔒 Universal Language & Format Governance Directives
+
+To maintain extreme token efficiency, zero build-tool bloat, and mathematical predictability across all `hyperlibs` repositories, all AI agents and human contributors must follow this mandatory hierarchy:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                        MANDATORY FORMAT & LANGUAGE GOVERNANCE                          │
+├────────────────────────────────────────────────────────────────────────────────────────┤
+│ 1. DEFAULT BEHAVIOR (STRICT PRIORITY):                                                 │
+│    • Logic, Algorithms, Math & Transformations ──► MUST be written in `.fx`            │
+│    • Schemas, Data Matrices, Configs, Diags    ──► MUST be written in `.mx`            │
+│    • Cross-Repository Hyperlib Interactions    ──► MUST strictly follow `.mx` / `.fx`  │
+│    • Refactoring Mandate: Always proactively refactor legacy `.js` to `.fx`            │
+│      and legacy `.json` / `.toml` / `.yaml` to `.mx`.                                  │
+│                                                                                        │
+│ 2. UNAVOIDABLE EXCEPTIONS (RESTRICTED PERMISSION):                                     │
+│    • `.js` and `.json` are permitted ONLY when interfacing with external third-party   │
+│      network APIs (e.g. Stripe, Postgres, third-party REST) or legacy browser runtime │
+│      boundaries where JavaScript/JSON is explicitly demanded by the wire.              │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
 
 ### Milestone 1: Core Hypermedia Stabilization & Extension Isolation
 - **Feature**: Hard isolation of Core HTMXUI (~40KB) from specialized 3D/WebGPU domain logic using the `HTMXUI.directive()` interface.

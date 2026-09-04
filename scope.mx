@@ -1,0 +1,63 @@
+@meta
+  project: HMLR
+  title: HyperMedia Language Runtime — Scope, Mission & Ecosystem Communication Bus
+  version: 1.0.0
+  runtime: hmlr@1.0
+  repo: github.com/hyperlibs/HMLR
+  ecosystem_host: github.com/hyperlibs/htmxUI
+  ecosystem_spatial: github.com/hyperlibs/htmfx
+  sync_bus: https://raw.githubusercontent.com/hyperlibs/htmxUI/master/docs/UPDATE.mx
+
+@type Subsystem = extension* | wasm_vm | compiler_fx | parser_mx | diagnostics
+@type Status = active* | planned | peer_synced
+
+@model SubsystemScope
+  name: string
+  subsystem: Subsystem
+  status: Status
+  responsibility: string
+  boundaries: string
+
+@model BusProtocol
+  rule: string
+  mechanism: string
+  format: string
+
+# ⚙️ HMLR Scope & Ecosystem Governance Manifest
+HMLR (HyperMedia Language Runtime) is the universal runtime, execution engine, and developer inspection layer for the hyperlibs ecosystem.
+It executes `.fx` functional programs and `.mx` spatial documents natively, provides an ultra-light (<50KB) WebAssembly VM for Cloudflare Workers, and ships as a Chromium/Firefox DevTools extension (.crx) to audit hypermedia velocity and inspect live reactive signals and 3D viewports.
+
+---
+
+## 🏛️ Scope of HMLR | @model SubsystemScope
+| name                  | subsystem    | status      | responsibility                                                                                                  | boundaries                                                                                             |
+| Browser DevTools Ext  | extension    | active      | WebExtension (Manifest V3) with 4 panels: Signals, Hypermedia Audit, 3D Spatial HUD, and Agentic .mx Telemetry. | Zero overhead in production; only connects when DevTools is opened. Never modifies page DOM arbitrarily. |
+| Hypermedia Auditor    | extension    | active      | Replaces generic Lighthouse with Hypermedia Velocity metrics (swap latency, payload size, zero-JS purity).      | Pure passive telemetry listener.                                                                       |
+| Wasm Execution VM     | wasm_vm      | planned     | High-performance <50KB Wasm runtime for Cloudflare Workers & browsers (fetch(req) -> Response).                | Zero Node.js legacy dependencies; pure edge standards.                                                 |
+| .fx Compiler Kernel   | compiler_fx  | planned     | Functional, immutable, F#-inspired compiler with pattern matching, Result<T,E>, and strict type inference.      | Emits HMLR Intermediate Representation (HIR); zero JS coercion bugs.                                   |
+| .mx Spatial Parser    | parser_mx    | active      | Streaming zero-copy parser for flat spatial coordinate grammar (@pin, @3d, @model, and TSV tables).             | Replaces JSON/YAML configurations; 75% token reduction.                                                |
+| AI Self-Healing Diags | diagnostics  | active      | Streams deterministic @diag FX-XXXX structured diagnostics for autonomous AI code repair.                       | Emits pure .mx format; never emits raw verbose JSON blobs.                                              |
+
+---
+
+## 🌐 Ecosystem Communication Bus Protocol | @model BusProtocol
+| rule                  | mechanism                                                                                 | format                                                     |
+| Periodic Sync Pull    | HMLR reads https://raw.githubusercontent.com/hyperlibs/htmxUI/master/docs/UPDATE.mx        | Pure .mx (@feed BuildFeed, @model EcosystemTimeline)       |
+| Directives Ingestion  | Ingest table @model RepoInstruction where target == "HMLR" or target == "all"             | Deterministic tabular action items (action_summary/detail) |
+| Feedback & Status Out | HMLR emits its build, test, and boundary status back in pure .mx syntax                   | @model BoundaryVerification & @diag FX-XXXX                |
+| Zero Polling Overhead | Sync occurs upon git commit trigger or developer command "UPDATE.mx"                      | Event-driven master bus                                    |
+
+---
+
+## ⛔ Hard Prohibitions for HMLR
+1. **NO UI REIMPLEMENTATION**: Do NOT build buttons, form controls, or Tailwind widgets inside HMLR. All UI primitives belong exclusively to `htmxUI`.
+2. **NO 3D SHADER REIMPLEMENTATION**: Do NOT implement 3D rendering engines or physics shaders inside HMLR. All 3D spatial viewports belong exclusively to `htmFX`.
+3. **NO JSON FOR INTERNAL SCHEMAS**: All configs, diagnostics, and data streams inside HMLR MUST use `.mx` and `.fx`. JSON is reserved exclusively for external third-party network boundaries.
+4. **NO HEAVY RUNTIMES**: Do NOT rely on Node.js runtime built-ins (`fs`, `child_process`). The runtime must target Wasm, Edge Workers, and WebExtensions natively.
+
+---
+
+## 🤖 HMLR Identity Summary for AI Agents
+You are the **HMLR (HyperMedia Language Runtime) Engine Architect**.
+Your job is to build the browser extension, the runtime Wasm VM, and the `.mx` / `.fx` compiler kernel.
+Always monitor `UPDATE.mx` from `hyperlibs/htmxUI` to remain synchronized with ecosystem milestones.

@@ -1,0 +1,143 @@
+@meta
+  project: HMLR
+  title: HyperMedia Language Runtime & Browser DevTools Extension
+  version: 1.0.0
+  runtime: hmlr@1.0
+  repo: github.com/hyperlibs/HMLR
+  license: MIT
+  architecture: Common Language Runtime & WebExtension Suite
+
+@type PanelType = signals* | audit | spatial | diagnostics
+@type TargetEngine = htmxui* | htmfx | hmlr_wasm | legacy_js
+@type Severity = info* | warning | error | critical
+
+@model ExtensionPanel
+  id: string
+  title: string
+  panel_type: PanelType
+  target: TargetEngine
+  active: bool
+
+@model AuditMetric
+  name: string
+  score_pct: int
+  payload_kb: float
+  swap_latency_ms: float
+  token_cost_llm: int
+  purity_grade: string
+
+# HMLR: HyperMedia Language Runtime & DevTools Inspector
+A high-performance Common Language Runtime (CLR-style) virtual machine (<50KB Wasm) paired with a Chromium/Firefox DevTools extension (.crx).
+Replaces generic Lighthouse auditing with hypermedia velocity metrics, inspects live HxBolt signal graphs, tracks htmFX 3D spatial viewports, and streams token-dense .mx diagnostics for autonomous AI self-healing.
+
+## Extension DevTools Panels | @model ExtensionPanel
+| id           | title                        | panel_type   | target       | active |
+| panel-signals| ⚡ Reactive Signal Graph      | signals      | htmxui       | true   |
+| panel-audit  | 🚀 Hypermedia Velocity Audit | audit        | htmxui       | true   |
+| panel-spatial| 🪐 3D Spatial & Physics HUD  | spatial      | htmfx        | true   |
+| panel-diag   | 🤖 Agentic .mx Telemetry     | diagnostics  | hmlr_wasm    | true   |
+
+## Hypermedia Audit vs. Chrome Lighthouse | @model AuditMetric
+| name                  | score_pct | payload_kb | swap_latency_ms | token_cost_llm | purity_grade |
+| Pure Hypermedia Flow  |       100 |       1.40 |            0.80 |             95 | AAA (Zero JS)|
+| Reactive Signal Patch |        98 |       0.20 |            0.15 |             28 | AAA          |
+| 3D Spatial Viewport   |        96 |      17.60 |            1.20 |             80 | AA+ (WebGPU) |
+| Legacy React/JSON SPA |        42 |     480.00 |           45.00 |           1850 | D- (Heavy JS)|
+
+## Architecture of HMLR DevTools Extension
+
+```text
+extension/
+├── manifest.json              # WebExtension Manifest V3 (Chrome, Edge, Firefox)
+├── background.ts              # Service worker auto-detecting htmx, htmxUI & htmFX
+├── content_script.ts          # Zero-overhead bridge inspecting DOM, signals, and viewports
+└── devtools/
+    ├── devtools.html          # DevTools Tab Container
+    ├── panel_signals.mx       # Panel A: Real-time HxBolt signal graph & time-travel replay
+    ├── panel_audit.mx         # Panel B: Hypermedia Velocity audit engine (Lighthouse bypass)
+    ├── panel_spatial.mx       # Panel C: htmFX 3D entity coordinate tracker & fog inspector
+    └── panel_agentic.mx       # Panel D: Live @diag FX-XXXX streaming telemetry
+```
+
+## Manifest V3 Specification (`extension/manifest.json`)
+
+```json
+{
+  "manifest_version": 3,
+  "name": "HMLR — HyperMedia Language Runtime & Spatial DevTools",
+  "version": "1.0.0",
+  "description": "Native DevTools inspector and velocity auditor for htmxUI, htmFX, and .mx/.fx runtimes.",
+  "devtools_page": "devtools/devtools.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": ["activeTab", "storage"]
+}
+```
+
+## Flat .mx Spatial DevTools Panel Layout (`panel_signals.mx`)
+
+```mx
+@viewport 1280x720
+
+# Panel Header
+@pin[top-left]:         Header("⚡ HxBolt Signal Tree", sub: "Active Reactive Scopes")
+@pin[top-right]:        TelemetryBadge("120 FPS Ticker Synchronized", color: "emerald")
+
+# Main Inspection Viewport
+@pin[left-sidebar]:     SignalTree(filter: searchSignal, select: activeSignalScope)
+@pin[center]:           StateInspector(scope: activeSignalScope, timeTravel: true)
+@pin[bottom-bar]:       ActionBar(
+                          Button("⏪ Step Backward", action: $timeTravel(-1)),
+                          Button("⏩ Step Forward", action: $timeTravel(1)),
+                          Button("📋 Copy State as .mx", action: $copyStateMatrix())
+                        )
+```
+
+## Autonomous AI Healing & Streaming Diagnostics (`panel_agentic.mx`)
+
+```mx
+@diag FX-04012: UnresolvedRouteTarget
+  file: routes/dashboard.mx:14:8
+  cause: Typo in route target '/analyticss'
+  candidates: /analytics | /settings
+  fix: /analytics
+
+@diag FX-01089: UnusedSignalScope
+  file: views/cockpit.mx:22:1
+  cause: Signal 'isMuted' declared in hx-state but never bound in child nodes
+  fix: Bind with hx-text or remove from state object
+```
+
+## Runtime Kernel (.fx Implementation Blueprint)
+
+```fsharp
+// runtime/src/diagnostics_stream.fx
+module HMLR.Diagnostics
+
+type DiagnosticCode = string
+type Severity = Error | Warning | Info
+
+type DiagnosticEntry = {
+    Code: DiagnosticCode
+    Severity: Severity
+    FilePos: string
+    Culprit: string
+    FixSuggestion: string
+}
+
+let formatDiagnosticMx (entry: DiagnosticEntry) : string =
+    $"@diag {entry.Code}: {entry.Severity}\n  file: {entry.FilePos}\n  culprit: {entry.Culprit}\n  fix: {entry.FixSuggestion}\n"
+```
+
+## Exported Runtime Targets
+- Browser DevTools Extension: `dist/hmlr-devtools.crx` & `dist/hmlr-devtools.zip`
+- Edge Execution VM: `dist/hmlr.wasm` (<50KB) with Cloudflare Worker `fetch(req) -> Response` entry point.
+- Host Integration Bridge: Attaches seamlessly to `window.HMLR` when present in the DOM.

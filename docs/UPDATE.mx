@@ -1,10 +1,10 @@
 @meta
   event_bus: UPDATE.mx
-  timestamp: 2026-09-04T13:10:00Z
+  timestamp: 2026-09-04T14:16:00Z
   ecosystem: hyperlibs
   source_repo: hyperlibs/htmxUI
-  subscribers: [hyperlibs/htmfx, hyperlibs/HMLR]
-  version: 2.0.0
+  subscribers: [hyperlibs/htmxUI, hyperlibs/htmfx, hyperlibs/HMLR]
+  version: 2.1.0
   status: ACTIVE_AND_SYNCHRONIZED
 
 @type RepoTarget = htmxui | htmfx | HMLR | all
@@ -44,19 +44,21 @@ This document is the single source of truth for multi-agent autonomous synchroni
 |    9 | Universal .mx & .fx Policy   | Replaced JSON with .mx (schemas/data/diagnostics) and JS with .fx (logic/solvers).        | Slashes context tokens by 75%–93%; zero JSON syntax hallucinations.                       |
 |   10 | HMLR Trojan Horse Strategy   | Launch HMLR as a Chrome/Firefox DevTools extension to audit hypermedia and inspect stack. | Devs/agents adopt it on Day 1; paves way for native browser C++ inclusion.                |
 |   11 | Universal Language Policy    | Default: JS -> .fx, JSON/TOML -> .mx. Restrict JS/JSON to third-party wire compatibility. | Proactive refactoring mandate across all repos to eliminate token waste and bloat.         |
+|   12 | The Hyperkill Full-Stack     | HTMXUI (UI) + Go (Backend Services) + Rust (HMLR Wasm Engine). Zero Node/NPM.              | Ultra-low latency edge performance with 100% standard W3C browser compatibility.          |
 
 ---
 
 ## 📋 Direct Action Directives for Repositories | @model RepoInstruction
 | target | priority  | title                          | action_summary                                                      | action_detail                                                                                                |
 | all    | immediate | Mandatory .fx & .mx Default    | Default: JS -> .fx, JSON/TOML -> .mx. Refactor proactively.         | Use .fx for all logic/math and .mx for all data/schemas. JS/JSON permitted ONLY for unavoidable wire APIs.    |
+| htmxui | immediate | Maintain Host Core Purity      | Protect ~40KB reactive hypermedia core from scope creep.            | Continue refining signals, 120 FPS ticker, virtualized grid, forms, and component catalog in .mx format.    |
+| htmxui | high      | Go Full-Stack Examples         | Provide canonical Go + htmxUI hypermedia backend service templates. | Show Go net/http handlers streaming htmxUI HTML fragments in <1ms without JS SPA build steps.               |
 | htmfx  | immediate | Adopt .mx Diagnostics & Spec   | Ensure all compiler and runtime error telemetry emits @diag FX-XXXX.| In docs/HYPERFX_AGENTIC_WIKI.md and src/diagnostics/, replace any JSON error schemas with pure .mx format.  |
 | htmfx  | high      | Decoupled Peer Host Boundary   | Never duplicate htmxUI components, buttons, or signals.             | Maintain "peerDependencies": { "@hyperlibs/htmxui": ">=1.0.0" }. Mount all 3D via HTMXUI.directive('3d').  |
-| htmfx  | normal    | Implement Canonical htmfx.mx   | Use htmfx.mx specification as single source of truth for 3D engine. | Export <hx-viewport>, <hx-mesh>, <hx-particle>, 3denv, 3datmos, and .fx spatial solvers.                     |
-| HMLR   | immediate | Initialize HMLR Repository     | Scaffold github.com/hyperlibs/HMLR using canonical hmlr.mx spec.    | Build Chrome/Firefox DevTools extension (Manifest V3) with 4 core panels: Signals, Audit, Spatial, Diag.     |
-| HMLR   | high      | Implement Hypermedia Audit     | Replace generic Lighthouse with Hypermedia Velocity metrics.        | Measure HTML swap payload KB, swap latency ms, token cost, and Zero-JS purity grade.                        |
-| HMLR   | high      | Real-Time Signal & 3D Tracker  | Ingest HxBolt signal graph and htmFX spatial coordinate viewports.  | Provide time-travel state debugging and live @3d[x, y, z] coordinate entity inspection.                      |
-| HMLR   | normal    | Wasm Execution VM Kernel       | Develop <50KB Wasm runtime for Cloudflare Workers (fetch -> Resp).  | Single-pass zero-copy stream parser for .mx documents and .fx functional expressions.                       |
+| htmfx  | high      | Implement Canonical htmfx.mx   | Use htmfx.mx specification as single source of truth for 3D engine. | Export <hx-viewport>, <hx-mesh>, <hx-particle>, 3denv, 3datmos, and .fx spatial physics kernels.            |
+| HMLR   | immediate | Rust/Wasm Native Kernel        | Build HMLR core in Rust (crates/hmlr-core, crates/hmlr-wasm).        | Eliminate Node.js/NPM dependencies completely. Produce standalone <50KB Wasm binary for Cloudflare & DevTools.|
+| HMLR   | high      | Chrome/Firefox DevTools Ext    | Build Manifest V3 WebExtension with 4 panels: Signals, Audit, 3D, Diag.| Provide live HxBolt signal tree, Hypermedia Velocity audit (vs LH), and live 3D entity coordinate HUD.     |
+| HMLR   | normal    | Zero-Copy .mx Parser & .fx HIR | Develop streaming zero-copy parser in Rust for .mx and .fx AST.     | Enable sub-millisecond parsing and deterministic AI self-healing diagnostics (@diag FX-XXXX).                |
 
 ---
 
@@ -64,8 +66,8 @@ This document is the single source of truth for multi-agent autonomous synchroni
 
 ```mx
 @diag FX-0000: SYSTEM_HEALTH
-  status: SYNCHRONIZED
+  status: SYNCHRONIZED_AND_LOCKED
   source: docs/UPDATE.mx
   scope: [htmxUI, htmFX, HMLR]
-  message: Ecosystem aligned on universal .mx grammar, decoupled architecture, and HMLR DevTools roadmap.
+  message: Ecosystem aligned on universal .mx grammar, Rust/Wasm HMLR runtime, Go hypermedia backends, and decoupled htmFX spatial extensions.
 ```

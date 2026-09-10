@@ -9,7 +9,7 @@
  * - Optimistic UI updates with automatic rollback on error
  */
 
-import type { FormState, ValidatorFn, HxFormAPI } from './types';
+import type { FormState, ValidatorFn, HxFormAPI, CellTransactionOptions, ICellTransactionManager } from './types';
 
 export const defaultValidators: Record<string, ValidatorFn> = {
   required: (val: any) => {
@@ -334,14 +334,165 @@ export function initForm(form: HTMLFormElement): FormState {
   return state;
 }
 
+// -----------------------------------------------------------------------------
+// HxForm Cell Transaction Engine — Optimistic Updates, Saving/Error Status, Rollback
+// -----------------------------------------------------------------------------
+
+interface CellTxRecord {
+  cellEl: HTMLElement | null;
+  row: number;
+  col: number;
+  oldValue: any;
+  newValue: any;
+  timestamp: number;
+}
+
+const cellUndoStack: CellTxRecord[] = [];
+const cellRedoStack: CellTxRecord[] = [];
+
+export async function cellTransaction(cellEl: HTMLElement | null, options: CellTransactionOptions): Promise<boolean> {
+  const { row, col, oldValue, newValue, endpoint, headers, onCommit, onRollback } = options;
+
+  // Optimistic UI state
+  if (cellEl) {
+    cellEl.classList.remove('hs-cell-error', 'hs-cell-saved', 'hx-cell-error', 'hx-cell-saved');
+    cellEl.classList.add('hs-cell-saving', 'hx-cell-saving');
+    const isInput = cellEl.tagName === 'INPUT' || cellEl.tagName === 'TEXTAREA' || (typeof HTMLInputElement !== 'undefined' && cellEl instanceof HTMLInputElement);
+    if (isInput) {
+      (cellEl as any).value = newValue !== undefined && newValue !== null ? String(newValue) : '';
+    } else {
+      cellEl.textContent = newValue !== undefined && newValue !== null ? String(newValue) : '';
+    }
+  }
+
+  cellUndoStack.push({ cellEl, row, col, oldValue, newValue, timestamp: Date.now() });
+  cellRedoStack.length = 0;
+
+  if (!endpoint) {
+    if (cellEl) {
+      cellEl.classList.remove('hs-cell-saving', 'hx-cell-saving');
+      cellEl.classList.add('hs-cell-saved', 'hx-cell-saved');
+      setTimeout(() => cellEl.classList.remove('hs-cell-saved', 'hx-cell-saved'), 600);
+    }
+    if (onCommit) onCommit({ success: true, row, col, value: newValue });
+    return true;
+  }
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'HX-Request': 'true',
+        ...headers
+      },
+      body: JSON.stringify({ row, col, oldValue, newValue })
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+
+    const data = await res.json().catch(() => ({}));
+    if (cellEl) {
+      cellEl.classList.remove('hs-cell-saving', 'hx-cell-saving');
+      cellEl.classList.add('hs-cell-saved', 'hx-cell-saved');
+      setTimeout(() => cellEl.classList.remove('hs-cell-saved', 'hx-cell-saved'), 600);
+    }
+    if (onCommit) onCommit(data);
+    return true;
+  } catch (err: any) {
+    // Rollback on error
+    if (cellEl) {
+      cellEl.classList.remove('hs-cell-saving', 'hx-cell-saving');
+      cellEl.classList.add('hs-cell-error', 'hx-cell-error');
+      const isInput = cellEl.tagName === 'INPUT' || cellEl.tagName === 'TEXTAREA' || (typeof HTMLInputElement !== 'undefined' && cellEl instanceof HTMLInputElement);
+      if (isInput) {
+        (cellEl as any).value = oldValue !== undefined && oldValue !== null ? String(oldValue) : '';
+      } else {
+        cellEl.textContent = oldValue !== undefined && oldValue !== null ? String(oldValue) : '';
+      }
+      setTimeout(() => cellEl.classList.remove('hs-cell-error', 'hx-cell-error'), 1500);
+    }
+    if (onRollback) onRollback(err);
+    return false;
+  }
+}
+
+export const cellTransactions: ICellTransactionManager = {
+  commit: (cellEl, options) => cellTransaction(cellEl, options),
+  undo(): boolean {
+    const last = cellUndoStack.pop();
+    if (!last) return false;
+    cellRedoStack.push(last);
+    if (last.cellEl) {
+      const isInput = last.cellEl.tagName === 'INPUT' || last.cellEl.tagName === 'TEXTAREA' || (typeof HTMLInputElement !== 'undefined' && last.cellEl instanceof HTMLInputElement);
+      if (isInput) {
+        (last.cellEl as any).value = last.oldValue !== undefined && last.oldValue !== null ? String(last.oldValue) : '';
+      } else {
+        last.cellEl.textContent = last.oldValue !== undefined && last.oldValue !== null ? String(last.oldValue) : '';
+      }
+      last.cellEl.classList.add('hs-cell-undo');
+      setTimeout(() => last.cellEl?.classList.remove('hs-cell-undo'), 600);
+    }
+    return true;
+  },
+  redo(): boolean {
+    const next = cellRedoStack.pop();
+    if (!next) return false;
+    cellUndoStack.push(next);
+    if (next.cellEl) {
+      const isInput = next.cellEl.tagName === 'INPUT' || next.cellEl.tagName === 'TEXTAREA' || (typeof HTMLInputElement !== 'undefined' && next.cellEl instanceof HTMLInputElement);
+      if (isInput) {
+        (next.cellEl as any).value = next.newValue !== undefined && next.newValue !== null ? String(next.newValue) : '';
+      } else {
+        next.cellEl.textContent = next.newValue !== undefined && next.newValue !== null ? String(next.newValue) : '';
+      }
+      next.cellEl.classList.add('hs-cell-redo');
+      setTimeout(() => next.cellEl?.classList.remove('hs-cell-redo'), 600);
+    }
+    return true;
+  },
+  canUndo: () => cellUndoStack.length > 0,
+  canRedo: () => cellRedoStack.length > 0,
+  clearHistory: () => {
+    cellUndoStack.length = 0;
+    cellRedoStack.length = 0;
+  }
+};
+
 export const HxForm: HxFormAPI = {
   validators: defaultValidators,
   messages: defaultMessages,
-  init: initForm
+  init: initForm,
+  cellTransaction,
+  cellTransactions
 };
 
 if (typeof window !== 'undefined') {
   window.HxForm = HxForm;
+
+  // Keyboard shortcut listener for cell transaction undo/redo
+  window.addEventListener('keydown', (e: KeyboardEvent) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+      if (e.shiftKey) {
+        if (cellTransactions.canRedo()) {
+          e.preventDefault();
+          cellTransactions.redo();
+        }
+      } else {
+        if (cellTransactions.canUndo()) {
+          e.preventDefault();
+          cellTransactions.undo();
+        }
+      }
+    } else if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+      if (cellTransactions.canRedo()) {
+        e.preventDefault();
+        cellTransactions.redo();
+      }
+    }
+  });
 
   if (typeof (window as any).htmx !== 'undefined') {
     (window as any).htmx.defineExtension('form', {

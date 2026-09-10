@@ -50,6 +50,17 @@ var KNOWN_ATTRIBUTES = new Set([
   "hx-class",
   "hx-style",
   "hx-ref",
+  "hx-cell",
+  "hx-matrix",
+  "hx-matrix-cell",
+  "hx-stream-batch",
+  "hx-virtual-2d",
+  "hx-matrix-nav",
+  "hx-calc",
+  "hx-pinned-left",
+  "hx-pinned-right",
+  "hx-virtual-row-height",
+  "hx-virtual-col-width",
   "hx-transition",
   "hx-transition:enter",
   "hx-transition:enter-start",
@@ -254,6 +265,183 @@ function createReactiveObject(target, rootNotify = null, path = "") {
     }
   });
   return proxy;
+}
+
+class SparseMatrix {
+  rows;
+  cols;
+  data = new Map;
+  signals = new Map;
+  cellSubscribers = new Map;
+  allSubscribers = new Set;
+  constructor(rows = 1e6, cols = 16384, initialData) {
+    this.rows = rows;
+    this.cols = cols;
+    if (initialData) {
+      if (Array.isArray(initialData)) {
+        for (const [r, c, val] of initialData) {
+          this.data.set(`${r}:${c}`, val);
+        }
+      } else {
+        for (const [key, val] of Object.entries(initialData)) {
+          this.data.set(key, val);
+        }
+      }
+    }
+  }
+  getCellSignal(key) {
+    let sig = this.signals.get(key);
+    if (!sig) {
+      sig = new SignalTracker;
+      this.signals.set(key, sig);
+    }
+    return sig;
+  }
+  get(row, col) {
+    const key = `${row}:${col}`;
+    this.getCellSignal(key).depend();
+    return this.data.get(key);
+  }
+  set(row, col, value, flashClass) {
+    const key = `${row}:${col}`;
+    const oldVal = this.data.get(key);
+    if (oldVal === value && !flashClass)
+      return;
+    if (value === undefined || value === null || value === "") {
+      this.data.delete(key);
+    } else {
+      this.data.set(key, value);
+    }
+    if (this.signals.has(key)) {
+      this.signals.get(key).notify();
+    }
+    const subs = this.cellSubscribers.get(key);
+    if (subs) {
+      for (const cb of Array.from(subs)) {
+        cb(value, flashClass);
+      }
+    }
+    for (const cb of Array.from(this.allSubscribers)) {
+      cb(row, col, value, flashClass);
+    }
+  }
+  batch(updates) {
+    for (const [r, c, val, flashClass] of updates) {
+      this.set(r, c, val, flashClass);
+    }
+  }
+  subscribe(row, col, callback) {
+    const key = `${row}:${col}`;
+    if (!this.cellSubscribers.has(key)) {
+      this.cellSubscribers.set(key, new Set);
+    }
+    const set = this.cellSubscribers.get(key);
+    set.add(callback);
+    return () => {
+      set.delete(callback);
+      if (set.size === 0)
+        this.cellSubscribers.delete(key);
+    };
+  }
+  subscribeAll(callback) {
+    this.allSubscribers.add(callback);
+    return () => this.allSubscribers.delete(callback);
+  }
+  toObject() {
+    const obj = {};
+    for (const [k, v] of this.data.entries()) {
+      obj[k] = v;
+    }
+    return obj;
+  }
+  clear() {
+    const keys = Array.from(this.data.keys());
+    this.data.clear();
+    for (const key of keys) {
+      if (this.signals.has(key))
+        this.signals.get(key).notify();
+      const subs = this.cellSubscribers.get(key);
+      if (subs) {
+        for (const cb of Array.from(subs))
+          cb(undefined);
+      }
+    }
+  }
+  size() {
+    return this.data.size;
+  }
+}
+var matrices = {};
+var streamBatchQueues = new Map;
+var streamBatchRafIds = new Map;
+function streamBatch(callback, fps = 60) {
+  const interval = 1000 / fps;
+  let queue = streamBatchQueues.get(fps);
+  if (!queue) {
+    queue = new Set;
+    streamBatchQueues.set(fps, queue);
+  }
+  queue.add(callback);
+  if (!streamBatchRafIds.has(fps)) {
+    if (typeof requestAnimationFrame !== "undefined" && fps >= 60) {
+      const id = requestAnimationFrame(() => {
+        streamBatchRafIds.delete(fps);
+        const toRun = Array.from(queue);
+        queue.clear();
+        for (const fn of toRun) {
+          try {
+            fn();
+          } catch (err) {
+            console.error("[HxBolt:streamBatch]", err);
+          }
+        }
+      });
+      streamBatchRafIds.set(fps, id);
+    } else {
+      const id = setTimeout(() => {
+        streamBatchRafIds.delete(fps);
+        const toRun = Array.from(queue);
+        queue.clear();
+        for (const fn of toRun) {
+          try {
+            fn();
+          } catch (err) {
+            console.error("[HxBolt:streamBatch]", err);
+          }
+        }
+      }, interval);
+      streamBatchRafIds.set(fps, id);
+    }
+  }
+}
+function parseMicroDelta(deltaText, targetMatrix) {
+  const deltas = [];
+  if (!deltaText)
+    return deltas;
+  const lines = deltaText.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  for (const line of lines) {
+    let clean = line;
+    if (clean.startsWith("Δ") || clean.startsWith("delta:")) {
+      clean = clean.replace(/^(Δ|delta:)\s*/, "");
+    }
+    const parts = clean.split(":");
+    if (parts.length >= 3) {
+      const row = parseInt(parts[0], 10);
+      const col = parseInt(parts[1], 10);
+      let val = parts[2];
+      if (!isNaN(val) && val !== "") {
+        val = Number(val);
+      }
+      const flashClass = parts[3] || undefined;
+      if (!isNaN(row) && !isNaN(col)) {
+        deltas.push({ row, col, val, flashClass });
+        if (targetMatrix) {
+          targetMatrix.set(row, col, val, flashClass);
+        }
+      }
+    }
+  }
+  return deltas;
 }
 var audioCtx = null;
 function getAudioContext() {
@@ -882,6 +1070,53 @@ function bindDirectives(rootEl, state) {
       executeAction(`${propPath} = $eventValue`, state, { $el: el, $eventValue: val });
     });
   });
+  const cellEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll("[hx-cell], [hx-matrix-cell]") : []);
+  if (rootEl.hasAttribute && (rootEl.hasAttribute("hx-cell") || rootEl.hasAttribute("hx-matrix-cell")))
+    cellEls.unshift(rootEl);
+  cellEls.forEach((el) => {
+    checkAttributeTypos(el);
+    const cellAttr = el.getAttribute("hx-cell") || el.getAttribute("hx-matrix-cell");
+    const [rStr, cStr] = cellAttr.split(/[,:]/).map((s) => s.trim());
+    const row = parseInt(rStr, 10);
+    const col = parseInt(cStr, 10);
+    if (isNaN(row) || isNaN(col))
+      return;
+    const matrixName = el.getAttribute("hx-matrix") || el.closest("[hx-matrix]")?.getAttribute("hx-matrix") || "default";
+    let targetMatrix = matrices[matrixName];
+    if (!targetMatrix && state && state.$matrix) {
+      targetMatrix = state.$matrix;
+    }
+    if (targetMatrix) {
+      const isInput = el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement;
+      targetMatrix.subscribe(row, col, (val, flashClass) => {
+        const displayVal = val !== undefined && val !== null ? String(val) : "";
+        if (isInput) {
+          el.value = displayVal;
+        } else {
+          el.textContent = displayVal;
+        }
+        if (flashClass) {
+          const classes = flashClass.split(/\s+/).filter(Boolean);
+          el.classList.add(...classes);
+          setTimeout(() => el.classList.remove(...classes), 600);
+        }
+      });
+      const initialVal = targetMatrix.get(row, col);
+      if (initialVal !== undefined) {
+        if (isInput) {
+          el.value = String(initialVal);
+        } else {
+          el.textContent = String(initialVal);
+        }
+      }
+      if (isInput) {
+        el.addEventListener("change", () => {
+          const v = el.value;
+          targetMatrix.set(row, col, isNaN(v) || v === "" ? v : Number(v));
+        });
+      }
+    }
+  });
   customDirectives.forEach((handler, dirName) => {
     const matchedEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll(`[${dirName}]`) : []);
     if (rootEl.hasAttribute && rootEl.hasAttribute(dirName))
@@ -1146,6 +1381,20 @@ var HxBolt = {
   getState(el) {
     return elementStates.get(el);
   },
+  matrix(rows = 1e6, cols = 16384, initialData) {
+    const mat = new SparseMatrix(rows, cols, initialData);
+    if (!matrices["default"])
+      matrices["default"] = mat;
+    return mat;
+  },
+  getMatrix(name = "default") {
+    return matrices[name];
+  },
+  registerMatrix(name, matrix) {
+    matrices[name] = matrix;
+  },
+  streamBatch,
+  parseMicroDelta,
   init(root) {
     const scopeRoots = root.querySelectorAll ? root.querySelectorAll('[hx-state], [hx-ext="reactive"]') : [];
     scopeRoots.forEach(initComponent);
@@ -1211,6 +1460,22 @@ if (typeof window !== "undefined") {
       }
     }
   });
+  document.body.addEventListener("hxMatrixUpdate", function(evt) {
+    const detail = evt.detail;
+    if (detail) {
+      const matrixName = detail.matrix || "default";
+      const targetMat = matrices[matrixName];
+      if (targetMat) {
+        if (typeof detail.delta === "string") {
+          parseMicroDelta(detail.delta, targetMat);
+        } else if (detail.row !== undefined && detail.col !== undefined) {
+          targetMat.set(detail.row, detail.col, detail.val, detail.flashClass);
+        } else if (Array.isArray(detail.batch)) {
+          targetMat.batch(detail.batch);
+        }
+      }
+    }
+  });
   if (typeof window.htmx !== "undefined") {
     window.htmx.defineExtension("reactive", {
       onEvent: function(name, evt) {
@@ -1219,6 +1484,26 @@ if (typeof window !== "undefined") {
           if (elt && elt.nodeType === 1) {
             if (elt.hasAttribute("hx-state") || elt.querySelector("script[hx-state]") || elt.getAttribute("hx-ext") === "reactive") {
               initComponent(elt);
+            }
+          }
+        }
+      }
+    });
+    window.htmx.defineExtension("grid-delta", {
+      onEvent: function(name, evt) {
+        if (name === "htmx:sseMessage" || name === "htmx:wsAfterMessage" || name === "htmx:afterOnLoad") {
+          const text = evt.detail?.data || evt.detail?.xhr?.responseText;
+          if (text && typeof text === "string" && (text.includes("Δ") || text.includes("delta:"))) {
+            const matrixName = evt.detail?.elt?.getAttribute("hx-matrix") || "default";
+            const targetMat = matrices[matrixName] || matrices["default"];
+            if (targetMat) {
+              const streamBatchAttr = evt.detail?.elt?.getAttribute("hx-stream-batch");
+              if (streamBatchAttr) {
+                const fps = parseInt(streamBatchAttr.replace("fps", ""), 10) || 60;
+                streamBatch(() => parseMicroDelta(text, targetMat), fps);
+              } else {
+                parseMicroDelta(text, targetMat);
+              }
             }
           }
         }
@@ -1275,18 +1560,21 @@ if (typeof window !== "undefined") {
 export {
   unregisterModal,
   undoState,
+  streamBatch,
   runWithEffect,
   reportError,
   registerModal,
   redoState,
   recordStateSnapshot,
   playProceduralSound,
+  parseMicroDelta,
   initComponent,
   executeAction,
   evaluateExpression,
   createReactiveObject,
   config,
   applyTransition,
+  SparseMatrix,
   SignalTracker,
   HyperFX,
   HxBolt,

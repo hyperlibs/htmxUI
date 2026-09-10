@@ -6,12 +6,14 @@
  */
 
 export * from './types';
-export { HxBolt, SignalTracker, createReactiveObject, evaluateExpression, executeAction, runWithEffect } from './htmx-bolt';
-export { HxFlash, FlashDatabase } from './htmx-flash';
-export { HxForm, defaultValidators, defaultMessages, validateInput, initForm } from './htmx-form';
+export { HxBolt, SignalTracker, SparseMatrix, streamBatch, parseMicroDelta, createReactiveObject, evaluateExpression, executeAction, runWithEffect } from './htmx-bolt';
+export { HxFlash, FlashDatabase, ColumnStore } from './htmx-flash';
+export { HxForm, defaultValidators, defaultMessages, validateInput, initForm, cellTransaction, cellTransactions } from './htmx-form';
 export { HxVibe, FlipManager, initVibe } from './htmx-vibe';
-export { HxA11y, trapFocus, initRovingTabindex, announce, initA11y } from './htmx-a11y';
-export { VirtualScroller, initVirtual } from './htmx-virtual';
+export { HxA11y, trapFocus, initRovingTabindex, initMatrixNav, announce, initA11y } from './htmx-a11y';
+export { VirtualScroller, VirtualScroller2D, initVirtual } from './htmx-virtual';
 export { EnterpriseDataGrid, initGrids } from './htmx-grid';
 export { HxOffline } from './htmx-offline';
 export { HxDevTools } from './htmx-devtools';
+export { HxCalc, CalcEngine, cellToCoords, coordsToCell, expandRange } from './htmx-calc';
+

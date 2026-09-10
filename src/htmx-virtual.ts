@@ -1,10 +1,4 @@
-/**
- * HTMX-VIRTUAL — 100k-Row High-Performance DOM Virtualization Engine
- * 
- * Recycles DOM nodes based on viewport scroll position with top/bottom spacers.
- * Enables smooth 60fps scrolling for massive datasets (10,000 to 100,000+ rows)
- * without memory bloat or browser layout thrashing.
- */
+import type { VirtualScroll2DOptions, IVirtualScroller2D } from './types';
 
 export interface VirtualScrollOptions {
   itemHeight: number;
@@ -54,7 +48,9 @@ export class VirtualScroller {
     }
 
     this.container.addEventListener('scroll', () => this.onScroll(), { passive: true });
-    window.addEventListener('resize', () => this.onScroll(), { passive: true });
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => this.onScroll(), { passive: true });
+    }
   }
 
   setItems(items: any[]): void {
@@ -115,8 +111,6 @@ export class VirtualScroller {
 
         // Bind item data if HxBolt is present
         if (typeof (window as any).HxBolt !== 'undefined') {
-          const itemScope = { item, index: i, idx: i };
-          // Simple interpolation for template text
           rootEl.querySelectorAll('[hx-text]').forEach(textEl => {
             const expr = textEl.getAttribute('hx-text');
             if (expr && expr.startsWith('item.')) {
@@ -136,14 +130,224 @@ export class VirtualScroller {
   }
 }
 
+// -----------------------------------------------------------------------------
+// HxVirtual 2D — Bi-Directional (X + Y) Matrix Viewport Virtualization
+// -----------------------------------------------------------------------------
+
+export class VirtualScroller2D implements IVirtualScroller2D {
+  container: HTMLElement;
+  totalRows: number;
+  totalCols: number;
+  rowHeight: number | ((rowIdx: number) => number);
+  colWidth: number | ((colIdx: number) => number);
+  bufferRows: number;
+  bufferCols: number;
+  pinnedLeft: number;
+  pinnedRight: number;
+  pinnedTop: number;
+  pinnedBottom: number;
+  renderCell?: (row: number, col: number) => HTMLElement | string;
+
+  private topSpacer: HTMLElement;
+  private bottomSpacer: HTMLElement;
+  private leftSpacer: HTMLElement;
+  private rightSpacer: HTMLElement;
+  private gridBody: HTMLElement;
+  private isTicking = false;
+  private resizeHandler: () => void;
+
+  constructor(container: HTMLElement, options?: Partial<VirtualScroll2DOptions>) {
+    this.container = container;
+    this.totalRows = options?.totalRows ?? parseInt(container.getAttribute('hx-virtual-rows') || '0', 10);
+    this.totalCols = options?.totalCols ?? parseInt(container.getAttribute('hx-virtual-cols') || '0', 10);
+    this.rowHeight = options?.rowHeight ?? parseInt(container.getAttribute('hx-virtual-row-height') || '32', 10);
+    this.colWidth = options?.colWidth ?? parseInt(container.getAttribute('hx-virtual-col-width') || '100', 10);
+    this.bufferRows = options?.bufferRows ?? parseInt(container.getAttribute('hx-virtual-buffer-rows') || '4', 10);
+    this.bufferCols = options?.bufferCols ?? parseInt(container.getAttribute('hx-virtual-buffer-cols') || '2', 10);
+    this.pinnedLeft = options?.pinnedLeft ?? parseInt(container.getAttribute('hx-pinned-left') || '0', 10);
+    this.pinnedRight = options?.pinnedRight ?? parseInt(container.getAttribute('hx-pinned-right') || '0', 10);
+    this.pinnedTop = options?.pinnedTop ?? parseInt(container.getAttribute('hx-pinned-top') || '0', 10);
+    this.pinnedBottom = options?.pinnedBottom ?? parseInt(container.getAttribute('hx-pinned-bottom') || '0', 10);
+    this.renderCell = options?.renderCell;
+
+    this.container.style.overflow = 'auto';
+    this.container.style.position = 'relative';
+
+    this.topSpacer = document.createElement('div');
+    this.topSpacer.className = 'hx-virtual-2d-top-spacer';
+    this.bottomSpacer = document.createElement('div');
+    this.bottomSpacer.className = 'hx-virtual-2d-bottom-spacer';
+    this.leftSpacer = document.createElement('div');
+    this.leftSpacer.className = 'hx-virtual-2d-left-spacer';
+    this.rightSpacer = document.createElement('div');
+    this.rightSpacer.className = 'hx-virtual-2d-right-spacer';
+
+    this.gridBody = document.createElement('div');
+    this.gridBody.className = 'hx-virtual-2d-body';
+
+    this.container.appendChild(this.topSpacer);
+    this.container.appendChild(this.gridBody);
+    this.container.appendChild(this.bottomSpacer);
+
+    this.container.addEventListener('scroll', () => this.onScroll(), { passive: true });
+    this.resizeHandler = () => this.onScroll();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', this.resizeHandler, { passive: true });
+    }
+    this.update();
+  }
+
+  private getRowH(rowIdx: number): number {
+    return typeof this.rowHeight === 'function' ? this.rowHeight(rowIdx) : this.rowHeight;
+  }
+
+  private getColW(colIdx: number): number {
+    return typeof this.colWidth === 'function' ? this.colWidth(colIdx) : this.colWidth;
+  }
+
+  setDimensions(rows: number, cols: number): void {
+    this.totalRows = rows;
+    this.totalCols = cols;
+    this.update();
+  }
+
+  setCellRenderer(renderer: (row: number, col: number) => HTMLElement | string): void {
+    this.renderCell = renderer;
+    this.update();
+  }
+
+  scrollTo(row: number, col: number): void {
+    const rowH = this.getRowH(0);
+    const colW = this.getColW(0);
+    this.container.scrollTop = row * rowH;
+    this.container.scrollLeft = col * colW;
+  }
+
+  onScroll(): void {
+    if (!this.isTicking) {
+      this.isTicking = true;
+      requestAnimationFrame(() => {
+        this.update();
+        this.isTicking = false;
+      });
+    }
+  }
+
+  update(): void {
+    if (this.totalRows === 0 || this.totalCols === 0) {
+      this.topSpacer.style.height = '0px';
+      this.bottomSpacer.style.height = '0px';
+      this.gridBody.innerHTML = '';
+      return;
+    }
+
+    const scrollTop = this.container.scrollTop;
+    const scrollLeft = this.container.scrollLeft;
+    const vpHeight = this.container.clientHeight || 400;
+    const vpWidth = this.container.clientWidth || 800;
+
+    const rowH = this.getRowH(0);
+    const colW = this.getColW(0);
+
+    const startRow = Math.max(this.pinnedTop, Math.floor(scrollTop / rowH) - this.bufferRows);
+    const endRow = Math.min(this.totalRows - this.pinnedBottom, Math.ceil((scrollTop + vpHeight) / rowH) + this.bufferRows);
+
+    const startCol = Math.max(this.pinnedLeft, Math.floor(scrollLeft / colW) - this.bufferCols);
+    const endCol = Math.min(this.totalCols - this.pinnedRight, Math.ceil((scrollLeft + vpWidth) / colW) + this.bufferCols);
+
+    const topHeight = startRow * rowH;
+    const bottomHeight = Math.max(0, (this.totalRows - endRow) * rowH);
+
+    this.topSpacer.style.height = `${topHeight}px`;
+    this.bottomSpacer.style.height = `${bottomHeight}px`;
+
+    const fragment = document.createDocumentFragment();
+
+    for (let r = startRow; r < endRow; r++) {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'hx-virtual-2d-row flex';
+      rowEl.style.height = `${this.getRowH(r)}px`;
+      rowEl.setAttribute('data-row', String(r));
+
+      // Pinned Left Columns
+      for (let c = 0; c < this.pinnedLeft; c++) {
+        rowEl.appendChild(this.createCellElement(r, c, true, 'left'));
+      }
+
+      // Left column spacer for scrolled horizontal slice
+      if (startCol > this.pinnedLeft) {
+        const spacer = document.createElement('div');
+        spacer.style.width = `${(startCol - this.pinnedLeft) * colW}px`;
+        spacer.style.flexShrink = '0';
+        rowEl.appendChild(spacer);
+      }
+
+      // Middle Visible Slice Columns
+      for (let c = startCol; c < endCol; c++) {
+        rowEl.appendChild(this.createCellElement(r, c, false));
+      }
+
+      // Right column spacer
+      if (this.totalCols - this.pinnedRight > endCol) {
+        const spacer = document.createElement('div');
+        spacer.style.width = `${(this.totalCols - this.pinnedRight - endCol) * colW}px`;
+        spacer.style.flexShrink = '0';
+        rowEl.appendChild(spacer);
+      }
+
+      // Pinned Right Columns
+      for (let c = this.totalCols - this.pinnedRight; c < this.totalCols; c++) {
+        rowEl.appendChild(this.createCellElement(r, c, true, 'right'));
+      }
+
+      fragment.appendChild(rowEl);
+    }
+
+    this.gridBody.innerHTML = '';
+    this.gridBody.appendChild(fragment);
+  }
+
+  private createCellElement(row: number, col: number, isPinned = false, pinSide = 'left'): HTMLElement {
+    const cellEl = document.createElement('div');
+    const w = this.getColW(col);
+    cellEl.style.width = `${w}px`;
+    cellEl.style.minWidth = `${w}px`;
+    cellEl.style.flexShrink = '0';
+    cellEl.setAttribute('data-row', String(row));
+    cellEl.setAttribute('data-col', String(col));
+    cellEl.className = `hx-virtual-2d-cell border-b border-r border-border p-1 text-xs select-none truncate ${
+      isPinned ? `sticky ${pinSide === 'left' ? 'left-0' : 'right-0'} z-10 bg-background/95 backdrop-blur font-medium` : ''
+    }`;
+
+    if (this.renderCell) {
+      const rendered = this.renderCell(row, col);
+      if (typeof rendered === 'string') {
+        cellEl.innerHTML = rendered;
+      } else if (rendered instanceof HTMLElement) {
+        cellEl.appendChild(rendered);
+      }
+    } else {
+      cellEl.textContent = `${row}:${col}`;
+    }
+
+    return cellEl;
+  }
+
+  destroy(): void {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.resizeHandler);
+    }
+  }
+}
+
 export function initVirtual(root: HTMLElement | Document): void {
-  const virtualContainers = (root.querySelectorAll ? root.querySelectorAll('[hx-virtual]') : []) as NodeListOf<HTMLElement>;
+  // 1D Virtual Scrollers
+  const virtualContainers = (root.querySelectorAll ? root.querySelectorAll('[hx-virtual]:not([hx-virtual-2d])') : []) as NodeListOf<HTMLElement>;
   virtualContainers.forEach(container => {
     if ((container as any)._hxVirtual) return;
     const scroller = new VirtualScroller(container);
     (container as any)._hxVirtual = scroller;
 
-    // Check if data source is specified via hx-virtual-src or global variable
     const src = container.getAttribute('hx-virtual-src');
     if (src) {
       fetch(src)
@@ -152,13 +356,24 @@ export function initVirtual(root: HTMLElement | Document): void {
         .catch(err => console.error('[htmx-virtual] Failed to fetch data from:', src, err));
     }
   });
+
+  // 2D Bi-Directional Virtual Scrollers
+  const virtual2DContainers = (root.querySelectorAll ? root.querySelectorAll('[hx-virtual-2d]') : []) as NodeListOf<HTMLElement>;
+  virtual2DContainers.forEach(container => {
+    if ((container as any)._hxVirtual2D) return;
+    const scroller2D = new VirtualScroller2D(container);
+    (container as any)._hxVirtual2D = scroller2D;
+  });
 }
 
+export const HxVirtual = {
+  VirtualScroller,
+  VirtualScroller2D,
+  init: initVirtual
+};
+
 if (typeof window !== 'undefined') {
-  (window as any).HxVirtual = {
-    VirtualScroller,
-    init: initVirtual
-  };
+  (window as any).HxVirtual = HxVirtual;
 
   if (typeof (window as any).htmx !== 'undefined') {
     (window as any).htmx.defineExtension('virtual', {
@@ -174,3 +389,4 @@ if (typeof window !== 'undefined') {
     initVirtual(document.body);
   });
 }
+

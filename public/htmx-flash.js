@@ -189,6 +189,198 @@ function executeSearch(config) {
     detail: { total, renderedCount: results.length, dbName }
   }));
 }
+
+class ColumnStore {
+  length = 0;
+  capacity = 0;
+  schema = {};
+  columns = new Map;
+  constructor(schema = {}, initialCapacity = 1000) {
+    this.schema = schema;
+    this.capacity = initialCapacity;
+    this.length = 0;
+    for (const [colName, colType] of Object.entries(schema)) {
+      this.addColumn(colName, colType);
+    }
+  }
+  ensureCapacity(needed) {
+    if (needed <= this.capacity)
+      return;
+    const newCap = Math.max(needed, this.capacity * 2, 100);
+    this.capacity = newCap;
+    for (const [, col] of this.columns.entries()) {
+      if (col.type === "float64") {
+        const next = new Float64Array(newCap);
+        next.set(col.data);
+        col.data = next;
+      } else if (col.type === "int32") {
+        const next = new Int32Array(newCap);
+        next.set(col.data);
+        col.data = next;
+      } else if (col.type === "uint32") {
+        const next = new Uint32Array(newCap);
+        next.set(col.data);
+        col.data = next;
+      } else if (col.type === "boolean") {
+        const next = new Uint8Array(newCap);
+        next.set(col.data);
+        col.data = next;
+      }
+    }
+  }
+  addColumn(name, type, initialData) {
+    let data;
+    const count = initialData ? initialData.length : this.capacity;
+    if (count > this.capacity)
+      this.capacity = count;
+    if (type === "float64") {
+      data = new Float64Array(this.capacity);
+      if (initialData)
+        data.set(initialData);
+    } else if (type === "int32") {
+      data = new Int32Array(this.capacity);
+      if (initialData)
+        data.set(initialData);
+    } else if (type === "uint32") {
+      data = new Uint32Array(this.capacity);
+      if (initialData)
+        data.set(initialData);
+    } else if (type === "boolean") {
+      data = new Uint8Array(this.capacity);
+      if (initialData) {
+        for (let i = 0;i < initialData.length; i++)
+          data[i] = initialData[i] ? 1 : 0;
+      }
+    } else {
+      data = initialData ? Array.from(initialData) : [];
+    }
+    this.columns.set(name, { type, data });
+    this.schema[name] = type;
+    if (initialData && initialData.length > this.length) {
+      this.length = initialData.length;
+    }
+  }
+  get(column, rowIndex) {
+    const col = this.columns.get(column);
+    if (!col || rowIndex < 0 || rowIndex >= this.length)
+      return;
+    if (col.type === "boolean")
+      return Boolean(col.data[rowIndex]);
+    return col.data[rowIndex];
+  }
+  set(column, rowIndex, value) {
+    if (rowIndex >= this.capacity) {
+      this.ensureCapacity(rowIndex + 1);
+    }
+    if (rowIndex >= this.length) {
+      this.length = rowIndex + 1;
+    }
+    const col = this.columns.get(column);
+    if (!col)
+      return;
+    if (col.type === "float64" || col.type === "int32" || col.type === "uint32") {
+      col.data[rowIndex] = Number(value) || 0;
+    } else if (col.type === "boolean") {
+      col.data[rowIndex] = value ? 1 : 0;
+    } else {
+      col.data[rowIndex] = String(value);
+    }
+  }
+  filterRange(column, min, max) {
+    const col = this.columns.get(column);
+    if (!col)
+      return new Uint32Array(0);
+    const matches = [];
+    const len = this.length;
+    const data = col.data;
+    for (let i = 0;i < len; i++) {
+      const v = data[i];
+      if (v >= min && v <= max) {
+        matches.push(i);
+      }
+    }
+    return new Uint32Array(matches);
+  }
+  filterEquals(column, value) {
+    const col = this.columns.get(column);
+    if (!col)
+      return new Uint32Array(0);
+    const matches = [];
+    const len = this.length;
+    const data = col.data;
+    const target = col.type === "boolean" ? value ? 1 : 0 : value;
+    for (let i = 0;i < len; i++) {
+      if (data[i] === target) {
+        matches.push(i);
+      }
+    }
+    return new Uint32Array(matches);
+  }
+  aggregate(column, op, indices) {
+    const col = this.columns.get(column);
+    if (!col)
+      return 0;
+    const data = col.data;
+    const len = indices ? indices.length : this.length;
+    if (len === 0)
+      return 0;
+    if (op === "count")
+      return len;
+    let sum = 0;
+    let min = Infinity;
+    let max = -Infinity;
+    for (let i = 0;i < len; i++) {
+      const idx = indices ? indices[i] : i;
+      const v = Number(data[idx]) || 0;
+      sum += v;
+      if (v < min)
+        min = v;
+      if (v > max)
+        max = v;
+    }
+    if (op === "sum")
+      return sum;
+    if (op === "avg")
+      return sum / len;
+    if (op === "min")
+      return min === Infinity ? 0 : min;
+    if (op === "max")
+      return max === -Infinity ? 0 : max;
+    return 0;
+  }
+  sort(column, dir = "asc") {
+    const col = this.columns.get(column);
+    const indices = new Uint32Array(this.length);
+    for (let i = 0;i < this.length; i++)
+      indices[i] = i;
+    if (!col)
+      return indices;
+    const data = col.data;
+    const isAsc = dir === "asc";
+    const arr = Array.from(indices);
+    arr.sort((a, b) => {
+      const valA = data[a];
+      const valB = data[b];
+      if (valA === valB)
+        return 0;
+      if (valA < valB)
+        return isAsc ? -1 : 1;
+      return isAsc ? 1 : -1;
+    });
+    return new Uint32Array(arr);
+  }
+  exportRow(rowIndex) {
+    const obj = {};
+    for (const [name, col] of this.columns.entries()) {
+      if (col.type === "boolean") {
+        obj[name] = Boolean(col.data[rowIndex]);
+      } else {
+        obj[name] = col.data[rowIndex];
+      }
+    }
+    return obj;
+  }
+}
 var HxFlash = {
   db(name) {
     return getOrCreateDB(name);
@@ -204,6 +396,9 @@ var HxFlash = {
   query(name, options) {
     const db = getOrCreateDB(name);
     return db.query(options);
+  },
+  createColumnStore(schema, initialCapacity = 1000) {
+    return new ColumnStore(schema, initialCapacity);
   }
 };
 if (typeof window !== "undefined") {
@@ -297,5 +492,6 @@ if (typeof window !== "undefined") {
 }
 export {
   HxFlash,
-  FlashDatabase
+  FlashDatabase,
+  ColumnStore
 };

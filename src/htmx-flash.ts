@@ -3,7 +3,16 @@
  * Written in TypeScript for type safety and framework extensibility.
  */
 
-import type { FlashItem, FlashQueryParams, FlashQueryResult, IFlashDatabase, HxFlashAPI } from './types';
+import type {
+  FlashItem,
+  FlashQueryParams,
+  FlashQueryResult,
+  IFlashDatabase,
+  HxFlashAPI,
+  ColumnType,
+  ColumnSchema,
+  IColumnStore
+} from './types';
 
 const databases: Record<string, FlashDatabase<any>> = {};
 
@@ -205,6 +214,205 @@ function executeSearch(config: any): void {
   }));
 }
 
+// -----------------------------------------------------------------------------
+// HxFlash Columnar Store — TypedArray Range Queries & Numerical Aggregation
+// -----------------------------------------------------------------------------
+
+export class ColumnStore implements IColumnStore {
+  length: number = 0;
+  capacity: number = 0;
+  private schema: ColumnSchema = {};
+  private columns: Map<string, {
+    type: ColumnType;
+    data: Float64Array | Int32Array | Uint32Array | Uint8Array | string[];
+  }> = new Map();
+
+  constructor(schema: ColumnSchema = {}, initialCapacity = 1000) {
+    this.schema = schema;
+    this.capacity = initialCapacity;
+    this.length = 0;
+    for (const [colName, colType] of Object.entries(schema)) {
+      this.addColumn(colName, colType);
+    }
+  }
+
+  private ensureCapacity(needed: number): void {
+    if (needed <= this.capacity) return;
+    const newCap = Math.max(needed, this.capacity * 2, 100);
+    this.capacity = newCap;
+    for (const [, col] of this.columns.entries()) {
+      if (col.type === 'float64') {
+        const next = new Float64Array(newCap);
+        next.set(col.data as Float64Array);
+        col.data = next;
+      } else if (col.type === 'int32') {
+        const next = new Int32Array(newCap);
+        next.set(col.data as Int32Array);
+        col.data = next;
+      } else if (col.type === 'uint32') {
+        const next = new Uint32Array(newCap);
+        next.set(col.data as Uint32Array);
+        col.data = next;
+      } else if (col.type === 'boolean') {
+        const next = new Uint8Array(newCap);
+        next.set(col.data as Uint8Array);
+        col.data = next;
+      }
+    }
+  }
+
+  addColumn(name: string, type: ColumnType, initialData?: ArrayLike<any>): void {
+    let data: any;
+    const count = initialData ? initialData.length : this.capacity;
+    if (count > this.capacity) this.capacity = count;
+
+    if (type === 'float64') {
+      data = new Float64Array(this.capacity);
+      if (initialData) data.set(initialData);
+    } else if (type === 'int32') {
+      data = new Int32Array(this.capacity);
+      if (initialData) data.set(initialData);
+    } else if (type === 'uint32') {
+      data = new Uint32Array(this.capacity);
+      if (initialData) data.set(initialData);
+    } else if (type === 'boolean') {
+      data = new Uint8Array(this.capacity);
+      if (initialData) {
+        for (let i = 0; i < initialData.length; i++) data[i] = initialData[i] ? 1 : 0;
+      }
+    } else {
+      data = initialData ? Array.from(initialData) : [];
+    }
+
+    this.columns.set(name, { type, data });
+    this.schema[name] = type;
+    if (initialData && initialData.length > this.length) {
+      this.length = initialData.length;
+    }
+  }
+
+  get(column: string, rowIndex: number): any {
+    const col = this.columns.get(column);
+    if (!col || rowIndex < 0 || rowIndex >= this.length) return undefined;
+    if (col.type === 'boolean') return Boolean(col.data[rowIndex]);
+    return (col.data as any)[rowIndex];
+  }
+
+  set(column: string, rowIndex: number, value: any): void {
+    if (rowIndex >= this.capacity) {
+      this.ensureCapacity(rowIndex + 1);
+    }
+    if (rowIndex >= this.length) {
+      this.length = rowIndex + 1;
+    }
+    const col = this.columns.get(column);
+    if (!col) return;
+
+    if (col.type === 'float64' || col.type === 'int32' || col.type === 'uint32') {
+      (col.data as any)[rowIndex] = Number(value) || 0;
+    } else if (col.type === 'boolean') {
+      (col.data as any)[rowIndex] = value ? 1 : 0;
+    } else {
+      (col.data as any)[rowIndex] = String(value);
+    }
+  }
+
+  filterRange(column: string, min: number, max: number): Uint32Array {
+    const col = this.columns.get(column);
+    if (!col) return new Uint32Array(0);
+
+    const matches: number[] = [];
+    const len = this.length;
+    const data = col.data;
+
+    for (let i = 0; i < len; i++) {
+      const v = (data as any)[i];
+      if (v >= min && v <= max) {
+        matches.push(i);
+      }
+    }
+    return new Uint32Array(matches);
+  }
+
+  filterEquals(column: string, value: any): Uint32Array {
+    const col = this.columns.get(column);
+    if (!col) return new Uint32Array(0);
+
+    const matches: number[] = [];
+    const len = this.length;
+    const data = col.data;
+    const target = col.type === 'boolean' ? (value ? 1 : 0) : value;
+
+    for (let i = 0; i < len; i++) {
+      if ((data as any)[i] === target) {
+        matches.push(i);
+      }
+    }
+    return new Uint32Array(matches);
+  }
+
+  aggregate(column: string, op: 'sum' | 'avg' | 'min' | 'max' | 'count', indices?: Uint32Array | number[]): number {
+    const col = this.columns.get(column);
+    if (!col) return 0;
+
+    const data = col.data;
+    const len = indices ? indices.length : this.length;
+    if (len === 0) return 0;
+    if (op === 'count') return len;
+
+    let sum = 0;
+    let min = Infinity;
+    let max = -Infinity;
+
+    for (let i = 0; i < len; i++) {
+      const idx = indices ? indices[i] : i;
+      const v = Number((data as any)[idx]) || 0;
+      sum += v;
+      if (v < min) min = v;
+      if (v > max) max = v;
+    }
+
+    if (op === 'sum') return sum;
+    if (op === 'avg') return sum / len;
+    if (op === 'min') return min === Infinity ? 0 : min;
+    if (op === 'max') return max === -Infinity ? 0 : max;
+    return 0;
+  }
+
+  sort(column: string, dir: 'asc' | 'desc' = 'asc'): Uint32Array {
+    const col = this.columns.get(column);
+    const indices = new Uint32Array(this.length);
+    for (let i = 0; i < this.length; i++) indices[i] = i;
+    if (!col) return indices;
+
+    const data = col.data;
+    const isAsc = dir === 'asc';
+
+    const arr = Array.from(indices);
+    arr.sort((a, b) => {
+      const valA = (data as any)[a];
+      const valB = (data as any)[b];
+      if (valA === valB) return 0;
+      if (valA < valB) return isAsc ? -1 : 1;
+      return isAsc ? 1 : -1;
+    });
+
+    return new Uint32Array(arr);
+  }
+
+  exportRow(rowIndex: number): Record<string, any> {
+    const obj: Record<string, any> = {};
+    for (const [name, col] of this.columns.entries()) {
+      if (col.type === 'boolean') {
+        obj[name] = Boolean(col.data[rowIndex]);
+      } else {
+        obj[name] = (col.data as any)[rowIndex];
+      }
+    }
+    return obj;
+  }
+}
+
 export const HxFlash: HxFlashAPI = {
   db<T = any>(name: string): IFlashDatabase<T> {
     return getOrCreateDB<T>(name);
@@ -220,6 +428,9 @@ export const HxFlash: HxFlashAPI = {
   query<T = any>(name: string, options?: FlashQueryParams): FlashQueryResult<T> {
     const db = getOrCreateDB<T>(name);
     return db.query(options);
+  },
+  createColumnStore(schema: ColumnSchema, initialCapacity = 1000): IColumnStore {
+    return new ColumnStore(schema, initialCapacity);
   }
 };
 

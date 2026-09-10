@@ -75,6 +75,123 @@ function initRovingTabindex(container) {
     }
   });
 }
+function initMatrixNav(container, options) {
+  if (container._hxMatrixNavInit)
+    return;
+  container._hxMatrixNavInit = true;
+  let activeRow = options?.activeRow ?? 0;
+  let activeCol = options?.activeCol ?? 0;
+  let anchorRow = activeRow;
+  let anchorCol = activeCol;
+  const selectable = options?.selectable !== false;
+  function getCell(r, c) {
+    return container.querySelector(`[data-row="${r}"][data-col="${c}"], [hx-cell="${r},${c}"], [hx-matrix-cell="${r},${c}"]`);
+  }
+  function highlightSelection(r1, c1, r2, c2) {
+    const minR = Math.min(r1, r2);
+    const maxR = Math.max(r1, r2);
+    const minC = Math.min(c1, c2);
+    const maxC = Math.max(c1, c2);
+    const allCells = container.querySelectorAll("[data-row][data-col], [hx-cell], [hx-matrix-cell]");
+    allCells.forEach((cell) => {
+      const rAttr = cell.getAttribute("data-row") || cell.getAttribute("hx-cell")?.split(/[,:]/)[0] || cell.getAttribute("hx-matrix-cell")?.split(/[,:]/)[0];
+      const cAttr = cell.getAttribute("data-col") || cell.getAttribute("hx-cell")?.split(/[,:]/)[1] || cell.getAttribute("hx-matrix-cell")?.split(/[,:]/)[1];
+      if (rAttr !== undefined && cAttr !== undefined) {
+        const r = parseInt(rAttr, 10);
+        const c = parseInt(cAttr, 10);
+        const inRange = r >= minR && r <= maxR && c >= minC && c <= maxC;
+        const isActive = r === activeRow && c === activeCol;
+        if (inRange) {
+          cell.setAttribute("aria-selected", "true");
+          cell.classList.add("hs-selected-range", "bg-primary/15");
+        } else {
+          cell.setAttribute("aria-selected", "false");
+          cell.classList.remove("hs-selected-range", "bg-primary/15");
+        }
+        if (isActive) {
+          cell.setAttribute("tabindex", "0");
+          cell.classList.add("hs-active-cell", "ring-2", "ring-primary", "ring-inset");
+        } else {
+          cell.setAttribute("tabindex", "-1");
+          cell.classList.remove("hs-active-cell", "ring-2", "ring-primary", "ring-inset");
+        }
+      }
+    });
+    const range = { startRow: minR, startCol: minC, endRow: maxR, endCol: maxC };
+    container.dispatchEvent(new CustomEvent("hx-matrix:select", { bubbles: true, detail: range }));
+    if (options?.onRangeSelect)
+      options.onRangeSelect(range);
+  }
+  function focusCell(r, c, extendSelection = false) {
+    const totalRows = options?.rows ?? 1e5;
+    const totalCols = options?.cols ?? 1000;
+    activeRow = Math.max(0, Math.min(totalRows - 1, r));
+    activeCol = Math.max(0, Math.min(totalCols - 1, c));
+    if (!extendSelection) {
+      anchorRow = activeRow;
+      anchorCol = activeCol;
+    }
+    const cell = getCell(activeRow, activeCol);
+    if (cell) {
+      cell.focus();
+    }
+    highlightSelection(anchorRow, anchorCol, activeRow, activeCol);
+    container.dispatchEvent(new CustomEvent("hx-matrix:focus", { bubbles: true, detail: { row: activeRow, col: activeCol, cell } }));
+    if (options?.onCellFocus)
+      options.onCellFocus(activeRow, activeCol, cell);
+  }
+  container.addEventListener("keydown", (e) => {
+    if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Home", "End", "PageUp", "PageDown"].includes(e.key)) {
+      return;
+    }
+    const extend = e.shiftKey && selectable;
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      focusCell(activeRow, activeCol + 1, extend);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      focusCell(activeRow, activeCol - 1, extend);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      focusCell(activeRow + 1, activeCol, extend);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      focusCell(activeRow - 1, activeCol, extend);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      if (e.shiftKey) {
+        focusCell(activeCol > 0 ? activeRow : Math.max(0, activeRow - 1), activeCol > 0 ? activeCol - 1 : (options?.cols ?? 10) - 1, false);
+      } else {
+        focusCell(activeCol + 1 < (options?.cols ?? 10) ? activeRow : activeRow + 1, activeCol + 1 < (options?.cols ?? 10) ? activeCol + 1 : 0, false);
+      }
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      focusCell(activeRow, 0, extend);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      focusCell(activeRow, (options?.cols ?? 100) - 1, extend);
+    } else if (e.key === "PageDown") {
+      e.preventDefault();
+      focusCell(activeRow + 20, activeCol, extend);
+    } else if (e.key === "PageUp") {
+      e.preventDefault();
+      focusCell(activeRow - 20, activeCol, extend);
+    }
+  });
+  container.addEventListener("click", (e) => {
+    const target = e.target.closest("[data-row][data-col], [hx-cell], [hx-matrix-cell]");
+    if (target) {
+      const rAttr = target.getAttribute("data-row") || target.getAttribute("hx-cell")?.split(/[,:]/)[0] || target.getAttribute("hx-matrix-cell")?.split(/[,:]/)[0];
+      const cAttr = target.getAttribute("data-col") || target.getAttribute("hx-cell")?.split(/[,:]/)[1] || target.getAttribute("hx-matrix-cell")?.split(/[,:]/)[1];
+      if (rAttr !== undefined && cAttr !== undefined) {
+        const r = parseInt(rAttr, 10);
+        const c = parseInt(cAttr, 10);
+        focusCell(r, c, e.shiftKey && selectable);
+      }
+    }
+  });
+  highlightSelection(anchorRow, anchorCol, activeRow, activeCol);
+}
 var liveRegion = null;
 function announce(message, priority = "polite") {
   if (!liveRegion && typeof document !== "undefined") {
@@ -109,10 +226,13 @@ function initA11y(root) {
   });
   const rovingContainers = root.querySelectorAll ? root.querySelectorAll('[hx-roving], [role="tablist"], [role="menubar"]') : [];
   rovingContainers.forEach(initRovingTabindex);
+  const matrixContainers = root.querySelectorAll ? root.querySelectorAll("[hx-matrix-nav]") : [];
+  matrixContainers.forEach((container) => initMatrixNav(container));
 }
 var HxA11y = {
   trapFocus,
   initRovingTabindex,
+  initMatrixNav,
   announce,
   init: initA11y
 };
@@ -125,6 +245,7 @@ if (typeof window !== "undefined") {
 export {
   trapFocus,
   initRovingTabindex,
+  initMatrixNav,
   initA11y,
   announce,
   HxA11y

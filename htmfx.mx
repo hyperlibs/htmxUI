@@ -1,16 +1,17 @@
 @meta
   project: htmFX
   title: Declarative 3D, WebGPU & Spatial Simulation Companion for htmxUI
-  version: 1.0.0
-  runtime: hmlr@1.0
+  version: 1.2.0
+  runtime: hmlr@1.2
   repo: github.com/hyperlibs/htmFX
   license: MIT
-  architecture: Decoupled Spatial Companion Layer
+  architecture: Decoupled Spatial Companion Layer & SpatialEdgeDB
+  bundle_footprint_gzipped: 33.99 KB
 
 @type CameraMode = orbit* | first_person | third_person | cinematic | fly
 @type EnvPreset = space* | outdoor | cyberpunk | underwater | dungeon | desert | arctic | laboratory
 @type AtmosPreset = clear* | cloudy | rainy | stormy | foggy | windy | snowy | sandstorm | nebula
-@type EmitterType = burn | flare | radiate | splash | splatter | explode | implode | splinter | zap | slime | wave
+@type EmitterType = burn | flare | radiate | splash | splatter | explode | implode | splinter | zap | slime | wave | 240_fx_catalogue
 
 @model EnvConfig
   preset: EnvPreset
@@ -19,6 +20,7 @@
   fog_density: float
   wind_speed_ms: float
   altitude_m: float
+  turbulence_curl: float
 
 @model SpatialEntity
   id: string
@@ -28,17 +30,17 @@
   scale: [float, float, float]
   material: string
 
-# htmFX: Declarative 3D & Spatial Engine Specification
-A lightweight (~35KB), declarative WebGL/WebGPU companion for htmxUI. 
-Eliminates 400-line Three.js boilerplate in favor of declarative HTML components (<hx-viewport>, <hx-mesh>) and flat .mx spatial coordinate grammar.
+# htmFX: Declarative 3D & Spatial Engine Specification (v1.2.0)
+A lightweight (33.99 KB gzipped), declarative WebGL/WebGPU companion for htmxUI. 
+Eliminates 400-line Three.js boilerplate in favor of declarative HTML components (<hx-viewport>, <hx-mesh>), 240+ spatial physics FX, and FlatBuffer SpatialEdgeDB storage for >100,000 entities.
 
 ## Core Directives & Macros | @model EnvConfig
-| preset     | atmos       | camera       | fog_density | wind_speed_ms | altitude_m |
-| $space     | $nebula     | $orbit       |        0.00 |          0.00 |  1000000.0 |
-| $outdoor   | $foggy      | $first_person|        0.08 |         12.50 |      500.0 |
-| $cyberpunk | $rainy      | $cinematic   |        0.04 |          8.00 |       50.0 |
-| $desert    | $sandstorm  | $orbit       |        0.15 |         25.00 |     1200.0 |
-| $dungeon   | $clear      | $first_person|        0.02 |          0.00 |     -200.0 |
+| preset     | atmos       | camera       | fog_density | wind_speed_ms | altitude_m | turbulence_curl |
+| $space     | $nebula     | $orbit       |        0.00 |          0.00 |  1000000.0 |            0.00 |
+| $outdoor   | $foggy      | $first_person|        0.08 |         12.50 |      500.0 |            0.45 |
+| $cyberpunk | $rainy      | $cinematic   |        0.04 |          8.00 |       50.0 |            0.20 |
+| $desert    | $sandstorm  | $orbit       |        0.15 |         25.00 |     1200.0 |            0.80 |
+| $dungeon   | $clear      | $first_person|        0.02 |          0.00 |     -200.0 |            0.05 |
 
 ## Spatial Physics & Mathematical Foundations
 
@@ -54,6 +56,13 @@ Equation: I(d) = I₀ / (1 + k₁·d + k₂·d²)
 ### 3. Supersonic Ballistics & Altitude Drag Solver
 Equation: F_drag = -0.5 · ρ(y) · C_d(Mach) · A · ||v|| · v
 - Trajectory integrated via 4th-Order Runge-Kutta (RK4) accounting for crosswind shear and material ricochet matrices.
+
+### 4. Curl-Noise Wind Turbulence & Fluid Swirl
+Equation: v_wind(x,y,z) = ∇ × ψ(x,y,z)
+- Divergence-free incompressible fluid turbulence vector field driving foliage swaying and missile smoke trails.
+
+## SpatialEdgeDB FlatBuffer Spatial Store (>1,000 Entities)
+When spatial entity counts exceed 1,000 items, DOM node creation is bypassed. Entities are ingested into `htmFX.SpatialEdgeDB` (TypedArray FlatBuffers), rendering directly via WebGPU instanced draws with $O(1)$ spatial spatial indexing.
 
 ## Declarative Web Component API
 
@@ -91,26 +100,8 @@ Equation: F_drag = -0.5 · ρ(y) · C_d(Mach) · A · ||v|| · v
 @pin[top-right]:        TelemetryBadge("120 FPS", color: "emerald", pulse: true)
 ```
 
-## Functional Engine Kernel (.fx Implementation Blueprint)
-
-```fsharp
-// src/math/spatial_solver.fx
-module HtmFX.SpatialSolver
-
-type Vector3 = { x: float; y: float; z: float }
-type Altitude = float
-type Intensity = float
-
-let computeHeightFog (y: Altitude) (baseDensity: float) (scaleHeight: float) : float =
-    let deltaY = max 0.0 y
-    baseDensity * exp (-deltaY / scaleHeight)
-
-let computeDistanceFalloff (dist: float) (i0: Intensity) (k1: float) (k2: float) : Intensity =
-    let d = max 0.1 dist
-    i0 / (1.0 + (k1 * d) + (k2 * d * d))
-```
-
-## Exported Bundle & Bridge
-- Standalone Library: `dist/htmfx.js` (~35KB gzipped)
-- HTMXUI Directive Hook: `HTMXUI.directive('3d', (el, binding) => HtmFX.mount(el, binding))`
+## Autonomous Handoff Protocol & Diagnostic Bridge
+- Standalone Library: `dist/htmfx.js` (33.99 KB gzipped)
+- HTMXUI Bridge: Autonomous directive scanner (`hx-3d`, `3denv`, `3datmos`, `3dfx`, `<hx-viewport>`) delegates to `window.htmFX.mount(el)`
+- Missing Companion Diagnostic: `@diag FX-0404: htmFX spatial companion required for 3D rendering.`
 - Fallback Pipeline: Auto-detects WebGPU (`navigator.gpu`) with seamless WebGL2 fallback.

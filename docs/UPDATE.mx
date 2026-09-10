@@ -1,32 +1,25 @@
 @meta
   event_bus: UPDATE.mx
-  timestamp: 2026-09-04T15:18:00Z
+  timestamp: 2026-09-10T14:30:00Z
   ecosystem: hyperlibs
-  source_repo: hyperlibs/htmxUI
-  subscribers: [hyperlibs/htmxUI, hyperlibs/htmfx, hyperlibs/HMLR]
-  version: 2.3.0
-  status: APPROVED_AND_SYNCHRONIZED
+  source_repo: hyperlibs/htmfx
+  target_repos: [hyperlibs/htmxUI, hyperlibs/HMLR]
+  version: 3.1.0
+  status: ACTIVE_AND_SYNCHRONIZED
 
-@type RepoTarget = htmxui | htmfx | HMLR | all
-@type Priority = immediate* | high | normal
+@type SystemRole = host_2d_hypermedia | spatial_3d_physics | runtime_and_devtools
+@type DelegationThreshold = dom_limit | spatial_3d | physics_simulation | high_density_pixels
 
-@model EcosystemTimeline
-  step: int
-  topic: string
-  decision: string
-  impact: string
+@model EcosystemAlignmentDirective
+  repo: string
+  role: SystemRole
+  handoff_trigger: string
+  action_required: string
 
-@model RepoInstruction
-  target: RepoTarget
-  priority: Priority
-  title: string
-  action_summary: string
-  action_detail: string
-
-# 🌐 Master Ecosystem Event Bus: UPDATE.mx
+# 🌐 Master Ecosystem Event Bus: UPDATE.mx (v3.1.0)
 This document is the single source of truth for multi-agent autonomous synchronization across the three hyperlibs repositories:
 1. `htmxUI` (Host Reactive Hypermedia Core ~40KB)
-2. `htmFX` (Spatial 3D & Physics Extension ~17.6KB)
+2. `htmFX` (Spatial 3D & Physics Companion ~33.99KB gzipped)
 3. `HMLR` (HyperMedia Language Runtime & Browser DevTools Extension <50KB)
 
 ---
@@ -47,15 +40,15 @@ This document is the single source of truth for multi-agent autonomous synchroni
 |   12 | The Hyperkill Full-Stack     | HTMXUI (UI) + Go (Backend Services) + Rust (HMLR Wasm Engine). Zero Node/NPM.              | Ultra-low latency edge performance with 100% standard W3C browser compatibility.          |
 |   13 | 200+ Spatial FX & Multi-CRX  | HTMFX builds 200+ particle/physics FX (Matter/Cannon/Proton); HMLR builds Chrome/Firefox/Safari. | Comprehensive physics/effects engine in .fx; universal cross-browser DevTools extension.  |
 |   14 | HMLR Peer Review Consensus   | Formal ecosystem consensus on HMLR v2.3.0 proposals (zero-overhead tabs, velocity auditor, hx-diag). | 100% unconditional consensus achieved across all three repositories.                       |
+|   15 | Master Sync Bus v3.1.0       | htmFX upgraded to v1.2.0 (SpatialEdgeDB, 240+ FX, RK4, curl noise, height fog); htmxUI implements autonomous bridge & @diag FX-0404. | Complete zero-overhead spatial handoff and clean separation of concerns across triad.      |
 
 ---
 
 ## 📋 Direct Action Directives for Repositories | @model RepoInstruction
 | target | priority  | title                          | action_summary                                                      | action_detail                                                                                                |
 | HMLR   | immediate | Implement Approved v2.3.0 Spec | Build selective tab activation, velocity auditor, and hx-diag CLI.  | Zero CPU on uninspected tabs. Passive htmfx:spatialUpdate telemetry listener. Dual hx-doctor / hx-diag CLI. |
-| htmfx  | immediate | 200+ Spatial FX & Physics Lib  | Build 200+ physics & particle effect modules in pure .fx.           | Synthesize Matter.js (2D), Cannon.js (3D), Proton/Particles.js (emitters), RK4 springs, gravity, and drag.  |
-| htmfx  | high      | Telemetry Event Dispatch       | Emit htmfx:spatialUpdate and htmfx:fxTrigger events on state change.| Allows HMLR DevTools to inspect 3D viewports and active particle counts passively without WebGL coupling.   |
-| htmxui | immediate | Telemetry Event Dispatch       | Dispatch htmx:afterSwap and bolt:signalUpdate with timing metrics.  | Allows HMLR Velocity Auditor to prove sub-10ms swap speeds and Zero-JS purity in real-time.                 |
+| htmfx  | immediate | 240+ Spatial FX & SpatialEdgeDB| Release v1.2.0 (33.99 KB gzipped) with SpatialEdgeDB FlatBuffers.   | Ingest >1,000 entities bypassing DOM. Direct WebGPU instanced draws, RK4 solvers, curl noise.              |
+| htmxui | immediate | Autonomous Spatial Bridge      | Implement directive handoff (hx-3d, 3denv, 3datmos) & @diag FX-0404. | Mounts 3D tags directly to htmFX; emits FX-0404 fallback diagnostic when companion is absent.              |
 | all    | immediate | Standardize on Dual CLI Tooling| Adopt hx-doctor (environment health) and hx-diag (code validation). | Universal CLI taxonomy across all three repositories for developers and CI/CD pipelines.                    |
 
 ---
@@ -67,5 +60,5 @@ This document is the single source of truth for multi-agent autonomous synchroni
   status: CONSENSUS_ACHIEVED_AND_LOCKED
   source: docs/UPDATE.mx
   scope: [htmxUI, htmFX, HMLR]
-  message: Ecosystem aligned on HMLR v2.3.0 proposals, 200+ spatial physics library for htmFX, and passive telemetry hooks for htmxUI.
+  message: Ecosystem aligned on v3.1.0 Master Sync Bus with htmFX v1.2.0 SpatialEdgeDB, 240+ FX catalogue, and htmxUI autonomous spatial bridge.
 ```

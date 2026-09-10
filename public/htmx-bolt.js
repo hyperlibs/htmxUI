@@ -112,6 +112,13 @@ var KNOWN_ATTRIBUTES = new Set([
   "hx-trap-focus",
   "hx-roving",
   "scaleui",
+  "hx-3d",
+  "3denv",
+  "3datmos",
+  "3dfx",
+  "hx-spatial",
+  "hx-spatial-focus",
+  "hx-spatial-explode",
   "hx-get",
   "hx-post",
   "hx-put",
@@ -1346,6 +1353,36 @@ function startTickerLoop() {
 }
 var customDirectives = new Map;
 var customEngines = new Map;
+var HxSpatial = {
+  mount(el) {
+    if (typeof window !== "undefined" && window.htmFX && typeof window.htmFX.mount === "function") {
+      window.htmFX.mount(el);
+      return;
+    }
+    console.warn("@diag FX-0404: htmFX spatial companion required for 3D rendering. (Include /htmfx.js)");
+  },
+  focus(target, options) {
+    if (typeof window !== "undefined" && window.htmFX && typeof window.htmFX.focus === "function") {
+      window.htmFX.focus(target, options);
+    }
+    if (typeof document !== "undefined") {
+      document.dispatchEvent(new CustomEvent("spatial:focus", { detail: { target, options } }));
+    }
+  },
+  explode(target, options) {
+    if (typeof window !== "undefined" && window.htmFX && typeof window.htmFX.explode === "function") {
+      window.htmFX.explode(target, options);
+    }
+    if (typeof document !== "undefined") {
+      document.dispatchEvent(new CustomEvent("spatial:explode", { detail: { target, options } }));
+    }
+  }
+};
+customDirectives.set("hx-3d", (el) => HxSpatial.mount(el));
+customDirectives.set("3denv", (el) => HxSpatial.mount(el));
+customDirectives.set("3datmos", (el) => HxSpatial.mount(el));
+customDirectives.set("3dfx", (el) => HxSpatial.mount(el));
+customDirectives.set("hx-spatial", (el) => HxSpatial.mount(el));
 var HxBolt = {
   config,
   errors: ERROR_CATALOG,
@@ -1358,6 +1395,7 @@ var HxBolt = {
   undo: undoState,
   redo: redoState,
   fx: HyperFX,
+  spatial: HxSpatial,
   ticker: {
     subscribe(cb) {
       tickerCallbacks.add(cb);
@@ -1401,6 +1439,13 @@ var HxBolt = {
     if (root.hasAttribute && (root.hasAttribute("hx-state") || root.getAttribute("hx-ext") === "reactive")) {
       initComponent(root);
     }
+    if (typeof document !== "undefined") {
+      const spatialEls = root.querySelectorAll ? root.querySelectorAll("[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light") : [];
+      spatialEls.forEach((el) => HxSpatial.mount(el));
+      if (root.matches && root.matches("[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light")) {
+        HxSpatial.mount(root);
+      }
+    }
     if (typeof document !== "undefined" && document.querySelector("[hx-tick]") && !tickerRunning) {
       startTickerLoop();
     }
@@ -1428,11 +1473,12 @@ if (typeof window !== "undefined") {
     errors: ERROR_CATALOG,
     bolt: HxBolt,
     fx: HyperFX,
+    spatial: HxSpatial,
     directive(name, handler) {
       customDirectives.set(name.startsWith("hx-") ? name : `hx-${name}`, handler);
     },
     defineEngine(name, factory) {
-      const engine = factory({ bolt: HxBolt, ticker: HxBolt.ticker, fx: HyperFX });
+      const engine = factory({ bolt: HxBolt, ticker: HxBolt.ticker, fx: HyperFX, spatial: HxSpatial });
       customEngines.set(name, engine);
       return engine;
     }
@@ -1536,6 +1582,7 @@ if (typeof window !== "undefined") {
         initComponent(root);
     });
     document.querySelectorAll("[scaleui]").forEach((el) => handleScaleUI(el));
+    document.querySelectorAll("[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light").forEach((el) => HxSpatial.mount(el));
     new MutationObserver((mutations) => {
       for (const m of mutations) {
         if (m.type === "attributes" && m.attributeName === "scaleui") {
@@ -1550,6 +1597,9 @@ if (typeof window !== "undefined") {
               if (el.hasAttribute("hx-state") || el.querySelector("script[hx-state]"))
                 initComponent(el);
               el.querySelectorAll("[hx-state]").forEach((child) => initComponent(child));
+              if (el.matches && el.matches("[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light"))
+                HxSpatial.mount(el);
+              el.querySelectorAll("[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light").forEach((child) => HxSpatial.mount(child));
             }
           });
         }
@@ -1577,6 +1627,7 @@ export {
   SparseMatrix,
   SignalTracker,
   HyperFX,
+  HxSpatial,
   HxBolt,
   ERROR_CATALOG
 };

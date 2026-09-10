@@ -17,13 +17,21 @@ declare global {
     HxForm?: HxFormAPI;
     HxVibe: HxVibeAPI;
     HxA11y: HxA11yAPI;
+    HxSpatial?: HxSpatialAPI;
     HxVirtual?: any;
     HxGrid?: any;
     HxOffline?: any;
     HxDevTools?: any;
     HxCalc?: any;
     HTMXUI?: any;
+    htmFX?: any;
   }
+}
+
+export interface HxSpatialAPI {
+  mount(el: HTMLElement): void;
+  focus(target: string | HTMLElement, options?: any): void;
+  explode(target: string | HTMLElement, options?: any): void;
 }
 
 // -----------------------------------------------------------------------------

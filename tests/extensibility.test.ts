@@ -19,4 +19,22 @@ describe('HTMXUI Hyper-Extensibility & Directive Hooks', () => {
     }
     expect(HxBolt.getStore('editor')?.currentLayer).toBe(3);
   });
+
+  test('HxSpatial bridge triggers fallback diagnostic when htmFX is absent', () => {
+    let warnedMessage = '';
+    const originalWarn = console.warn;
+    console.warn = (msg: string) => { warnedMessage = msg; };
+
+    const mockEl = { tagName: 'HX-VIEWPORT', getAttribute: () => null } as any;
+    HxBolt.spatial.mount(mockEl);
+
+    expect(warnedMessage).toContain('FX-0404');
+    console.warn = originalWarn;
+  });
+
+  test('HxSpatial bridge has focus and explode dispatch helpers', () => {
+    expect(typeof HxBolt.spatial.focus).toBe('function');
+    expect(typeof HxBolt.spatial.explode).toBe('function');
+    expect(typeof HxBolt.spatial.mount).toBe('function');
+  });
 });

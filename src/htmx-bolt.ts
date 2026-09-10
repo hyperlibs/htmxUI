@@ -72,6 +72,7 @@ const KNOWN_ATTRIBUTES = new Set([
   'hx-vibe-flip', 'hx-vibe-stagger', 'hx-vibe-view', 'hx-vibe-initial', 'hx-vibe-once',
   'hx-motion-flip', 'hx-motion-stagger', 'hx-motion-view', 'hx-motion-initial', 'hx-motion-once',
   'hx-trap-focus', 'hx-roving', 'scaleui',
+  'hx-3d', '3denv', '3datmos', '3dfx', 'hx-spatial', 'hx-spatial-focus', 'hx-spatial-explode',
   'hx-get', 'hx-post', 'hx-put', 'hx-delete', 'hx-patch', 'hx-target', 'hx-swap',
   'hx-trigger', 'hx-ext', 'hx-select', 'hx-indicator', 'hx-push-url', 'hx-params', 'hx-headers', 'hx-vals'
 ]);
@@ -1447,6 +1448,42 @@ const customDirectives = new Map<string, DirectiveHandler>();
 const customEngines = new Map<string, any>();
 
 // -----------------------------------------------------------------------------
+// Autonomous Spatial Bridge (htmFX Spatial Handoff & Diagnostic Fallback)
+// -----------------------------------------------------------------------------
+export const HxSpatial = {
+  mount(el: HTMLElement): void {
+    if (typeof window !== 'undefined' && (window as any).htmFX && typeof (window as any).htmFX.mount === 'function') {
+      (window as any).htmFX.mount(el);
+      return;
+    }
+    console.warn('@diag FX-0404: htmFX spatial companion required for 3D rendering. (Include /htmfx.js)');
+  },
+  focus(target: string | HTMLElement, options?: any): void {
+    if (typeof window !== 'undefined' && (window as any).htmFX && typeof (window as any).htmFX.focus === 'function') {
+      (window as any).htmFX.focus(target, options);
+    }
+    if (typeof document !== 'undefined') {
+      document.dispatchEvent(new CustomEvent('spatial:focus', { detail: { target, options } }));
+    }
+  },
+  explode(target: string | HTMLElement, options?: any): void {
+    if (typeof window !== 'undefined' && (window as any).htmFX && typeof (window as any).htmFX.explode === 'function') {
+      (window as any).htmFX.explode(target, options);
+    }
+    if (typeof document !== 'undefined') {
+      document.dispatchEvent(new CustomEvent('spatial:explode', { detail: { target, options } }));
+    }
+  }
+};
+
+// Default spatial directives for htmFX delegation
+customDirectives.set('hx-3d', (el) => HxSpatial.mount(el));
+customDirectives.set('3denv', (el) => HxSpatial.mount(el));
+customDirectives.set('3datmos', (el) => HxSpatial.mount(el));
+customDirectives.set('3dfx', (el) => HxSpatial.mount(el));
+customDirectives.set('hx-spatial', (el) => HxSpatial.mount(el));
+
+// -----------------------------------------------------------------------------
 // Global Public HxBolt API
 // -----------------------------------------------------------------------------
 export const HxBolt: HxBoltAPI = {
@@ -1461,6 +1498,7 @@ export const HxBolt: HxBoltAPI = {
   undo: undoState,
   redo: redoState,
   fx: HyperFX,
+  spatial: HxSpatial,
   ticker: {
     subscribe(cb: TickerCallback): () => void {
       tickerCallbacks.add(cb);
@@ -1502,6 +1540,13 @@ export const HxBolt: HxBoltAPI = {
     if ((root as HTMLElement).hasAttribute && ((root as HTMLElement).hasAttribute('hx-state') || (root as HTMLElement).getAttribute('hx-ext') === 'reactive')) {
       initComponent(root as HTMLElement);
     }
+    if (typeof document !== 'undefined') {
+      const spatialEls = (root.querySelectorAll ? root.querySelectorAll('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light') : []) as NodeListOf<HTMLElement>;
+      spatialEls.forEach(el => HxSpatial.mount(el));
+      if ((root as HTMLElement).matches && (root as HTMLElement).matches('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light')) {
+        HxSpatial.mount(root as HTMLElement);
+      }
+    }
     if (typeof document !== 'undefined' && document.querySelector('[hx-tick]') && !tickerRunning) {
       startTickerLoop();
     }
@@ -1515,11 +1560,12 @@ if (typeof window !== 'undefined') {
     errors: ERROR_CATALOG,
     bolt: HxBolt,
     fx: HyperFX,
+    spatial: HxSpatial,
     directive(name: string, handler: DirectiveHandler) {
       customDirectives.set(name.startsWith('hx-') ? name : `hx-${name}`, handler);
     },
     defineEngine(name: string, factory: (api: any) => any) {
-      const engine = factory({ bolt: HxBolt, ticker: HxBolt.ticker, fx: HyperFX });
+      const engine = factory({ bolt: HxBolt, ticker: HxBolt.ticker, fx: HyperFX, spatial: HxSpatial });
       customEngines.set(name, engine);
       return engine;
     }
@@ -1647,6 +1693,7 @@ if (typeof window !== 'undefined') {
       if (root) initComponent(root as HTMLElement);
     });
     document.querySelectorAll('[scaleui]').forEach(el => handleScaleUI(el as HTMLElement));
+    document.querySelectorAll('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light').forEach(el => HxSpatial.mount(el as HTMLElement));
 
     new MutationObserver(mutations => {
       for (const m of mutations) {
@@ -1660,6 +1707,8 @@ if (typeof window !== 'undefined') {
               el.querySelectorAll('[scaleui]').forEach(child => handleScaleUI(child as HTMLElement));
               if (el.hasAttribute('hx-state') || el.querySelector('script[hx-state]')) initComponent(el);
               el.querySelectorAll('[hx-state]').forEach(child => initComponent(child as HTMLElement));
+              if (el.matches && el.matches('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light')) HxSpatial.mount(el);
+              el.querySelectorAll('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light').forEach(child => HxSpatial.mount(child as HTMLElement));
             }
           });
         }

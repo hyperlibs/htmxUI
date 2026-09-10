@@ -1,33 +1,123 @@
-# HTMXUI — Hyper Reactive Lean Framework for AI & Humans
+# HTMXUI — Hyper Reactive Lean Framework Suite for Humans and AI Agents
+> A hyperreactive, lean hypermedia-first application suite. Sub-48KB total footprint, zero Virtual DOM, zero NPM build step for logic.
 
-> HTMXUI is a hyperreactive, hypermedia-first framework with fine-grained signals, in-memory fuzzy search, declarative validation, and FLIP animations — with zero Virtual DOM.
+## 🏛️ Core Philosophy
+1. **Hypermedia First**: HTML is the primary medium over the wire; the server remains the authoritative source of truth.
+2. **Deterministic & Agent-Native**: Machine-readable grammar (`/schema/htmxui.json`), numbered error codes (`HTMXUI-BOLT-001..050`) with actionable fixes, and zero hallucination risk.
+3. **Hyperreactive**: Fine-grained reactive signals, in-memory fuzzy search, 2D viewport virtualization, topological DAG formula calculations, and 60fps FLIP animations.
+4. **Zero NPM Logic Runtime**: No React, no ReactDOM, no Redux/Zustand boilerplate, no hydration mismatches. Works with any backend (Python, Go, Rust, PHP, Bun, Node, Elixir).
 
-## Core Rules for AI Coders
-1. NEVER generate React/JSX/Vue code when asked for HTMXUI. Always output declarative HTML with `hx-*` attributes.
-2. State Declaration: Prefer `<script type="application/json" hx-state> { "key": "value" } </script>` inside the component root over `hx-state='{...}'` to avoid quote escaping bugs.
-3. Two-Way Binding: Use `hx-model="prop"` for inputs, checkboxes, radios, selects. Modifiers: `.number`, `.lazy`, `.trim`.
-4. Loops: Use `<template hx-for="item in items">` or `<template hx-for="(item, idx) in items">`.
-5. Conditionals: Use `<template hx-if="condition">` for structural insertion/removal, or `hx-show="condition"` for display toggle.
-6. Computed State: Use `hx-computed='{ fullName: first + " " + last }'` on the root element.
-7. Actions: Use `hx-on:click.prevent="count++"` or `@click.prevent="count++"`.
-8. Global Stores: Access via `$store.storeName.property`.
-9. Form Validation: Use `hx-validate="required|email|min:3"`.
+---
 
-## Core Engines
-- `htmx-bolt.js`: Signal-based reactive state engine (~8KB).
-- `htmx-flash.js`: In-memory typo-tolerant fuzzy search and multi-column filter engine (~3KB).
-- `htmx-form.js`: Declarative validation state machine & optimistic UI engine (~2KB).
-- `htmx-vibe.js`: 60fps FLIP layout animation engine (~2KB).
-- `htmx-a11y.js`: WAI-ARIA focus trap & roving tabindex engine (~2KB).
+## ⚡ The 10 Micro-Engines
 
-## Rosetta Stone (React → HTMXUI)
-- `useState({ count: 0 })` -> `<script type="application/json" hx-state>{"count": 0}</script>`
-- `useMemo(() => price * qty, [price, qty])` -> `hx-computed="{ total: price * qty }"`
-- `useEffect(() => { ... }, [count])` -> `hx-effect="console.log(count)"`
-- `useContext(AuthContext)` -> `$store.auth.user`
-- `items.map(item => <Item key={item.id} />)` -> `<template hx-for="item in items">`
-- `value={val} onChange={e => setVal(e.target.value)}` -> `hx-model="val"`
-- `<Modal isOpen={open} />` -> `<div hx-show="open" hx-trap-focus>`
+| Engine | Bundle | Size | Primary Capabilities |
+|---|---|---|---|
+| **HxBolt** | `htmx-bolt.js` | ~2.5KB | Signal-based reactive state (`hx-state`), bindings (`hx-text`, `hx-show`, `hx-class`, `hx-style`), 2D sparse matrix (`HxBolt.matrix`), 60fps RAF stream throttle (`hx-stream-batch`). |
+| **HxFlash** | `htmx-flash.js` | ~2.1KB | 0ms in-memory fuzzy search (`hx-flash-search`), multi-column filters (`hx-flash-filter`), TypedArray ColumnStore (`HxFlash.createColumnStore`). |
+| **HxForm** | `htmx-form.js` | ~2.2KB | Declarative validation pipes (`hx-validate`), multi-step wizard (`hx-wizard`), cascading fields (`hx-depends`), cell transactions (`cellTransaction`). |
+| **HxVibe** | `htmx-vibe.js` | ~1.8KB | 60fps FLIP layout animation (`hx-vibe-flip`), 3D card tilt (`hx-vibe-card`), magnetic cursor snapping (`hx-vibe-magnetic`), physics shockwave (`hx-vpx-blast`). |
+| **HxA11y** | `htmx-a11y.js` | ~1.4KB | WAI-ARIA focus trapping (`hx-trap-focus`), roving tabindex (`hx-roving`), 2D matrix navigation (`hx-matrix-nav`, `Shift+Arrow` range selection). |
+| **HxVirtual** | `htmx-virtual.js` | ~2.0KB | 1D & 2D bi-directional viewport windowing (`hx-virtual`, `hx-virtual-2d`), pinned sticky left/right columns (`hx-pinned-left`), 100k+ row recycling. |
+| **HxGrid** | `htmx-grid.js` | ~3.2KB | Enterprise Data Grid (`<div hx-grid>`), interactive column resize handles, drag-and-drop column reordering, bulk actions, CSV export. |
+| **HxCalc** | `htmx-calc.js` | ~2.1KB | Zero-dependency reactive formula engine with topological sorting DAG (Kahn's algorithm), cycle detection (`#CYCLE!`), coordinate resolver (`A1` $\leftrightarrow$ `(0, 0)`). |
+| **HxOffline** | `htmx-offline.js` | ~1.6KB | IndexedDB offline mutation queue, optimistic local persistence, automatic sync on reconnect, 409 conflict resolution. |
+| **HxDevTools**| `htmx-devtools.js`| ~1.2KB | In-browser visualizer (`HTMXUI.devtools`), reactive signal inspector, mutation timeline profiler. |
 
-## Full API Specification
-See `https://htmxui.dev/schema/htmxui.json` and `/llms-full.txt`
+---
+
+## 📋 Attribute Grammar & Rules
+
+### State & Signals
+- `hx-state='{ "count": 0, "open": false }'`: Declares reactive context.
+- Preferred AI safe syntax: `<script type="application/json" hx-state>{ "count": 0, "open": false }</script>`
+- `hx-computed='{ "total": "price * qty" }'`: Memoized derived state.
+- `hx-effect="console.log(count)"`: Runs side effect on signal mutation.
+- `hx-text="count"`: Binds text content to expression.
+- `hx-html="richText"`: Binds innerHTML (ensure content is sanitized).
+- `hx-show="open"`: Toggles display with CSS transitions (`hx-transition="fade|slide|scale"`).
+- `hx-if="isLoggedIn"`: Conditional mounting on `<template hx-if="...">`.
+- `hx-for="(item, idx) in items"`: Loop rendering on `<template hx-for="...">`.
+- `hx-class='{ "bg-primary text-white": active, "opacity-50": disabled }'`: Dynamic classes.
+- `hx-style='{ width: progress + "%" }'`: Dynamic inline styles.
+- `hx-model.number="qty"`: Two-way binding (`.lazy`, `.number`, `.trim`).
+
+### HyperGrid & Spreadsheet Primitives
+- `hx-cell="row,col"` / `hx-matrix-cell="row,col"`: Binds cell directly to `HxBolt.matrix` coordinate with $O(1)$ signal granularity.
+- `hx-matrix="matrixName"`: Namespaces matrix signals.
+- `hx-stream-batch="60fps"`: Groups incoming SSE/WS deltas into single RAF frame render.
+- `hx-virtual-2d`: Enables X + Y viewport virtualization with `hx-pinned-left="2"`.
+- `hx-matrix-nav`: Enables Excel-style 2D roving tabindex, Shift+Arrows bounding box range selection.
+- `hx-ext="grid-delta"`: Parses `Δrow:col:val:flashClass` micro-delta streams.
+
+### Validation & Forms
+- `hx-validate="required|email|min:5|max:100|numeric|match:otherField"`: Pipeline validation.
+- `hx-error-for="fieldName"`: Targets validation message placeholder.
+- `hx-wizard`: Multi-step wizard wrapper (`hx-step="1"`, `hx-wizard-next`, `hx-wizard-prev`).
+- `hx-depends="country->state,city"`: Cascading dependent select inputs.
+- `hx-optimistic`: Optimistic mutation with automatic snapshot rollback on 4xx/5xx errors.
+
+---
+
+## 🛠️ HyperFX Global Scope Helpers (inside expressions & actions)
+- `$store.storeName`: Access global reactive stores.
+- `$refs.refName`: Access element tagged with `hx-ref="refName"`.
+- `$el`: Current DOM element.
+- `$event`: Current DOM event.
+- `$copy(text)`: Clipboard copy.
+- `$toast(message, 'info' | 'success' | 'warning' | 'error')`: Toast notification.
+- `$sound('ping' | 'click' | 'whoosh' | 'success' | 'error')`: Web Audio procedural tone.
+- `$blast({ radius: 250, force: 40 })`: Radial physics shockwave.
+- `$focus(selector)`: Moves keyboard focus.
+- `$toggle('propertyName')`: Inverts boolean state.
+- `$undo()` / `$redo()`: State history travel.
+- `$exportCSV('#grid', 'data.csv')`: Client-side CSV download.
+
+---
+
+## 🚨 Deterministic Error Codes for AI Self-Repair
+- `HTMXUI-BOLT-001`: Invalid JSON syntax in `hx-state` $\rightarrow$ Fix: Verify JSON quotes or use `<script type="application/json" hx-state>`.
+- `HTMXUI-BOLT-002`: Circular dependency in `hx-computed` $\rightarrow$ Fix: Remove self-referencing properties.
+- `HTMXUI-BOLT-003`: Invalid `hx-for` syntax $\rightarrow$ Fix: Use `item in items` or `(item, index) in items` on `<template>` tag.
+- `HTMXUI-BOLT-004`: Undefined property or global store $\rightarrow$ Fix: Register via `HxBolt.store('name', initial)` or declare in local `hx-state`.
+- `HTMXUI-BOLT-005`: Attribute typo detected $\rightarrow$ Fix: Check suggestion in warning (e.g. did you mean `hx-show` instead of `hx-showw`?).
+- `HTMXUI-CALC-002`: Circular reference `#CYCLE!` in formula $\rightarrow$ Fix: Break cyclic cell dependency.
+
+---
+
+## 🚀 Quickstart Example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <link rel="stylesheet" href="/styles/output.css">
+</head>
+<body class="p-8 bg-background text-foreground">
+
+  <!-- Reactive Counter & Toast Card -->
+  <div class="max-w-md p-6 border rounded-xl bg-card shadow-sm space-y-4"
+       hx-state='{ "count": 0, "starred": false }'>
+    
+    <h2 class="text-xl font-bold">HTMXUI Reactive Card</h2>
+    <p class="text-sm text-muted-foreground">Count: <span hx-text="count" class="font-mono font-bold">0</span></p>
+
+    <div class="flex gap-2">
+      <button hx-action="count++; $sound('click')" class="px-3 py-1.5 bg-primary text-primary-foreground rounded-md text-sm">
+        Increment
+      </button>
+      <button hx-action="$toggle('starred'); $toast(starred ? 'Starred!' : 'Unstarred', 'info'); $sound('ping')" 
+              class="px-3 py-1.5 border rounded-md text-sm">
+        <span hx-text="starred ? '★ Starred' : '☆ Star'">☆ Star</span>
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>
+```

@@ -74,7 +74,7 @@ class OfflineManager {
   private bindHTMXInterceptors(): void {
     if (typeof (window as any).htmx === 'undefined') return;
 
-    document.body.addEventListener('htmx:sendError', (evt: any) => {
+    document.addEventListener('htmx:sendError', (evt: any) => {
       const detail = evt.detail;
       if (detail && detail.requestConfig) {
         const cfg = detail.requestConfig;

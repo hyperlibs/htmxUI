@@ -1,6 +1,15 @@
 <div class="space-y-10 max-w-4xl py-6">
-  <!-- Title & Subtitle -->
+  <!-- Title & Subtitle with Current Release Badge -->
   <div class="space-y-3">
+    <div class="flex items-center gap-2">
+      <span class="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-primary/10 text-primary border border-primary/20 flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        v0.1.0 • September 2026 Release
+      </span>
+      <span class="px-2.5 py-1 rounded-full text-xs font-mono bg-muted text-muted-foreground border border-border">
+        10 Micro-Engines • Zero VDOM • Sub-48KB
+      </span>
+    </div>
     <h1 class="text-4xl font-extrabold tracking-tight text-foreground">Introduction</h1>
     <p class="text-lg text-muted-foreground leading-relaxed font-medium">
       HTMX on Steroids. Hyper Reactive. Lean. Built to make heavy client frameworks obsolete.
@@ -14,80 +23,178 @@
       HTMXUI is not a simple UI library bolted on top of htmx. It is a deliberate fork and reinvention of htmx into a hyperreactive, lean, hypermedia-first framework.
     </p>
     <p class="text-sm text-muted-foreground leading-relaxed">
-      Original htmx completed HTML as a hypermedia. HTMXUI completes it as a high-performance, signal-reactive, agent-friendly application platform — with zero Virtual DOM and zero NPM runtime bloat.
+      Original htmx completed HTML as a hypermedia. HTMXUI completes it as a high-performance, signal-reactive, agent-friendly application platform — with zero Virtual DOM, zero NPM runtime bloat, and sub-millisecond local reactivity.
     </p>
     <div class="p-4 rounded-xl border border-border bg-muted/40 font-mono text-sm text-foreground leading-relaxed shadow-sm">
-      <span class="text-primary font-semibold">HTMXUI</span> = HTMX (Hypermedia Core) + Bolt (Signal Reactive Core) + Flash (Fuzzy Search & Filters) + Form Engine + Vibe (FLIP Layout Engine) + A11y + Canvas + 100+ Shadcn-quality Components
+      <span class="text-primary font-bold">HTMXUI</span> = HTMX (Hypermedia Core) + Bolt (Signal Reactivity) + Flash (Fuzzy Search) + Form (Validation Machine) + Vibe (FLIP Layout) + A11y (Accessible Navigation) + Virtual (100k Windowing) + Grid (Data Grid) + Offline (IndexedDB Sync) + Calc (Excel DAG) + DevTools (HUD) + 100+ Shadcn-quality Components
     </div>
   </div>
 
-  <!-- Section: The Core Stack -->
+  <!-- Section: Flagship Live Demos Callout -->
   <div class="space-y-4">
-    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">The Hyperreactive Suite</h2>
+    <div class="flex items-center justify-between border-b border-border pb-2">
+      <h2 class="text-2xl font-bold tracking-tight text-foreground">Verifiable Flagship Demos</h2>
+      <a href="/demo" class="text-xs font-mono text-primary hover:underline flex items-center gap-1">
+        Browse All Demos →
+      </a>
+    </div>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      HTMXUI powers real-world enterprise applications out of the box with zero client-side framework overhead. Explore our full flagship implementations:
+    </p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <a href="/demo/tailadmin" class="group p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-all shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm text-foreground group-hover:text-primary transition-colors">📊 TailAdmin Dashboard</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">100% Pure HTMXUI</span>
+        </div>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Complete single-page admin panel recreation with 10 interactive views: E-Commerce, Analytics, Calendar, Profile, Forms, Tables, Settings, Alerts, Buttons Sandbox, and Auth.
+        </p>
+      </a>
+
+      <a href="/demo/hypersheet" class="group p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-all shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm text-foreground group-hover:text-primary transition-colors">📑 Hypersheet Matrix</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">1,000,000 Cells</span>
+        </div>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Ultra-scale reactive spreadsheet powered by atomic 2D sparse matrix signals, bi-directional virtual windowing, and topological DAG formula engine.
+        </p>
+      </a>
+
+      <a href="/demo/erp" class="group p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-all shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm text-foreground group-hover:text-primary transition-colors">🏢 Apex Logistics ERP</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Offline IndexedDB</span>
+        </div>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          10,000-row virtualized invoice data grid with column reorder/resize, multi-step invoice wizard, and zero-drop IndexedDB mutation replay.
+        </p>
+      </a>
+
+      <a href="/demo/universe" class="group p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-all shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-bold text-sm text-foreground group-hover:text-primary transition-colors">🪐 Kosmos Universe</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">120 FPS 3D Canvas</span>
+        </div>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Keplerian spatial celestial orbital simulation running at 120 FPS with real-time body tracking, trail projection, and procedural stars.
+        </p>
+      </a>
+    </div>
+  </div>
+
+  <!-- Section: The 10 Micro-Engines Suite -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">The 10 Micro-Engines Suite</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Card 1: htmx-bolt.js -->
+      <!-- 1. htmx-bolt.js -->
       <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
         <div class="flex items-center justify-between">
           <h3 class="font-semibold text-base text-card-foreground">htmx-bolt.js</h3>
-          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Signals & State</span>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Signals &amp; State</span>
         </div>
         <p class="text-sm text-muted-foreground leading-relaxed">
-          Fine-grained signal-based dependency tracking with zero VDOM. Features <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-state</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-computed</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-effect</code>, 2-way binding (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-model</code>), list rendering (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-for</code>), structural conditionals (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-if</code>), event modifiers (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">.debounce</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">.prevent</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">.outside</code>), global stores, and transitions.
+          Fine-grained signal-based dependency tracking with zero VDOM. Features <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-state</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-computed</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-effect</code>, 2-way binding (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-model</code>), list loops (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-for</code>), structural conditionals (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-if</code>), event modifiers (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">.debounce</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">.outside</code>), global stores, and undo/redo stacks.
         </p>
       </div>
 
-      <!-- Card 2: htmx-flash.js -->
+      <!-- 2. htmx-flash.js -->
       <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
         <div class="flex items-center justify-between">
           <h3 class="font-semibold text-base text-card-foreground">htmx-flash.js</h3>
-          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Fuzzy & Multi-Filter</span>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Fuzzy &amp; Multi-Filter</span>
         </div>
         <p class="text-sm text-muted-foreground leading-relaxed">
-          Zero-latency client query engine. Levenshtein typo-tolerant fuzzy matching (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-flash-search</code>), multi-column filters (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-flash-filter</code>), and client-side column sorting (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-flash-sort</code>) across thousands of records.
+          Zero-latency client query engine. Levenshtein typo-tolerant fuzzy matching (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-flash-search</code>), multi-column filters (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-flash-filter</code>), and in-memory column sorting (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-flash-sort</code>) across thousands of records in 0ms.
         </p>
       </div>
 
-      <!-- Card 3: htmx-form.js -->
+      <!-- 3. htmx-form.js -->
       <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
         <div class="flex items-center justify-between">
           <h3 class="font-semibold text-base text-card-foreground">htmx-form.js</h3>
-          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Validation & Optimistic UI</span>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Validation &amp; Optimistic UI</span>
         </div>
         <p class="text-sm text-muted-foreground leading-relaxed">
-          Declarative client-side validation rules (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-validate</code>), form state machine (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">$form.valid</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">$form.dirty</code>), and automatic optimistic UI rollback on server errors.
+          Declarative client-side validation rules (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-validate</code>), field error slots (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-error-for</code>), form state machine (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">$form.valid</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">$form.dirty</code>), and automatic optimistic UI rollback on server errors.
         </p>
       </div>
 
-      <!-- Card 4: htmx-vibe.js -->
+      <!-- 4. htmx-vibe.js -->
       <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
         <div class="flex items-center justify-between">
           <h3 class="font-semibold text-base text-card-foreground">htmx-vibe.js</h3>
-          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">FLIP & Vibe Motion</span>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">FLIP &amp; Vibe Motion</span>
         </div>
         <p class="text-sm text-muted-foreground leading-relaxed">
           FLIP layout animation engine that smoothly animates DOM swaps, item insertions, and list reorderings at 60fps. Includes stagger sequencing (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-vibe-stagger</code>) and viewport scroll triggers (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-vibe-view</code>).
         </p>
       </div>
 
-      <!-- Card 5: htmx-a11y.js -->
+      <!-- 5. htmx-a11y.js -->
       <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
         <div class="flex items-center justify-between">
           <h3 class="font-semibold text-base text-card-foreground">htmx-a11y.js</h3>
-          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Accessibility & Focus</span>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Accessibility &amp; Focus</span>
         </div>
         <p class="text-sm text-muted-foreground leading-relaxed">
-          WAI-ARIA compliant modal focus trapping (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-trap-focus</code>), roving tabindex keyboard navigation for tabs/menus, and dynamic screen-reader live announcements.
+          WAI-ARIA compliant modal focus trapping (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-trap-focus</code>), roving tabindex 2D matrix navigation for tabs/menus, and dynamic screen-reader live announcements.
         </p>
       </div>
 
-      <!-- Card 6: htmx-canvas.js -->
+      <!-- 6. htmx-virtual.js -->
       <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
         <div class="flex items-center justify-between">
-          <h3 class="font-semibold text-base text-card-foreground">htmx-canvas.js</h3>
-          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Spatial Node Canvas</span>
+          <h3 class="font-semibold text-base text-card-foreground">htmx-virtual.js</h3>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">1D &amp; 2D Virtualization</span>
         </div>
         <p class="text-sm text-muted-foreground leading-relaxed">
-          Spatial engine for infinite visual canvases. Draggable nodes (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-drag</code>), grid snapping (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-snap</code>), 2-layer nesting, and dynamic Bézier curve connectors (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-connect</code>).
+          Bi-directional windowing for 100,000+ items with pinned headers and freeze columns (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-virtual</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-virtual-pinned</code>) maintaining silky 60fps scrolling.
+        </p>
+      </div>
+
+      <!-- 7. htmx-grid.js -->
+      <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-base text-card-foreground">htmx-grid.js</h3>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Enterprise Data Grid</span>
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Data grid component with column resize, drag-and-drop reorder, multi-column sorting, inline editable cells, and one-click CSV export (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-grid</code>).
+        </p>
+      </div>
+
+      <!-- 8. htmx-offline.js -->
+      <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-base text-card-foreground">htmx-offline.js</h3>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">IndexedDB Offline Sync</span>
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Local IndexedDB mutation queue with 409 conflict detection, optimistic UI mutations, and automatic background replay upon network reconnection (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">hx-offline</code>).
+        </p>
+      </div>
+
+      <!-- 9. htmx-calc.js -->
+      <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-base text-card-foreground">htmx-calc.js</h3>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">Excel Topological DAG</span>
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Reactive spreadsheet calculation engine supporting formula evaluation (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">=SUM(A1:B10)</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">=AVG</code>, <code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">=IF</code>), range expansions, and circular dependency detection (<code class="bg-muted px-1 py-0.5 rounded text-xs font-mono">#CYCLE!</code>).
+        </p>
+      </div>
+
+      <!-- 10. htmx-devtools.js -->
+      <div class="rounded-xl border border-border bg-card p-5 text-card-foreground shadow-sm space-y-2">
+        <div class="flex items-center justify-between">
+          <h3 class="font-semibold text-base text-card-foreground">htmx-devtools.js</h3>
+          <span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-mono font-medium">In-Browser HUD</span>
+        </div>
+        <p class="text-sm text-muted-foreground leading-relaxed">
+          Interactive developer HUD (<kbd class="bg-muted px-1 py-0.5 rounded text-[10px] font-mono">Ctrl+Shift+H</kbd>) with real-time signal tree inspection, event stream timeline, mutation logger, and live state editing.
         </p>
       </div>
     </div>
@@ -98,15 +205,15 @@
     <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Benefits for Human Developers</h2>
     <ol class="list-decimal list-inside space-y-2.5 text-sm text-muted-foreground leading-relaxed marker:text-foreground marker:font-medium">
       <li><strong class="text-foreground">Zero NPM runtime dependencies</strong> — no node_modules, no webpack/vite config nightmares</li>
-      <li><strong class="text-foreground">Full reactive suite under 25KB total</strong> — smaller than a single React hook bundle</li>
+      <li><strong class="text-foreground">Full reactive suite under 48KB total</strong> — smaller than a single React hook bundle</li>
       <li><strong class="text-foreground">Server remains the source of truth</strong> — true hypermedia architecture with hyperreactive client ergonomics</li>
-      <li><strong class="text-foreground">Computed values & fine-grained signals</strong> — no unnecessary re-renders or brute-force DOM sweeps</li>
+      <li><strong class="text-foreground">Computed values &amp; fine-grained signals</strong> — no unnecessary re-renders or brute-force DOM sweeps</li>
       <li><strong class="text-foreground">Two-way binding with hx-model</strong> — effortless form controls with number, trim, and lazy modifiers</li>
-      <li><strong class="text-foreground">Structural loops (hx-for) & conditionals (hx-if)</strong> — clean HTML templates without JSX transpilation</li>
+      <li><strong class="text-foreground">Structural loops (hx-for) &amp; conditionals (hx-if)</strong> — clean HTML templates without JSX transpilation</li>
       <li><strong class="text-foreground">Backend agnostic</strong> — works seamlessly with Python (FastAPI/Django), Go, Rust, PHP (Laravel), Bun, or Ruby</li>
-      <li><strong class="text-foreground">Built-in accessible focus traps & roving tabindex</strong> — instant compliance without third-party libraries</li>
+      <li><strong class="text-foreground">Built-in accessible focus traps &amp; roving tabindex</strong> — instant compliance without third-party libraries</li>
       <li><strong class="text-foreground">Fluid ScaleUI resizing</strong> — interactive testing and responsive component scaling</li>
-      <li><strong class="text-foreground">Community-ready framework foundation</strong> — extensible foundation for Next.js-grade fullstack ecosystems</li>
+      <li><strong class="text-foreground">Extensible directive ecosystem</strong> — community-ready hooks for custom domain-specific UI behaviors</li>
     </ol>
   </div>
 
@@ -115,7 +222,7 @@
     <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Benefits for Agentic AI Coders</h2>
     <ol class="list-decimal list-inside space-y-2.5 text-sm text-muted-foreground leading-relaxed marker:text-foreground marker:font-medium">
       <li><strong class="text-foreground">Highly regular declarative HTML</strong> — AI agents can parse, generate, and refactor UI with near 100% success rate</li>
-      <li><strong class="text-foreground">No hydration or hook-order bugs</strong> — eliminates React's Rules of Hooks and useEffect race conditions</li>
+      <li><strong class="text-foreground">No hydration or hook-order bugs</strong> — eliminates React's Rules of Hooks, stale closures, and useEffect race conditions</li>
       <li><strong class="text-foreground">Predictable signal grammar</strong> — <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-state</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-model</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-for</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-if</code> form an unambiguous grammar</li>
       <li><strong class="text-foreground">Server-driven atomic mutations</strong> — AI agents can update parts of the UI by simply returning standard HTML fragments</li>
       <li><strong class="text-foreground">Zero build configuration fragility</strong> — agents don't get stuck debugging tsconfig, Babel, or Vite plugin errors</li>
@@ -127,10 +234,56 @@
     </ol>
   </div>
 
-  <!-- CTA Button -->
-  <div class="pt-4">
+  <!-- Design Pillars Table -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Design Pillars</h2>
+    <div class="rounded-xl border border-border overflow-hidden bg-card text-xs">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-border bg-muted/50 text-foreground font-semibold">
+            <th class="py-3 px-4">Pillar</th>
+            <th class="py-3 px-4">Meaning</th>
+            <th class="py-3 px-4">Non-Goal</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border text-muted-foreground">
+          <tr>
+            <td class="py-3 px-4 font-bold text-foreground">Hyperreactive</td>
+            <td class="py-3 px-4">Fine-grained signal reactivity directly in server-driven HTML fragments</td>
+            <td class="py-3 px-4">Becoming an opaque, heavy Single Page App runtime</td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-foreground">Lean</td>
+            <td class="py-3 px-4">Minimal runtime footprint (&lt;48KB total for all 10 engines combined)</td>
+            <td class="py-3 px-4">Megabyte-scale dependency graphs and build pipelines</td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-foreground">Hypermedia-First</td>
+            <td class="py-3 px-4">Server remains the authoritative source of truth for structure and state</td>
+            <td class="py-3 px-4">Client-side state ownership by default</td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-foreground">Agentic-Native</td>
+            <td class="py-3 px-4">Syntactically uniform HTML semantics optimized for LLMs and autonomous coders</td>
+            <td class="py-3 px-4">Human-only ergonomics with hidden boilerplate</td>
+          </tr>
+          <tr>
+            <td class="py-3 px-4 font-bold text-foreground">Composable</td>
+            <td class="py-3 px-4">Copy-paste atomic building blocks with well-defined slots and contracts</td>
+            <td class="py-3 px-4">Black-box abstractions that lock you in</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CTA Buttons -->
+  <div class="pt-4 flex items-center gap-4">
     <a href="/docs/components/installation" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
       Get Started →
+    </a>
+    <a href="/demo" class="inline-flex items-center justify-center rounded-md border border-border bg-background px-6 py-3 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+      Explore Live Demos
     </a>
   </div>
 </div>

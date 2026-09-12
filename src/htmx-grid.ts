@@ -504,7 +504,11 @@ if (typeof window !== 'undefined') {
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initGrids(document.body);
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.body) initGrids(document.body);
+    });
+  } else {
+    if (document.body) initGrids(document.body);
+  }
 }

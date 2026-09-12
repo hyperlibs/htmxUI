@@ -282,8 +282,12 @@ export const HxA11y: HxA11yAPI = {
 if (typeof window !== 'undefined') {
   window.HxA11y = HxA11y;
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initA11y(document.body);
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.body) initA11y(document.body);
+    });
+  } else {
+    if (document.body) initA11y(document.body);
+  }
 }
 

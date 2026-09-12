@@ -323,7 +323,11 @@ if (typeof window !== 'undefined') {
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initVibe(document.body);
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.body) initVibe(document.body);
+    });
+  } else {
+    if (document.body) initVibe(document.body);
+  }
 }

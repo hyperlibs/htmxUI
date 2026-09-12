@@ -182,13 +182,15 @@
       </div>
 
       <!-- Live Interactive Engine Health & Diagnostics Widget -->
-      <div class="rounded-2xl border border-border bg-muted/30 p-6 lg:p-8 space-y-6"
-           hx-state='{
-             "calcA1": 150,
-             "calcB1": 350,
-             "searchQuery": "",
-             "statusMsg": "All 10 Engines Ready"
-           }'>
+      <div class="rounded-2xl border border-border bg-muted/30 p-6 lg:p-8 space-y-6">
+        <script type="application/json" hx-state>
+        {
+          "calcA1": 150,
+          "calcB1": 350,
+          "searchQuery": "",
+          "statusMsg": "All 10 Engines Ready"
+        }
+        </script>
         <div class="flex items-center justify-between border-b border-border pb-4">
           <div>
             <h3 class="font-bold text-lg">⚡ In-Browser Reactive Engine Live Test</h3>

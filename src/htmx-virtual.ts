@@ -385,8 +385,12 @@ if (typeof window !== 'undefined') {
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initVirtual(document.body);
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.body) initVirtual(document.body);
+    });
+  } else {
+    if (document.body) initVirtual(document.body);
+  }
 }
 

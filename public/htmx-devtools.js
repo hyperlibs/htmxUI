@@ -1,33 +1,67 @@
-// src/htmx-devtools.ts
-class DevToolsPanel {
-  panelEl = null;
-  isVisible = false;
-  constructor() {
-    if (typeof window === "undefined")
-      return;
-    document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
-        this.toggle();
+(() => {
+  var __defProp = Object.defineProperty;
+  var __getOwnPropNames = Object.getOwnPropertyNames;
+  var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __moduleCache = /* @__PURE__ */ new WeakMap;
+  var __toCommonJS = (from) => {
+    var entry = __moduleCache.get(from), desc;
+    if (entry)
+      return entry;
+    entry = __defProp({}, "__esModule", { value: true });
+    if (from && typeof from === "object" || typeof from === "function")
+      __getOwnPropNames(from).map((key) => !__hasOwnProp.call(entry, key) && __defProp(entry, key, {
+        get: () => from[key],
+        enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable
+      }));
+    __moduleCache.set(from, entry);
+    return entry;
+  };
+  var __export = (target, all) => {
+    for (var name in all)
+      __defProp(target, name, {
+        get: all[name],
+        enumerable: true,
+        configurable: true,
+        set: (newValue) => all[name] = () => newValue
+      });
+  };
+
+  // src/htmx-devtools.ts
+  var exports_htmx_devtools = {};
+  __export(exports_htmx_devtools, {
+    HxDevTools: () => HxDevTools
+  });
+
+  class DevToolsPanel {
+    panelEl = null;
+    isVisible = false;
+    constructor() {
+      if (typeof window === "undefined")
+        return;
+      document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "h") {
+          this.toggle();
+        }
+      });
+    }
+    toggle() {
+      if (!this.panelEl) {
+        this.createDOM();
       }
-    });
-  }
-  toggle() {
-    if (!this.panelEl) {
-      this.createDOM();
+      this.isVisible = !this.isVisible;
+      if (this.panelEl) {
+        this.panelEl.style.display = this.isVisible ? "flex" : "none";
+        if (this.isVisible)
+          this.refresh();
+      }
     }
-    this.isVisible = !this.isVisible;
-    if (this.panelEl) {
-      this.panelEl.style.display = this.isVisible ? "flex" : "none";
-      if (this.isVisible)
-        this.refresh();
-    }
-  }
-  createDOM() {
-    this.panelEl = document.createElement("div");
-    this.panelEl.id = "htmxui-devtools-panel";
-    this.panelEl.className = "fixed bottom-4 right-4 w-96 max-h-[500px] bg-slate-950 text-slate-100 border border-slate-800 rounded-xl shadow-2xl z-50 flex flex-col font-mono text-xs overflow-hidden";
-    this.panelEl.style.display = "none";
-    this.panelEl.innerHTML = `
+    createDOM() {
+      this.panelEl = document.createElement("div");
+      this.panelEl.id = "htmxui-devtools-panel";
+      this.panelEl.className = "fixed bottom-4 right-4 w-96 max-h-[500px] bg-slate-950 text-slate-100 border border-slate-800 rounded-xl shadow-2xl z-50 flex flex-col font-mono text-xs overflow-hidden";
+      this.panelEl.style.display = "none";
+      this.panelEl.innerHTML = `
       <div class="p-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -53,69 +87,67 @@ class DevToolsPanel {
         </div>
       </div>
     `;
-    document.body.appendChild(this.panelEl);
-    this.panelEl.querySelector(".hx-dev-btn-close")?.addEventListener("click", () => this.toggle());
-    this.panelEl.querySelector(".hx-dev-btn-undo")?.addEventListener("click", () => {
-      if (window.HxBolt && window.HxBolt.undo)
-        window.HxBolt.undo();
-      this.refresh();
-    });
-    this.panelEl.querySelector(".hx-dev-btn-redo")?.addEventListener("click", () => {
-      if (window.HxBolt && window.HxBolt.redo)
-        window.HxBolt.redo();
-      this.refresh();
-    });
-  }
-  refresh() {
-    if (!this.panelEl)
-      return;
-    const storesEl = this.panelEl.querySelector(".hx-dev-stores");
-    if (storesEl && typeof window !== "undefined") {
-      const activeData = {};
-      if (window.HxBolt && window.HxBolt.getStore) {
-        const commonStores = ["auth", "cart", "app", "user", "theme", "filters", "settings"];
-        commonStores.forEach((name) => {
-          const s = window.HxBolt.getStore(name);
-          if (s) {
-            activeData[`$store.${name}`] = s.__raw || s;
+      document.body.appendChild(this.panelEl);
+      this.panelEl.querySelector(".hx-dev-btn-close")?.addEventListener("click", () => this.toggle());
+      this.panelEl.querySelector(".hx-dev-btn-undo")?.addEventListener("click", () => {
+        if (window.HxBolt && window.HxBolt.undo)
+          window.HxBolt.undo();
+        this.refresh();
+      });
+      this.panelEl.querySelector(".hx-dev-btn-redo")?.addEventListener("click", () => {
+        if (window.HxBolt && window.HxBolt.redo)
+          window.HxBolt.redo();
+        this.refresh();
+      });
+    }
+    refresh() {
+      if (!this.panelEl)
+        return;
+      const storesEl = this.panelEl.querySelector(".hx-dev-stores");
+      if (storesEl && typeof window !== "undefined") {
+        const activeData = {};
+        if (window.HxBolt && window.HxBolt.getStore) {
+          const commonStores = ["auth", "cart", "app", "user", "theme", "filters", "settings"];
+          commonStores.forEach((name) => {
+            const s = window.HxBolt.getStore(name);
+            if (s) {
+              activeData[`$store.${name}`] = s.__raw || s;
+            }
+          });
+        }
+        document.querySelectorAll("[hx-state]").forEach((el, idx) => {
+          if (window.HxBolt && window.HxBolt.getState) {
+            const st = window.HxBolt.getState(el);
+            if (st) {
+              const raw = st.__raw || st;
+              const sanitized = {};
+              for (const [k, v] of Object.entries(raw)) {
+                if (k !== "__refs" && typeof v !== "function") {
+                  sanitized[k] = v;
+                }
+              }
+              activeData[`Component[${el.id || idx}]`] = sanitized;
+            }
           }
         });
+        storesEl.textContent = JSON.stringify(activeData, null, 2);
       }
-      document.querySelectorAll("[hx-state]").forEach((el, idx) => {
-        if (window.HxBolt && window.HxBolt.getState) {
-          const st = window.HxBolt.getState(el);
-          if (st) {
-            const raw = st.__raw || st;
-            const sanitized = {};
-            for (const [k, v] of Object.entries(raw)) {
-              if (k !== "__refs" && typeof v !== "function") {
-                sanitized[k] = v;
-              }
-            }
-            activeData[`Component[${el.id || idx}]`] = sanitized;
-          }
-        }
-      });
-      storesEl.textContent = JSON.stringify(activeData, null, 2);
-    }
-    const netEl = this.panelEl.querySelector(".hx-dev-net-status");
-    const queueEl = this.panelEl.querySelector(".hx-dev-queue-count");
-    if (netEl) {
-      netEl.textContent = navigator.onLine ? "Online \uD83D\uDFE2" : "Offline \uD83D\uDCF4";
-      netEl.className = navigator.onLine ? "hx-dev-net-status text-emerald-400 font-semibold" : "hx-dev-net-status text-amber-400 font-semibold";
-    }
-    if (queueEl && window.HxOffline) {
-      queueEl.textContent = String(window.HxOffline.queueCount);
+      const netEl = this.panelEl.querySelector(".hx-dev-net-status");
+      const queueEl = this.panelEl.querySelector(".hx-dev-queue-count");
+      if (netEl) {
+        netEl.textContent = navigator.onLine ? "Online \uD83D\uDFE2" : "Offline \uD83D\uDCF4";
+        netEl.className = navigator.onLine ? "hx-dev-net-status text-emerald-400 font-semibold" : "hx-dev-net-status text-amber-400 font-semibold";
+      }
+      if (queueEl && window.HxOffline) {
+        queueEl.textContent = String(window.HxOffline.queueCount);
+      }
     }
   }
-}
-var HxDevTools = new DevToolsPanel;
-if (typeof window !== "undefined") {
-  window.HxDevTools = HxDevTools;
-  if (typeof window.HTMXUI !== "undefined") {
-    window.HTMXUI.devtools = HxDevTools;
+  var HxDevTools = new DevToolsPanel;
+  if (typeof window !== "undefined") {
+    window.HxDevTools = HxDevTools;
+    if (typeof window.HTMXUI !== "undefined") {
+      window.HTMXUI.devtools = HxDevTools;
+    }
   }
-}
-export {
-  HxDevTools
-};
+})();

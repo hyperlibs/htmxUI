@@ -446,42 +446,6 @@ const server = Bun.serve({
       return new Response(Bun.file("public/styles/output.css"), { headers: { "Content-Type": "text/css" } });
     }
 
-    if (url.pathname === "/htmx-bolt.js") {
-      return new Response(Bun.file("public/htmx-bolt.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-flash.js") {
-      return new Response(Bun.file("public/htmx-flash.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-form.js") {
-      return new Response(Bun.file("public/htmx-form.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-vibe.js") {
-      return new Response(Bun.file("public/htmx-vibe.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-a11y.js") {
-      return new Response(Bun.file("public/htmx-a11y.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-virtual.js") {
-      return new Response(Bun.file("public/htmx-virtual.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-grid.js") {
-      return new Response(Bun.file("public/htmx-grid.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-offline.js") {
-      return new Response(Bun.file("public/htmx-offline.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
-    if (url.pathname === "/htmx-devtools.js") {
-      return new Response(Bun.file("public/htmx-devtools.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
     if (url.pathname === "/api/erp-invoices.json") {
       const count = parseInt(url.searchParams.get("count") || "10000", 10);
       const statuses = ["Paid", "Pending", "Overdue", "Draft", "Processing"];
@@ -497,24 +461,22 @@ const server = Bun.serve({
       return new Response(JSON.stringify(invoices), { headers: { "Content-Type": "application/json" } });
     }
 
-    if (url.pathname === "/htmx-canvas.js") {
-      return new Response(Bun.file("public/htmx-canvas.js"), { headers: { "Content-Type": "application/javascript" } });
-    }
-
     if (url.pathname === "/schema/htmxui.json") {
       return new Response(Bun.file("schema/htmxui.json"), { headers: { "Content-Type": "application/json" } });
     }
 
-    if (url.pathname === "/llms.txt") {
-      return new Response(Bun.file("public/llms.txt"), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
-    }
-
-    if (url.pathname === "/llms-full.txt") {
-      return new Response(Bun.file("public/llms-full.txt"), { headers: { "Content-Type": "text/plain; charset=utf-8" } });
-    }
-
-    if (url.pathname === "/inventory.json") {
-      return new Response(Bun.file("public/inventory.json"), { headers: { "Content-Type": "application/json" } });
+    // Universal public file serving
+    const publicFile = Bun.file(`public${url.pathname}`);
+    if (await publicFile.exists()) {
+      let contentType = "application/octet-stream";
+      if (url.pathname.endsWith(".js")) contentType = "application/javascript";
+      else if (url.pathname.endsWith(".css")) contentType = "text/css";
+      else if (url.pathname.endsWith(".json")) contentType = "application/json";
+      else if (url.pathname.endsWith(".txt")) contentType = "text/plain; charset=utf-8";
+      else if (url.pathname.endsWith(".html")) contentType = "text/html; charset=utf-8";
+      else if (url.pathname.endsWith(".png")) contentType = "image/png";
+      else if (url.pathname.endsWith(".svg")) contentType = "image/svg+xml";
+      return new Response(publicFile, { headers: { "Content-Type": contentType } });
     }
 
     // Component doc pages

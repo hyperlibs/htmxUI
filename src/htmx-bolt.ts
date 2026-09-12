@@ -104,7 +104,7 @@ function checkAttributeTypos(el: HTMLElement): void {
   if (!el.attributes) return;
   for (const attr of Array.from(el.attributes)) {
     const name = attr.name;
-    if (name.startsWith('hx-') && !name.startsWith('hx-on:') && !name.startsWith('hx-bind:') && !name.startsWith('hx-msg-')) {
+    if (name.startsWith('hx-') && !name.startsWith('hx-on:') && !name.startsWith('hx-bind:') && !name.startsWith('hx-model.') && !name.startsWith('hx-action-') && !name.startsWith('hx-msg-')) {
       if (!KNOWN_ATTRIBUTES.has(name)) {
         // Find closest match
         let closest = '';
@@ -195,15 +195,26 @@ export function createReactiveObject<T extends object>(
   }
 
   const proxy = new Proxy(target, {
+    has(obj, prop) {
+      if (prop === Symbol.unscopables) return false;
+      if (typeof prop === 'string') {
+        if (prop in obj || Object.prototype.hasOwnProperty.call(obj, prop)) return true;
+        const globals = ['Math', 'Date', 'JSON', 'Number', 'String', 'Boolean', 'Array', 'Object', 'parseInt', 'parseFloat', 'isNaN', 'isFinite', 'console', 'window', 'document', 'event', '$event', '$el', '$eventValue', '$store', '$refs', '$form', '$calc', '$copy', '$toast', '$sound', '$blast', '$focus', '$undo', '$redo', '$exportCSV', '$toggle'];
+        if (globals.includes(prop)) return false;
+        return true;
+      }
+      return prop in obj;
+    },
     get(obj, prop, receiver) {
       if (prop === '__isProxy') return true;
       if (prop === '__raw') return obj;
+      if (prop === Symbol.unscopables) return undefined;
       if (typeof prop === 'string') {
         getSignal(prop).depend();
       }
       return Reflect.get(obj, prop, receiver);
     },
-    set(obj, prop, value, receiver) {
+    set(obj, prop, value) {
       const oldVal = (obj as any)[prop];
       if (oldVal === value && typeof value !== 'object') {
         return true;
@@ -213,7 +224,8 @@ export function createReactiveObject<T extends object>(
         ? createReactiveObject(value, rootNotify, path ? `${path}.${String(prop)}` : String(prop))
         : value;
 
-      const result = Reflect.set(obj, prop, wrappedVal, receiver);
+      (obj as any)[prop] = wrappedVal;
+
       if (typeof prop === 'string') {
         getSignal(prop).notify();
         recordStateSnapshot(obj);
@@ -222,7 +234,7 @@ export function createReactiveObject<T extends object>(
         }
         if (rootNotify) rootNotify();
       }
-      return result;
+      return true;
     },
     deleteProperty(obj, prop) {
       const has = prop in obj;
@@ -566,60 +578,38 @@ export const HyperFX = {
 
 // Scoped Expression Evaluator
 export function evaluateExpression(expr: string, context: any, extraScope: Record<string, any> = {}): any {
+  if (!expr || typeof expr !== 'string') return undefined;
+  const ctx = context && typeof context === 'object' ? context : {};
+  const fxScope = {
+    $store: stores,
+    $refs: ctx.__refs || {},
+    $el: extraScope.$el || null,
+    $event: extraScope.$event || null,
+    $eventValue: extraScope.$eventValue,
+    $form: ctx.$form || {},
+    $copy: HyperFX.copy,
+    $toast: HyperFX.toast,
+    $sound: HyperFX.sound,
+    $blast: (opts?: any) => HyperFX.blast(extraScope.$el, opts),
+    $focus: HyperFX.focus,
+    $undo: HyperFX.undo,
+    $redo: HyperFX.redo,
+    $exportCSV: HyperFX.exportCSV,
+    $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
+    ...extraScope
+  };
+
+  const scopeKeys = Object.keys(fxScope);
+  const scopeValues = Object.values(fxScope);
+  const trimmed = expr.trim();
+
   try {
-    const fxScope = {
-      $copy: HyperFX.copy,
-      $toast: HyperFX.toast,
-      $sound: HyperFX.sound,
-      $blast: (opts?: any) => HyperFX.blast(extraScope.$el, opts),
-      $focus: HyperFX.focus,
-      $undo: HyperFX.undo,
-      $redo: HyperFX.redo,
-      $exportCSV: HyperFX.exportCSV,
-      $toggle: (key: string) => { (context as any)[key] = !(context as any)[key]; }
-    };
-
-    const scopeKeys = ['$store', '$refs', '$el', '$event', '$form', ...Object.keys(fxScope), ...Object.keys(context), ...Object.keys(extraScope)];
-    const scopeValues = [
-      stores,
-      context.__refs || {},
-      extraScope.$el || null,
-      extraScope.$event || null,
-      context.$form || {},
-      ...Object.values(fxScope),
-      ...Object.values(context),
-      ...Object.values(extraScope)
-    ];
-
-    const trimmed = expr.trim();
-    const fn = new Function(...scopeKeys, `return (${trimmed})`);
-    return fn(...scopeValues);
+    const fn = new Function(...scopeKeys, `with(this) { return (${trimmed}); }`);
+    return fn.apply(ctx, scopeValues);
   } catch (e: any) {
     try {
-      const fxScope = {
-        $copy: HyperFX.copy,
-        $toast: HyperFX.toast,
-        $sound: HyperFX.sound,
-        $blast: (opts?: any) => HyperFX.blast(extraScope.$el, opts),
-        $focus: HyperFX.focus,
-        $undo: HyperFX.undo,
-        $redo: HyperFX.redo,
-        $exportCSV: HyperFX.exportCSV,
-        $toggle: (key: string) => { (context as any)[key] = !(context as any)[key]; }
-      };
-      const scopeKeys = ['$store', '$refs', '$el', '$event', '$form', ...Object.keys(fxScope), ...Object.keys(context), ...Object.keys(extraScope)];
-      const scopeValues = [
-        stores,
-        context.__refs || {},
-        extraScope.$el || null,
-        extraScope.$event || null,
-        context.$form || {},
-        ...Object.values(fxScope),
-        ...Object.values(context),
-        ...Object.values(extraScope)
-      ];
-      const fn = new Function(...scopeKeys, `with(this) { ${expr} }`);
-      return fn.apply(context, scopeValues);
+      const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
+      return fn.apply(ctx, scopeValues);
     } catch (err: any) {
       if (config.debug) {
         console.warn(`[htmx-bolt] Evaluation error in "${expr}":`, err.message);
@@ -630,31 +620,33 @@ export function evaluateExpression(expr: string, context: any, extraScope: Recor
 }
 
 export function executeAction(expr: string, context: any, extraScope: Record<string, any> = {}): any {
+  if (!expr || typeof expr !== 'string') return undefined;
+  const ctx = context && typeof context === 'object' ? context : {};
+  const fxScope = {
+    $store: stores,
+    $refs: ctx.__refs || {},
+    $el: extraScope.$el || null,
+    $event: extraScope.$event || null,
+    $eventValue: extraScope.$eventValue,
+    $form: ctx.$form || {},
+    $copy: HyperFX.copy,
+    $toast: HyperFX.toast,
+    $sound: HyperFX.sound,
+    $blast: (opts?: any) => HyperFX.blast(extraScope.$el, opts),
+    $focus: HyperFX.focus,
+    $undo: HyperFX.undo,
+    $redo: HyperFX.redo,
+    $exportCSV: HyperFX.exportCSV,
+    $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
+    ...extraScope
+  };
+
+  const scopeKeys = Object.keys(fxScope);
+  const scopeValues = Object.values(fxScope);
+
   try {
-    const fxScope = {
-      $copy: HyperFX.copy,
-      $toast: HyperFX.toast,
-      $sound: HyperFX.sound,
-      $blast: (opts?: any) => HyperFX.blast(extraScope.$el, opts),
-      $focus: HyperFX.focus,
-      $undo: HyperFX.undo,
-      $redo: HyperFX.redo,
-      $exportCSV: HyperFX.exportCSV,
-      $toggle: (key: string) => { (context as any)[key] = !(context as any)[key]; }
-    };
-    const scopeKeys = ['$store', '$refs', '$el', '$event', '$form', ...Object.keys(fxScope), ...Object.keys(context), ...Object.keys(extraScope)];
-    const scopeValues = [
-      stores,
-      context.__refs || {},
-      extraScope.$el || null,
-      extraScope.$event || null,
-      context.$form || {},
-      ...Object.values(fxScope),
-      ...Object.values(context),
-      ...Object.values(extraScope)
-    ];
-    const fn = new Function(...scopeKeys, `with(this) { ${expr} }`);
-    return fn.apply(context, scopeValues);
+    const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
+    return fn.apply(ctx, scopeValues);
   } catch (err: any) {
     reportError('HTMXUI-BOLT-004', `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
   }
@@ -826,14 +818,14 @@ export function initComponent(rootEl: HTMLElement): ReactiveProxy {
     });
   });
 
-  // Structural Directives
-  processStructuralDirectives(rootEl, reactiveState);
-
   // Bindings
   bindDirectives(rootEl, reactiveState);
 
   // Events
   bindEvents(rootEl, reactiveState);
+
+  // Structural Directives
+  processStructuralDirectives(rootEl, reactiveState);
 
   return reactiveState;
 }
@@ -919,12 +911,17 @@ function processStructuralDirectives(rootEl: HTMLElement, state: any): void {
       items.forEach((item, index) => {
         const clone = template.content.cloneNode(true) as DocumentFragment;
 
-        const itemScope = {
+        const itemScope: Record<string, any> = {
           [itemVar]: item,
           [indexVar]: index
         };
 
         const scopedState = new Proxy(state, {
+          has(target, prop) {
+            if (prop === Symbol.unscopables) return false;
+            if (typeof prop === 'string' && prop in itemScope) return true;
+            return Reflect.has(target, prop);
+          },
           get(target, prop, receiver) {
             if (typeof prop === 'string' && prop in itemScope) return itemScope[prop];
             return Reflect.get(target, prop, receiver);
@@ -938,12 +935,16 @@ function processStructuralDirectives(rootEl: HTMLElement, state: any): void {
           }
         });
 
-        bindDirectives(clone as any, scopedState);
-        bindEvents(clone as any, scopedState);
-
         const insertedNodes = Array.from(clone.childNodes);
         anchor.parentNode?.insertBefore(clone, anchor);
         currentNodes.push(...insertedNodes);
+
+        insertedNodes.forEach(node => {
+          if (node.nodeType === 1) {
+            bindDirectives(node as HTMLElement, scopedState);
+            bindEvents(node as HTMLElement, scopedState);
+          }
+        });
       });
     });
   });
@@ -955,11 +956,13 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
   if (rootEl.hasAttribute && rootEl.hasAttribute('hx-text')) textEls.unshift(rootEl);
 
   textEls.forEach(el => {
+    if ((el as any)._hxTextBound) return;
+    (el as any)._hxTextBound = true;
     checkAttributeTypos(el);
     const expr = el.getAttribute('hx-text')!;
     runWithEffect(() => {
       const val = evaluateExpression(expr, state, { $el: el });
-      el.innerText = val !== undefined && val !== null ? String(val) : '';
+      el.textContent = val !== undefined && val !== null ? String(val) : '';
     });
   });
 
@@ -968,6 +971,8 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
   if (rootEl.hasAttribute && rootEl.hasAttribute('hx-html')) htmlEls.unshift(rootEl);
 
   htmlEls.forEach(el => {
+    if ((el as any)._hxHtmlBound) return;
+    (el as any)._hxHtmlBound = true;
     checkAttributeTypos(el);
     const expr = el.getAttribute('hx-html')!;
     runWithEffect(() => {
@@ -981,6 +986,8 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
   if (rootEl.hasAttribute && rootEl.hasAttribute('hx-show')) showEls.unshift(rootEl);
 
   showEls.forEach(el => {
+    if ((el as any)._hxShowBound) return;
+    (el as any)._hxShowBound = true;
     checkAttributeTypos(el);
     const expr = el.getAttribute('hx-show')!;
     runWithEffect(() => {
@@ -1001,6 +1008,8 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
   if (rootEl.hasAttribute && rootEl.hasAttribute('hx-class')) classEls.unshift(rootEl);
 
   classEls.forEach(el => {
+    if ((el as any)._hxClassBound) return;
+    (el as any)._hxClassBound = true;
     checkAttributeTypos(el);
     const expr = el.getAttribute('hx-class')!;
     runWithEffect(() => {
@@ -1029,6 +1038,8 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
   if (rootEl.hasAttribute && rootEl.hasAttribute('hx-style')) styleEls.unshift(rootEl);
 
   styleEls.forEach(el => {
+    if ((el as any)._hxStyleBound) return;
+    (el as any)._hxStyleBound = true;
     checkAttributeTypos(el);
     const expr = el.getAttribute('hx-style')!;
     runWithEffect(() => {
@@ -1072,15 +1083,35 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
   });
 
   // hx-model
-  const modelEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll('[hx-model]') : []) as (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[];
-  if (rootEl.hasAttribute && rootEl.hasAttribute('hx-model')) modelEls.unshift(rootEl as any);
+  const modelEls: (HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement)[] = [];
+  const allCandidateEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll('*') : []) as HTMLElement[];
+  if (rootEl.nodeType === 1) allCandidateEls.unshift(rootEl);
+
+  allCandidateEls.forEach(el => {
+    if (!el.attributes) return;
+    for (const attr of Array.from(el.attributes)) {
+      if (attr.name === 'hx-model' || attr.name.startsWith('hx-model.')) {
+        modelEls.push(el as any);
+        break;
+      }
+    }
+  });
 
   modelEls.forEach(el => {
     checkAttributeTypos(el);
-    const modelAttr = el.getAttribute('hx-model')!;
-    const parts = modelAttr.split('.');
-    const propPath = parts[0];
+    let modelAttr = '';
+    let attrName = '';
+    for (const attr of Array.from(el.attributes)) {
+      if (attr.name === 'hx-model' || attr.name.startsWith('hx-model.')) {
+        modelAttr = attr.value;
+        attrName = attr.name;
+        break;
+      }
+    }
+
+    const parts = attrName.split('.');
     const modifiers = parts.slice(1);
+    const propPath = modelAttr;
 
     const isLazy = modifiers.includes('lazy');
     const isNumber = modifiers.includes('number') || (el as HTMLInputElement).type === 'number';
@@ -1185,7 +1216,11 @@ function bindDirectives(rootEl: HTMLElement, state: any): void {
 
   // Custom community directives
   customDirectives.forEach((handler, dirName) => {
-    const matchedEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll(`[${dirName}]`) : []) as HTMLElement[];
+    let matchedEls: HTMLElement[] = [];
+    try {
+      const selector = /^[0-9]/.test(dirName) ? `[\\3${dirName[0]} ${dirName.slice(1)}]` : `[${dirName}]`;
+      matchedEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll(selector) : []) as HTMLElement[];
+    } catch (e) {}
     if (rootEl.hasAttribute && rootEl.hasAttribute(dirName)) matchedEls.unshift(rootEl);
     matchedEls.forEach(el => {
       const val = el.getAttribute(dirName) || '';
@@ -1519,7 +1554,14 @@ export const HxBolt: HxBoltAPI = {
     return stores[name] as ReactiveProxy<T> | undefined;
   },
   getState<T extends object = Record<string, any>>(el: HTMLElement): ReactiveProxy<T> | undefined {
-    return elementStates.get(el) as ReactiveProxy<T> | undefined;
+    let current: HTMLElement | null = el;
+    while (current) {
+      if (elementStates.has(current)) {
+        return elementStates.get(current) as ReactiveProxy<T>;
+      }
+      current = current.parentElement;
+    }
+    return undefined;
   },
   matrix<T = any>(rows = 1000000, cols = 16384, initialData?: Record<string, T> | Array<[number, number, T]>): ISparseMatrix<T> {
     const mat = new SparseMatrix<T>(rows, cols, initialData);
@@ -1541,9 +1583,9 @@ export const HxBolt: HxBoltAPI = {
       initComponent(root as HTMLElement);
     }
     if (typeof document !== 'undefined') {
-      const spatialEls = (root.querySelectorAll ? root.querySelectorAll('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light') : []) as NodeListOf<HTMLElement>;
+      const spatialEls = (root.querySelectorAll ? root.querySelectorAll('[hx-3d], [hx-spatial], [hx-env], [hx-atmos], [hx-fx], hx-viewport, hx-mesh, hx-particle, hx-light') : []) as NodeListOf<HTMLElement>;
       spatialEls.forEach(el => HxSpatial.mount(el));
-      if ((root as HTMLElement).matches && (root as HTMLElement).matches('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light')) {
+      if ((root as HTMLElement).matches && (root as HTMLElement).matches('[hx-3d], [hx-spatial], [hx-env], [hx-atmos], [hx-fx], hx-viewport, hx-mesh, hx-particle, hx-light')) {
         HxSpatial.mount(root as HTMLElement);
       }
     }
@@ -1572,7 +1614,7 @@ if (typeof window !== 'undefined') {
   };
 
   // Server-driven sync
-  document.body.addEventListener('hxStateUpdate', function (evt: any) {
+  document.addEventListener('hxStateUpdate', function (evt: any) {
     const detail = evt.detail;
     if (detail && detail.target && detail.state) {
       const el = document.querySelector(detail.target) as HTMLElement;
@@ -1585,7 +1627,7 @@ if (typeof window !== 'undefined') {
     }
   });
 
-  document.body.addEventListener('hxStoreUpdate', function (evt: any) {
+  document.addEventListener('hxStoreUpdate', function (evt: any) {
     const detail = evt.detail;
     if (detail && detail.store && detail.state) {
       const store = stores[detail.store];
@@ -1597,7 +1639,7 @@ if (typeof window !== 'undefined') {
     }
   });
 
-  document.body.addEventListener('hxMatrixUpdate', function (evt: any) {
+  document.addEventListener('hxMatrixUpdate', function (evt: any) {
     const detail = evt.detail;
     if (detail) {
       const matrixName = detail.matrix || 'default';
@@ -1687,14 +1729,10 @@ if (typeof window !== 'undefined') {
     }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('[hx-state], script[hx-state]').forEach(el => {
-      const root = el.tagName === 'SCRIPT' ? el.parentElement : el;
-      if (root) initComponent(root as HTMLElement);
-    });
-    document.querySelectorAll('[scaleui]').forEach(el => handleScaleUI(el as HTMLElement));
-    document.querySelectorAll('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light').forEach(el => HxSpatial.mount(el as HTMLElement));
-
+  let observerInitialized = false;
+  function setupObserver(): void {
+    if (observerInitialized || typeof MutationObserver === 'undefined' || !document.body) return;
+    observerInitialized = true;
     new MutationObserver(mutations => {
       for (const m of mutations) {
         if (m.type === 'attributes' && m.attributeName === 'scaleui') {
@@ -1707,12 +1745,31 @@ if (typeof window !== 'undefined') {
               el.querySelectorAll('[scaleui]').forEach(child => handleScaleUI(child as HTMLElement));
               if (el.hasAttribute('hx-state') || el.querySelector('script[hx-state]')) initComponent(el);
               el.querySelectorAll('[hx-state]').forEach(child => initComponent(child as HTMLElement));
-              if (el.matches && el.matches('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light')) HxSpatial.mount(el);
-              el.querySelectorAll('[hx-3d], [3denv], [3datmos], [3dfx], hx-viewport, hx-mesh, hx-particle, hx-light').forEach(child => HxSpatial.mount(child as HTMLElement));
+              if (el.matches && el.matches('[hx-3d], [hx-spatial], [hx-env], [hx-atmos], [hx-fx], hx-viewport, hx-mesh, hx-particle, hx-light')) HxSpatial.mount(el);
+              el.querySelectorAll('[hx-3d], [hx-spatial], [hx-env], [hx-atmos], [hx-fx], hx-viewport, hx-mesh, hx-particle, hx-light').forEach(child => HxSpatial.mount(child as HTMLElement));
             }
           });
         }
       }
     }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['scaleui', 'hx-state'] });
-  });
+  }
+
+  function autoInit(): void {
+    document.querySelectorAll('[hx-state], script[hx-state]').forEach(el => {
+      const root = el.tagName === 'SCRIPT' ? el.parentElement : el;
+      if (root) initComponent(root as HTMLElement);
+    });
+    if (document.body && document.body.hasAttribute('hx-state')) {
+      initComponent(document.body);
+    }
+    document.querySelectorAll('[scaleui]').forEach(el => handleScaleUI(el as HTMLElement));
+    document.querySelectorAll('[hx-3d], [hx-spatial], [hx-env], [hx-atmos], [hx-fx], hx-viewport, hx-mesh, hx-particle, hx-light').forEach(el => HxSpatial.mount(el as HTMLElement));
+    setupObserver();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInit);
+  } else {
+    autoInit();
+  }
 }

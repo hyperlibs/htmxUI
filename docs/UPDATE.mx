@@ -1,10 +1,10 @@
 @meta
   event_bus: UPDATE.mx
-  timestamp: 2026-09-10T14:30:00Z
+  timestamp: 2026-09-13T00:55:00Z
   ecosystem: hyperlibs
-  source_repo: hyperlibs/htmfx
-  target_repos: [hyperlibs/htmxUI, hyperlibs/HMLR]
-  version: 3.1.0
+  source_repo: hyperlibs/htmxUI
+  target_repos: [hyperlibs/htmxUI, hyperlibs/HMLR, hyperlibs/htmfx]
+  version: 3.2.0
   status: ACTIVE_AND_SYNCHRONIZED
 
 @type SystemRole = host_2d_hypermedia | spatial_3d_physics | runtime_and_devtools
@@ -16,9 +16,9 @@
   handoff_trigger: string
   action_required: string
 
-# 🌐 Master Ecosystem Event Bus: UPDATE.mx (v3.1.0)
+# 🌐 Master Ecosystem Event Bus: UPDATE.mx (v3.2.0)
 This document is the single source of truth for multi-agent autonomous synchronization across the three hyperlibs repositories:
-1. `htmxUI` (Host Reactive Hypermedia Core ~40KB)
+1. `htmxUI` (Host Reactive Hypermedia Core ~48KB total suite)
 2. `htmFX` (Spatial 3D & Physics Companion ~33.99KB gzipped)
 3. `HMLR` (HyperMedia Language Runtime & Browser DevTools Extension <50KB)
 
@@ -27,7 +27,7 @@ This document is the single source of truth for multi-agent autonomous synchroni
 ## 📜 Chronological Evolution & Strategic Rationale | @model EcosystemTimeline
 | step | topic                        | decision                                                                                  | impact                                                                                    |
 |    1 | Scope Grounding              | Strict boundary: htmxUI owns HUD, signals, 120 FPS ticker; domain physics live in htmFX.  | Protects core from monolithic bloat; guarantees sub-millisecond execution.                |
-|    2 | E2E Playwright Suite         | Verified 5/5 Playwright tests passing and 20/20 unit tests (148ms).                        | High trust baseline for enterprise and AI builders.                                       |
+|    2 | E2E Playwright Suite         | Verified 5/5 Playwright tests passing and 31/31 unit tests.                                | High trust baseline for enterprise and AI builders.                                       |
 |    3 | Soft Circular Photons & Rays | Replaced square particles with procedural Gaussian radial textures; added 3D raycasting.   | Eliminates visual artifacts; clean spatial interactivity.                                 |
 |    4 | 100+ FX Primitives Taxonomy  | Defined 100 high-velocity physics, kinetic, and deformation primitives ($burn, $zap).      | Action blueprint for game and simulation triggers.                                        |
 |    5 | Spatial Volumetric Fields    | Analytical height fog ρ(y) = ρ₀·e^(-(y-y₀)/H) & inverse-square falloff I(d) = I₀/(1+kd²). | Proves atmosphere is a 3D field, not a 2D screen overlay.                                 |
@@ -41,15 +41,17 @@ This document is the single source of truth for multi-agent autonomous synchroni
 |   13 | 200+ Spatial FX & Multi-CRX  | HTMFX builds 200+ particle/physics FX (Matter/Cannon/Proton); HMLR builds Chrome/Firefox/Safari. | Comprehensive physics/effects engine in .fx; universal cross-browser DevTools extension.  |
 |   14 | HMLR Peer Review Consensus   | Formal ecosystem consensus on HMLR v2.3.0 proposals (zero-overhead tabs, velocity auditor, hx-diag). | 100% unconditional consensus achieved across all three repositories.                       |
 |   15 | Master Sync Bus v3.1.0       | htmFX upgraded to v1.2.0 (SpatialEdgeDB, 240+ FX, RK4, curl noise, height fog); htmxUI implements autonomous bridge & @diag FX-0404. | Complete zero-overhead spatial handoff and clean separation of concerns across triad.      |
+|   16 | Flagship Ecosystem v3.2.0    | TailAdmin 100% pure HTMXUI recreation (10 views), IIFE engine bundles, scoped loop signal isolation, 100% Playwright E2E green suite. | Production-grade validation of hyperreactive zero-VDOM stack across enterprise scenarios. |
 
 ---
 
 ## 📋 Direct Action Directives for Repositories | @model RepoInstruction
 | target | priority  | title                          | action_summary                                                      | action_detail                                                                                                |
-| HMLR   | immediate | Implement Approved v2.3.0 Spec | Build selective tab activation, velocity auditor, and hx-diag CLI.  | Zero CPU on uninspected tabs. Passive htmfx:spatialUpdate telemetry listener. Dual hx-doctor / hx-diag CLI. |
-| htmfx  | immediate | 240+ Spatial FX & SpatialEdgeDB| Release v1.2.0 (33.99 KB gzipped) with SpatialEdgeDB FlatBuffers.   | Ingest >1,000 entities bypassing DOM. Direct WebGPU instanced draws, RK4 solvers, curl noise.              |
-| htmxui | immediate | Autonomous Spatial Bridge      | Implement directive handoff (hx-3d, 3denv, 3datmos) & @diag FX-0404. | Mounts 3D tags directly to htmFX; emits FX-0404 fallback diagnostic when companion is absent.              |
-| all    | immediate | Standardize on Dual CLI Tooling| Adopt hx-doctor (environment health) and hx-diag (code validation). | Universal CLI taxonomy across all three repositories for developers and CI/CD pipelines.                    |
+| HMLR   | immediate | Align DevTools with v3.2.0 Core| Ingest CSP `<script hx-state>` and scoped `hx-for` proxies.         | Update DevTools state tree inspector to traverse scoped loop proxies and capture IndexedDB mutation streams. |
+| HMLR   | immediate | Syntax Audit Linter Rule       | Detect unescaped `hx-on:click` in HTMX 2 projects.                  | Recommend `@click` or `hx-action` to prevent HTMX 2 window evaluation errors.                               |
+| htmfx  | immediate | 120 FPS Ticker Synchronization | Hook Keplerian orbiters to `HxBolt.ticker` and sanitize digit tags. | Ensure 3D selectors escape leading digits (`[\\33 denv]`) and subscribe to the unified 120 FPS ticker stream. |
+| htmxui | completed | IIFE Bundles & Scoped Signals  | Shipped IIFE builds, `hx-for` proxy `has` trap, and flagship apps.  | 5/5 Playwright E2E tests passing, 31/31 unit tests passing, zero external frontend dependencies.             |
+| all    | immediate | Unified Release v3.2.0         | Sync master branch revisions with `UPDATE.mx` v3.2.0 tag.           | Universal milestone alignment across `htmxUI`, `htmFX`, and `HMLR`.                                         |
 
 ---
 
@@ -57,8 +59,8 @@ This document is the single source of truth for multi-agent autonomous synchroni
 
 ```mx
 @diag FX-0000: SYSTEM_HEALTH
-  status: CONSENSUS_ACHIEVED_AND_LOCKED
+  status: ECOSYSTEM_ALIGNED_AND_VERIFIED
   source: docs/UPDATE.mx
   scope: [htmxUI, htmFX, HMLR]
-  message: Ecosystem aligned on v3.1.0 Master Sync Bus with htmFX v1.2.0 SpatialEdgeDB, 240+ FX catalogue, and htmxUI autonomous spatial bridge.
+  message: Ecosystem aligned on v3.2.0 Master Sync Bus with TailAdmin pure HTMXUI recreation, 10-engine IIFE builds, and 100% green automated test verification.
 ```

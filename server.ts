@@ -249,9 +249,10 @@ const server = Bun.serve({
         HTMXUI
       </div>
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
+        <a href="/demo" class="text-primary font-semibold hover:text-primary transition-colors flex items-center gap-1"><span>🚀</span> Live Demos</a>
         <a href="/docs/components/introduction" class="hover:text-foreground transition-colors">Documentation</a>
         <a href="/docs/components/button" class="hover:text-foreground transition-colors">Components</a>
-        <a href="https://github.com/hyperlibs/htmxUI" class="hover:text-foreground transition-colors">GitHub</a>
+        <a href="https://github.com/hyperlibs/htmxUI" target="_blank" class="hover:text-foreground transition-colors">GitHub</a>
       </nav>
     </div>
   </header>
@@ -421,8 +422,16 @@ const server = Bun.serve({
 </html>`, { headers: { "Content-Type": "text/html" } });
     }
 
+    if (url.pathname === "/demo" || url.pathname === "/demos") {
+      return new Response(Bun.file("views/demos-hub.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
+
     if (url.pathname === "/app/erp" || url.pathname === "/demo/erp") {
       return new Response(Bun.file("views/app-erp.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
+
+    if (url.pathname === "/app/hypersheet" || url.pathname === "/demo/hypersheet") {
+      return new Response(Bun.file("views/app-hypersheet.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
     if (url.pathname === "/app/universe" || url.pathname === "/demo/universe" || url.pathname === "/cosmos") {

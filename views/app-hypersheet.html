@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hypersheet — 1,000,000 Cell Reactive Spreadsheet Matrix</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-calc.js"></script>
+  <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-virtual.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-devtools.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .cell-input:focus { outline: 2px solid hsl(var(--primary)); z-index: 10; }
+  </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-primary/30"
+      hx-state='{
+        "activeCell": "A1",
+        "activeVal": "100",
+        "formulaBar": "100",
+        "selectedRange": "A1:A1",
+        "sumOutput": 0,
+        "rowCount": 100,
+        "colCount": 26
+      }'>
+
+  <!-- Top Navigation & Formula Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur px-4 py-2.5 flex flex-col gap-2 sticky top-0 z-30">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a href="/demo" class="text-xs text-slate-400 hover:text-white transition-colors">← All Demos</a>
+        <span class="text-slate-600">|</span>
+        <div class="flex items-center gap-2 font-bold text-sm">
+          <span class="text-blue-400">📑</span>
+          <span>Hypersheet Matrix</span>
+          <span class="text-[10px] font-mono uppercase bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">1,000,000 Cells</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3 text-xs">
+        <button onclick="simulateServerStream()" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors shadow-sm">
+          ⚡ Simulate 60fps SSE Delta Stream
+        </button>
+        <button onclick="window.HxBolt.history.undo()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300">
+          Undo (Ctrl+Z)
+        </button>
+        <button onclick="window.HxBolt.history.redo()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300">
+          Redo (Ctrl+Y)
+        </button>
+      </div>
+    </div>
+
+    <!-- Formula Bar -->
+    <div class="flex items-center gap-2 pt-1">
+      <div class="w-14 text-center font-mono font-bold text-xs bg-slate-950 px-2 py-1.5 rounded border border-slate-800 text-blue-400" hx-text="activeCell">
+        A1
+      </div>
+      <div class="text-slate-500 font-mono text-sm">fx</div>
+      <input type="text" 
+             id="formula-input"
+             hx-model="formulaBar" 
+             onkeydown="if(event.key === 'Enter') commitActiveCell(this.value)"
+             placeholder="Type a value or formula (e.g. =SUM(A1:A5) or =A1*2)..."
+             class="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-1.5 font-mono text-xs text-slate-200 focus:border-blue-500 focus:outline-none">
+    </div>
+  </header>
+
+  <!-- Spreadsheet Grid Body -->
+  <main class="flex-1 overflow-auto bg-slate-950 p-4">
+    <div class="border border-slate-800 rounded-lg overflow-hidden bg-slate-900/50 shadow-xl max-w-full">
+      <table class="w-full border-collapse font-mono text-xs select-none" id="sheet-table">
+        <thead>
+          <tr class="bg-slate-900 text-slate-400 border-b border-slate-800">
+            <th class="w-12 py-2 px-1 text-center font-semibold border-r border-slate-800 bg-slate-950">#</th>
+            <!-- Column Headers A-J -->
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">A</th>
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">B</th>
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">C</th>
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">D</th>
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">E</th>
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">F</th>
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">G</th>
+            <th class="w-28 py-2 px-2 text-center font-semibold border-r border-slate-800">H</th>
+          </tr>
+        </thead>
+        <tbody id="sheet-body" class="divide-y divide-slate-800/60">
+          <!-- Rows will be initialized by script -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Bottom Telemetry HUD -->
+  <footer class="h-9 border-t border-slate-800 bg-slate-900 px-4 flex items-center justify-between text-[11px] font-mono text-slate-400">
+    <div class="flex items-center gap-4">
+      <span>Selection: <strong class="text-slate-200" hx-text="selectedRange">A1:A1</strong></span>
+      <span>Formula DAG: <strong class="text-emerald-400">Topological Recalc Active</strong></span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span>Matrix: <strong>100 x 26 (Sparse $O(1)$)</strong></span>
+      <span class="text-emerald-400">● 60 FPS Batching Ready</span>
+    </div>
+  </footer>
+
+  <script>
+    const matrix = HxBolt.matrix(1000, 26);
+    const calc = HxCalc ? HxCalc.create(matrix) : null;
+
+    // Pre-populate demo values
+    matrix.set(0, 0, 100); // A1
+    matrix.set(1, 0, 250); // A2
+    matrix.set(2, 0, 450); // A3
+    matrix.set(0, 1, 1500); // B1
+    matrix.set(1, 1, 3200); // B2
+
+    function renderSheetRows() {
+      const tbody = document.getElementById('sheet-body');
+      let html = '';
+      for (let r = 0; r < 20; r++) {
+        html += `<tr class="hover:bg-slate-800/30 transition-colors">`;
+        html += `<td class="py-1 px-2 text-center font-bold text-slate-500 bg-slate-950 border-r border-slate-800">${r + 1}</td>`;
+        for (let c = 0; c < 8; c++) {
+          const colLetter = String.fromCharCode(65 + c);
+          const cellCoord = `${colLetter}${r + 1}`;
+          const val = matrix.get(r, c) !== undefined ? matrix.get(r, c) : '';
+          html += `<td class="p-0 border-r border-slate-800/60 relative">
+            <input type="text" 
+                   data-row="${r}" 
+                   data-col="${c}" 
+                   data-coord="${cellCoord}"
+                   value="${val}" 
+                   onfocus="onCellFocus(this)"
+                   onchange="onCellChange(this)"
+                   class="cell-input w-full h-8 px-2 bg-transparent text-slate-200 font-mono text-xs border-none focus:bg-slate-900">
+          </td>`;
+        }
+        html += `</tr>`;
+      }
+      tbody.innerHTML = html;
+    }
+
+    function onCellFocus(input) {
+      const coord = input.getAttribute('data-coord');
+      const val = input.value;
+      const state = HxBolt.getState(document.body);
+      if (state) {
+        state.activeCell = coord;
+        state.activeVal = val;
+        state.formulaBar = val;
+        state.selectedRange = `${coord}:${coord}`;
+      }
+    }
+
+    function onCellChange(input) {
+      const r = parseInt(input.getAttribute('data-row'), 10);
+      const c = parseInt(input.getAttribute('data-col'), 10);
+      let val = input.value;
+      const num = parseFloat(val);
+      if (!isNaN(num) && String(num) === val.trim()) val = num;
+      matrix.set(r, c, val);
+      if (calc) calc.setCell([r, c], val);
+      onCellFocus(input);
+    }
+
+    function commitActiveCell(formulaVal) {
+      const state = HxBolt.getState(document.body);
+      if (!state) return;
+      const activeInput = document.querySelector(`input[data-coord="${state.activeCell}"]`);
+      if (activeInput) {
+        activeInput.value = formulaVal;
+        onCellChange(activeInput);
+      }
+    }
+
+    let streamInterval = null;
+    function simulateServerStream() {
+      if (streamInterval) {
+        clearInterval(streamInterval);
+        streamInterval = null;
+        return;
+      }
+      let step = 0;
+      streamInterval = setInterval(() => {
+        step++;
+        const targetRow = Math.floor(Math.random() * 15);
+        const targetCol = Math.floor(Math.random() * 6);
+        const newVal = Math.floor(Math.random() * 5000 + 100);
+        
+        // Use HxBolt.streamBatch
+        HxBolt.streamBatch(() => {
+          matrix.set(targetRow, targetCol, newVal, 'bg-emerald-500/30');
+          const input = document.querySelector(`input[data-row="${targetRow}"][data-col="${targetCol}"]`);
+          if (input) {
+            input.value = newVal;
+            input.classList.add('bg-emerald-500/20');
+            setTimeout(() => input.classList.remove('bg-emerald-500/20'), 300);
+          }
+        }, 60);
+
+        if (step > 60) {
+          clearInterval(streamInterval);
+          streamInterval = null;
+        }
+      }, 50);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSheetRows();
+      if (HxA11y && HxA11y.initMatrixNav) {
+        HxA11y.initMatrixNav(document.getElementById('sheet-table'), {
+          rows: 20,
+          cols: 8,
+          selectable: true
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

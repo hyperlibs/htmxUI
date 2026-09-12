@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TailAdmin Dashboard — Built with HTMXUI</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-devtools.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Smooth scroll & custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="h-full bg-slate-900 text-slate-100 flex font-sans antialiased selection:bg-blue-600/30"
+      hx-state='{
+        "sidebarOpen": true,
+        "sidebarExpanded": true,
+        "activePage": "ecommerce",
+        "timeRange": "monthly",
+        "darkMode": true,
+        "notificationOpen": false,
+        "profileOpen": false,
+        "searchQuery": "",
+        "unreadNotifications": 3,
+        "kpis": {
+          "views": 34560,
+          "profit": 45200,
+          "products": 2450,
+          "users": 3456
+        },
+        "orders": [
+          { "id": "ORD-001", "name": "Macbook Pro M3", "category": "Electronics", "price": "$2,499", "status": "Paid", "statusClass": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+          { "id": "ORD-002", "name": "Apple Watch Ultra", "category": "Wearables", "price": "$799", "status": "Paid", "statusClass": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+          { "id": "ORD-003", "name": "Dell XPS 15", "category": "Electronics", "price": "$1,899", "status": "Pending", "statusClass": "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+          { "id": "ORD-004", "name": "Sony WH-1000XM5", "category": "Audio", "price": "$399", "status": "Paid", "statusClass": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+          { "id": "ORD-005", "name": "Logitech MX Master 3S", "category": "Accessories", "price": "$99", "status": "Failed", "statusClass": "bg-rose-500/10 text-rose-400 border-rose-500/20" }
+        ],
+        "channels": [
+          { "source": "Google Search", "visitors": "3.5K", "revenues": "$5,768", "sales": "590", "conversion": "4.8%" },
+          { "source": "Twitter / X", "visitors": "2.2K", "revenues": "$4,635", "sales": "467", "conversion": "4.3%" },
+          { "source": "GitHub Referral", "visitors": "2.1K", "revenues": "$3,780", "sales": "420", "conversion": "3.7%" },
+          { "source": "Direct / Bookmarks", "visitors": "1.4K", "revenues": "$2,980", "sales": "389", "conversion": "2.5%" }
+        ]
+      }'>
+
+  <!-- Left Sidebar Navigation -->
+  <aside class="w-64 border-r border-slate-800 bg-slate-950 flex flex-col justify-between transition-all duration-300 z-40 shrink-0">
+    <div class="p-5 flex flex-col gap-6">
+      <!-- Logo -->
+      <div class="flex items-center justify-between">
+        <a href="/demo" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-lg shadow-lg shadow-blue-500/20">
+            T
+          </div>
+          <div class="flex flex-col">
+            <span class="font-extrabold text-base tracking-tight text-white">TailAdmin</span>
+            <span class="text-[10px] font-mono text-blue-400 uppercase">HTMXUI Edition</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Menu -->
+      <div class="space-y-6">
+        <div>
+          <div class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">MENU</div>
+          <nav class="space-y-1 text-sm">
+            <button hx-on:click="activePage = 'ecommerce'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'ecommerce', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'ecommerce' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>📊</span>
+              <span>E-Commerce</span>
+            </button>
+
+            <button hx-on:click="activePage = 'analytics'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'analytics', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'analytics' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>📈</span>
+              <span>Analytics</span>
+            </button>
+
+            <button hx-on:click="activePage = 'orders'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'orders', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'orders' }"
+                    class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors text-left">
+              <div class="flex items-center gap-3">
+                <span>🛒</span>
+                <span>Orders</span>
+              </div>
+              <span class="text-[10px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded-full font-mono font-bold">5</span>
+            </button>
+          </nav>
+        </div>
+
+        <div>
+          <div class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">SUPPORT & TOOLS</div>
+          <nav class="space-y-1 text-sm">
+            <a href="/demo" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-colors">
+              <span>🚀</span>
+              <span>All Demos Hub</span>
+            </a>
+            <a href="/docs/components/introduction" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-colors">
+              <span>📖</span>
+              <span>Framework Docs</span>
+            </a>
+            <button onclick="window.HxDevTools.toggle()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-colors text-left">
+              <span>🛠️</span>
+              <span>Open DevTools</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom User Bar -->
+    <div class="p-4 border-t border-slate-800/80 bg-slate-950/80 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-blue-400">
+          DA
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-slate-200">David Admin</span>
+          <span class="text-[10px] text-slate-500 font-mono">admin@tailadmin.io</span>
+        </div>
+      </div>
+      <span class="w-2 h-2 rounded-full bg-emerald-400" title="Online"></span>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-900">
+
+    <!-- Top Navigation Header Bar -->
+    <header class="h-16 border-b border-slate-800 bg-slate-950/90 backdrop-blur px-6 flex items-center justify-between sticky top-0 z-30">
+      <!-- Search Bar -->
+      <div class="flex items-center gap-3 w-96">
+        <div class="relative w-full">
+          <span class="absolute left-3 top-2.5 text-slate-500 text-sm">🔍</span>
+          <input type="text" 
+                 hx-model="searchQuery"
+                 placeholder="Type to search orders, metrics, channels..." 
+                 class="w-full pl-9 pr-12 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors">
+          <kbd class="absolute right-2.5 top-2.5 text-[10px] bg-slate-950 text-slate-500 px-1.5 py-0.5 rounded border border-slate-800 font-mono">⌘K</kbd>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-4">
+        <!-- Notification Dropdown Toggle -->
+        <div class="relative">
+          <button hx-on:click="notificationOpen = !notificationOpen"
+                  class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-sm relative transition-colors">
+            <span>🔔</span>
+            <span hx-show="unreadNotifications > 0"
+                  class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center"
+                  hx-text="unreadNotifications">3</span>
+          </button>
+
+          <!-- Notification Dropdown Panel -->
+          <div hx-show="notificationOpen" 
+               style="display:none;"
+               class="absolute right-0 mt-2 w-80 rounded-xl border border-slate-800 bg-slate-950 shadow-2xl p-4 space-y-3 z-50">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-slate-200">Notifications</span>
+              <button hx-on:click="unreadNotifications = 0; notificationOpen = false" class="text-[10px] text-blue-400 hover:underline">Mark all read</button>
+            </div>
+            <div class="space-y-2 text-xs">
+              <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                <p class="font-semibold text-slate-200">⚡ High Volume Order Surge</p>
+                <p class="text-[11px] text-slate-400">Received 42 new orders in last 5 mins.</p>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                <p class="font-semibold text-slate-200">🛡️ Casbin RBAC Verified</p>
+                <p class="text-[11px] text-slate-400">All permissions active with zero leaks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Indicator Badge -->
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
+          <span>⚡</span>
+          <span>HTMXUI Engine Active</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Scrollable Dashboard Content -->
+    <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
+
+      <!-- Breadcrumbs & Time Filter -->
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">E-Commerce Dashboard</h1>
+          <p class="text-xs text-slate-400 mt-1">Real-time store performance, visitor conversions, and recent orders.</p>
+        </div>
+
+        <!-- Time Range Selector -->
+        <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs font-medium">
+          <button hx-on:click="timeRange = 'daily'"
+                  hx-class="{ 'bg-blue-600 text-white shadow-sm': timeRange === 'daily', 'text-slate-400 hover:text-slate-200': timeRange !== 'daily' }"
+                  class="px-3 py-1.5 rounded-md transition-colors">Day</button>
+          <button hx-on:click="timeRange = 'weekly'"
+                  hx-class="{ 'bg-blue-600 text-white shadow-sm': timeRange === 'weekly', 'text-slate-400 hover:text-slate-200': timeRange !== 'weekly' }"
+                  class="px-3 py-1.5 rounded-md transition-colors">Week</button>
+          <button hx-on:click="timeRange = 'monthly'"
+                  hx-class="{ 'bg-blue-600 text-white shadow-sm': timeRange === 'monthly', 'text-slate-400 hover:text-slate-200': timeRange !== 'monthly' }"
+                  class="px-3 py-1.5 rounded-md transition-colors">Month</button>
+        </div>
+      </div>
+
+      <!-- 4 KPI Metrics Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- KPI 1: Total Views -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">
+              👁️
+            </div>
+            <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 flex items-center gap-1">
+              <span>↑</span> 0.43%
+            </span>
+          </div>
+          <div>
+            <div class="text-2xl font-black text-white font-mono">$<span hx-text="(kpis.views * 1.25).toFixed(2)">43200.00</span></div>
+            <span class="text-xs text-slate-400">Total Views</span>
+          </div>
+        </div>
+
+        <!-- KPI 2: Total Profit -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">
+              💰
+            </div>
+            <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 flex items-center gap-1">
+              <span>↑</span> 4.35%
+            </span>
+          </div>
+          <div>
+            <div class="text-2xl font-black text-white font-mono">$<span hx-text="kpis.profit.toLocaleString()">45,200</span></div>
+            <span class="text-xs text-slate-400">Total Profit</span>
+          </div>
+        </div>
+
+        <!-- KPI 3: Total Product -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+              📦
+            </div>
+            <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 flex items-center gap-1">
+              <span>↑</span> 2.59%
+            </span>
+          </div>
+          <div>
+            <div class="text-2xl font-black text-white font-mono"><span hx-text="kpis.products.toLocaleString()">2,450</span></div>
+            <span class="text-xs text-slate-400">Total Products</span>
+          </div>
+        </div>
+
+        <!-- KPI 4: Total Users -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">
+              👥
+            </div>
+            <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 flex items-center gap-1">
+              <span>↓</span> 0.95%
+            </span>
+          </div>
+          <div>
+            <div class="text-2xl font-black text-white font-mono"><span hx-text="kpis.users.toLocaleString()">3,456</span></div>
+            <span class="text-xs text-slate-400">Active Customers</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Middle Section: Chart Simulation & Channels -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Revenue Analytics Chart Card -->
+        <div class="lg:col-span-2 p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-base font-bold text-white">Revenue & Visitors Analytics</h2>
+              <p class="text-xs text-slate-400">Performance aggregated across all channels</p>
+            </div>
+            <span class="text-xs font-mono text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-md">60 FPS Ticker Ready</span>
+          </div>
+
+          <!-- Synthetic High-Fidelity SVG Bar Chart -->
+          <div class="h-64 flex items-end justify-between gap-3 pt-6 px-2 border-b border-slate-800">
+            <div class="w-full flex flex-col items-center gap-2 group">
+              <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-44 shadow-lg shadow-blue-500/20"></div>
+              <span class="text-[11px] font-mono text-slate-400">Jan</span>
+            </div>
+            <div class="w-full flex flex-col items-center gap-2 group">
+              <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-32 shadow-lg shadow-blue-500/20"></div>
+              <span class="text-[11px] font-mono text-slate-400">Feb</span>
+            </div>
+            <div class="w-full flex flex-col items-center gap-2 group">
+              <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-52 shadow-lg shadow-blue-500/20"></div>
+              <span class="text-[11px] font-mono text-slate-400">Mar</span>
+            </div>
+            <div class="w-full flex flex-col items-center gap-2 group">
+              <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-40 shadow-lg shadow-blue-500/20"></div>
+              <span class="text-[11px] font-mono text-slate-400">Apr</span>
+            </div>
+            <div class="w-full flex flex-col items-center gap-2 group">
+              <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-60 shadow-lg shadow-blue-500/20"></div>
+              <span class="text-[11px] font-mono text-slate-400">May</span>
+            </div>
+            <div class="w-full flex flex-col items-center gap-2 group">
+              <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-48 shadow-lg shadow-blue-500/20"></div>
+              <span class="text-[11px] font-mono text-slate-400">Jun</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Referral Channels -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+          <h2 class="text-base font-bold text-white">Top Channels</h2>
+          <p class="text-xs text-slate-400">Acquisition breakdown by platform</p>
+          <div class="divide-y divide-slate-800/80">
+            <template hx-for="ch in channels">
+              <div class="py-3 flex items-center justify-between text-xs">
+                <div class="space-y-0.5">
+                  <span class="font-semibold text-slate-200" hx-text="ch.source"></span>
+                  <div class="text-[10px] text-slate-500"><span hx-text="ch.visitors"></span> visitors</div>
+                </div>
+                <div class="text-right">
+                  <span class="font-mono font-bold text-emerald-400" hx-text="ch.revenues"></span>
+                  <div class="text-[10px] font-mono text-slate-400"><span hx-text="ch.conversion"></span> conv</div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Recent Orders Table -->
+      <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-bold text-white">Recent Orders</h2>
+            <p class="text-xs text-slate-400">Directly synchronized with backend hypermedia</p>
+          </div>
+          <button onclick="window.HxBolt.getState(document.body).orders.unshift({ id: 'ORD-999', name: 'Mac Studio M3 Ultra', category: 'Workstation', price: '$3,999', status: 'Paid', statusClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' })"
+                  class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow-sm">
+            + Inject Order (Bolt Signal)
+          </button>
+        </div>
+
+        <div class="overflow-x-auto border border-slate-800 rounded-xl">
+          <table class="w-full text-left text-xs border-collapse font-sans">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-900/60 text-slate-400 font-semibold">
+                <th class="py-3 px-4">Order ID</th>
+                <th class="py-3 px-4">Product</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4">Price</th>
+                <th class="py-3 px-4">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 font-mono">
+              <template hx-for="ord in orders">
+                <tr class="hover:bg-slate-900/40 transition-colors">
+                  <td class="py-3 px-4 font-bold text-blue-400" hx-text="ord.id"></td>
+                  <td class="py-3 px-4 font-sans font-medium text-slate-200" hx-text="ord.name"></td>
+                  <td class="py-3 px-4 font-sans text-slate-400" hx-text="ord.category"></td>
+                  <td class="py-3 px-4 font-bold text-slate-200" hx-text="ord.price"></td>
+                  <td class="py-3 px-4">
+                    <span class="px-2 py-0.5 rounded-md border text-[11px] font-sans font-medium"
+                          hx-class="ord.statusClass"
+                          hx-text="ord.status"></span>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

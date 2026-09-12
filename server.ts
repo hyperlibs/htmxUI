@@ -430,6 +430,10 @@ const server = Bun.serve({
       return new Response(Bun.file("views/app-erp.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
+    if (url.pathname === "/app/tailadmin" || url.pathname === "/demo/tailadmin") {
+      return new Response(Bun.file("views/app-tailadmin.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
+
     if (url.pathname === "/app/hypersheet" || url.pathname === "/demo/hypersheet") {
       return new Response(Bun.file("views/app-hypersheet.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }

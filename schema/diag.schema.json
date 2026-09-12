@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hyperlibs.org/schema/diag.schema.json",
+  "title": "Hyperlibs Diagnostic Protocol Schema",
+  "type": "object",
+  "required": ["code", "severity", "cause"],
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "Unique error taxonomy code (e.g. FX-0404, HTMXUI-BOLT-001)"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["error", "warning", "info", "hint"]
+    },
+    "phase": {
+      "type": "string",
+      "enum": ["compile", "validate", "scheduling", "execution", "runtime"]
+    },
+    "file": {
+      "type": "string"
+    },
+    "span": {
+      "type": "string",
+      "description": "Line and column range (e.g. 42:8-42:26)"
+    },
+    "agent": {
+      "type": "string"
+    },
+    "culprit": {
+      "type": "string"
+    },
+    "cause": {
+      "type": "string"
+    },
+    "safe_replacement": {
+      "type": "object",
+      "properties": {
+        "field": { "type": "string" },
+        "old": {},
+        "new": {}
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "auto_apply": {
+      "type": "boolean"
+    },
+    "resolution": {
+      "type": "string"
+    }
+  }
+}

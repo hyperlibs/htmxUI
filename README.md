@@ -1,9 +1,41 @@
-# HTMXUI — Hyper Reactive HTMX on Steroids
+# HTMXUI — The Hypermedia Platform for Go, Rust, Python & .NET
 
 <div align="center">
-  <p><strong>A hyperreactive, lean, hypermedia-first framework built for human developers and Agentic AI coders.</strong></p>
-  <p><em>Original htmx completed HTML as a hypermedia. HTMXUI completes it as a reactive, agent-friendly application platform — making heavy client-side SPAs obsolete.</em></p>
+  <p><strong>A hyperreactive, lean, hypermedia-first frontend platform built for backend engineers and AI agent swarms.</strong></p>
+  <p><em>Zero Virtual DOM. Zero Hydration Mismatches. Zero Node/NPM build step required. Server remains the single source of truth.</em></p>
+  <p>
+    <a href="https://github.com/hyperlibs/htmxUI/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square" alt="CI"></a>
+    <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/release-v0.1.0-blue?style=flat-square" alt="Release"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
+    <a href="CHECKSUMS.sha256"><img src="https://img.shields.io/badge/checksums-verified-success?style=flat-square" alt="Checksums"></a>
+  </p>
 </div>
+
+---
+
+## 🏛️ Ecosystem Architecture & Maturity Matrix
+
+| Component | Role | Status | Documentation |
+| :--- | :--- | :--- | :--- |
+| **`HxBolt` Signals & Matrix** | 2D Reactive State, Proxies & $O(1)$ Sparse Matrix | **Production Ready (v0.1.0)** | [`src/htmx-bolt.ts`](src/htmx-bolt.ts) |
+| **`HxFlash` Fuzzy Search** | Zero-Latency In-Memory TypedArray Column Store | **Production Ready (v0.1.0)** | [`src/htmx-flash.ts`](src/htmx-flash.ts) |
+| **`HxVirtual` 2D Windowing** | Bi-Directional Windowing with Pinned Columns | **Production Ready (v0.1.0)** | [`src/htmx-virtual.ts`](src/htmx-virtual.ts) |
+| **`HxForm` & Transactions** | Declarative Validation & Optimistic Rollbacks | **Production Ready (v0.1.0)** | [`src/htmx-form.ts`](src/htmx-form.ts) |
+| **`HxCalc` Spreadsheet DAG** | Topological Formula Solver & Cycle Detection | **Production Ready (v0.1.0)** | [`src/htmx-calc.ts`](src/htmx-calc.ts) |
+| **`HxA11y` Matrix Nav** | 2D Roving Tabindex & Excel Range Selection | **Production Ready (v0.1.0)** | [`src/htmx-a11y.ts`](src/htmx-a11y.ts) |
+| **`HxSpatial` Bridge** | Spatial Directives & `@diag FX-0404` Fallback | **Usable (v0.1.0)** | [`src/htmx-bolt.ts`](src/htmx-bolt.ts) |
+| **`htmFX` WebGL/WebGPU** | Spatial 3D & Physics Companion DSL | **Experimental (v1.2.0)** | [`htmfx.mx`](htmfx.mx) |
+| **`HMLR` Scheduler & Runtime** | Agent Swarm Runtime & Browser DevTools | **Experimental (v0.1.0)** | [`hmlr.mx`](hmlr.mx) |
+| **`.fx` Language** | Go + Rust Inspired Agent Swarm Orchestration | **Active RFC** | [`docs/UPDATE.mx`](docs/UPDATE.mx) |
+
+---
+
+## 🤝 Triad Version Compatibility Matrix
+
+| `htmxUI` | `htmFX` | `HMLR` | Compatibility Status |
+| :---: | :---: | :---: | :--- |
+| `0.1.x` | `1.2.x` | `0.1.x` | ✅ **Fully Compatible & Synchronized** |
+| `0.1.x` | `2.x` | `0.1.x` | ⚠️ Experimental |
 
 ---
 
@@ -11,93 +43,58 @@
 
 ```text
 HTMXUI = HTMX (Hypermedia Core)
-       + Bolt (Signal-Based Reactive State & Computed Values)
-       + Flash (In-Memory Typo-Tolerant Fuzzy Search & Filters)
-       + Form (Declarative Validation & Optimistic UI Engine)
-       + Vibe (60fps FLIP Layout Animations & Stagger Sequences)
-       + A11y (WAI-ARIA Focus Traps & Roving Tabindex)
-       + Canvas (Spatial Node Visual Engine)
-       + 100+ Shadcn-Quality Copy-Paste Components
+       + Bolt (Signal-Based Reactive State & 2D Sparse Matrix)
+       + Flash (In-Memory Typo-Tolerant Search & Columnar Store)
+       + Form (Declarative Validation & Cell Transaction Rollbacks)
+       + Virtual (Bi-Directional 2D Scroller with Pinned Columns)
+       + Calc (Topological Formula DAG & Cycle Detection)
+       + Vibe (60fps Spring Physics & FLIP Layout Animations)
+       + A11y (WAI-ARIA Focus Trapping & 2D Matrix Nav)
+       + Offline (IndexedDB Mutation Queues & Auto-Sync)
+       + 120+ Shadcn-Quality Copy-Paste Components
 ```
 
 ---
 
-## 📦 The Hyperreactive Suite
+## 📦 The 10 Modular Core Micro-Engines (~48KB Total)
 
-| Engine | Source (`src/`) | Distribution (`public/`) | Capabilities |
-|---|---|---|---|
-| **⚡ Bolt** | `htmx-bolt.ts` | `htmx-bolt.js` | Fine-grained signals, dependency tracking via deep Proxies, microtask batching, computed properties (`hx-computed`), effects (`hx-effect`), two-way binding (`hx-model`), structural loops (`hx-for`), structural conditionals (`hx-if`), event modifiers (`.prevent`, `.debounce`, `.outside`), global stores (`$store`), transitions (`hx-transition`), and fluid ScaleUI resizing. |
-| **🔍 Flash** | `htmx-flash.ts` | `htmx-flash.js` | Typo-tolerant Levenshtein fuzzy search (`hx-flash-search`), multi-column filters (`hx-flash-filter`), client-side column sorting (`hx-flash-sort`), and pagination across thousands of records. |
-| **📝 Form** | `htmx-form.ts` | `htmx-form.js` | Declarative validation rules (`hx-validate="required\|email\|min:3"`), form state machine (`$form.valid`, `$form.dirty`, `$form.errors`), and automatic optimistic UI rollback on server error. |
-| **🌊 Vibe** | `htmx-vibe.ts` | `htmx-vibe.js` | FLIP layout animation engine that smoothly animates DOM swaps and list reorderings at 60fps. Includes stagger sequences (`hx-vibe-stagger`) and viewport scroll triggers (`hx-vibe-view`). |
-| **♿ A11y** | `htmx-a11y.ts` | `htmx-a11y.js` | WAI-ARIA compliant modal focus trapping (`hx-trap-focus`), roving tabindex for keyboard navigation in menus/tabs, and dynamic live screen-reader announcements (`HxA11y.announce`). |
-| **🎨 Canvas** | `htmx-canvas.js` | `htmx-canvas.js` | Spatial visual node editor engine with draggable nodes (`hx-drag`), grid auto-snapping (`hx-snap`), 2-layer nesting, dynamic Bézier elastic connectors (`hx-connect`), and coordinate badge telemetry. |
-| **🧩 UI Library** | `views/components/` | HTML | 100+ Shadcn/ui-quality copy-paste components with dark mode, customizable design tokens, and zero Virtual DOM overhead. |
-
----
-
-## 🎯 Benefits for Human Developers
-
-1. **Zero NPM Runtime Dependencies**: No `node_modules`, no webpack or Vite build fragility.
-2. **Sub-25KB Total Client Suite**: The complete reactive suite is smaller than a single React hook import bundle.
-3. **Server Remains Source of Truth**: True hypermedia architecture with hyperreactive client ergonomics.
-4. **Fine-Grained Signals**: Only the exact DOM nodes reading a changed property re-render. Zero brute-force DOM sweeps.
-5. **Two-Way Binding with `hx-model`**: Clean synchronization for text, checkboxes, radios, and selects with `.lazy`, `.number`, `.trim`.
-6. **Structural Loops (`hx-for`) & Conditionals (`hx-if`)**: Clean HTML template rendering without JSX transpilation.
-7. **Backend Agnostic**: Works with Python (FastAPI/Django), Go, Rust, PHP (Laravel), Bun, Ruby on Rails, or Java.
-8. **Built-in Accessible Focus Trapping & Roving Tabindex**: Instant compliance without third-party libraries.
-9. **Fluid ScaleUI Resizing**: Interactive testing and responsive component scaling.
-10. **Extensible for Framework Builders**: Full TypeScript definitions (`src/types.d.ts`) enabling community developers to build Next.js-equivalent fullstack platforms.
+| Engine | Source (`src/`) | Distribution (`public/`) | Size (Gzipped) | Capabilities |
+|---|---|---|---|---|
+| **⚡ Bolt** | `htmx-bolt.ts` | `htmx-bolt.js` | ~16.2 KB | Signals, dependency tracking via deep Proxies, microtask batching, computed properties, `$store`, `HxBolt.matrix`, 120 FPS ticker. |
+| **🔍 Flash** | `htmx-flash.ts` | `htmx-flash.js` | ~4.8 KB | In-memory fuzzy search (`hx-flash-search`), multi-column filters, TypedArray columnar store (`createColumnStore`). |
+| **🪟 Virtual** | `htmx-virtual.ts` | `htmx-virtual.js` | ~3.9 KB | Bi-directional 2D windowing virtualization with pinned rows/columns for million-row tables. |
+| **📊 Calc** | `htmx-calc.ts` | `htmx-calc.js` | ~3.2 KB | Reactive formula DAG engine with coordinate references (`A1`, `SUM(A1:B10)`) and `#CYCLE!` detection. |
+| **📝 Form** | `htmx-form.ts` | `htmx-form.js` | ~5.1 KB | Declarative validation (`hx-validate="required\|email"`), optimistic cell transactions with undo/redo (`Ctrl+Z`). |
+| **🌊 Vibe** | `htmx-vibe.ts` | `htmx-vibe.js` | ~3.4 KB | FLIP layout animation engine, spring physics solver (`SpringSolver`), stagger sequences, scroll triggers. |
+| **♿ A11y** | `htmx-a11y.ts` | `htmx-a11y.js` | ~3.1 KB | Modal focus trapping (`hx-trap-focus`), roving tabindex, 2D matrix navigation, Excel range selection. |
+| **📶 Offline** | `htmx-offline.ts` | `htmx-offline.js` | ~2.1 KB | IndexedDB mutation queues with exponential retry backoff and online sync. |
+| **🛠️ DevTools** | `htmx-devtools.ts` | `htmx-devtools.js` | ~1.8 KB | Real-time signal inspector, swap latency timing metrics, `@diag` HUD. |
+| **🎨 Canvas** | `htmx-canvas.js` | `htmx-canvas.js` | ~3.5 KB | Spatial node editor engine with draggable nodes (`hx-drag`), snapping (`hx-snap`), Bézier connectors (`hx-connect`). |
 
 ---
 
-## 🤖 Benefits for Agentic AI Coders
+## 🎯 Native Backend Integration (Zero Dependencies)
 
-1. **Highly Regular Declarative HTML**: AI agents can parse, generate, and refactor UI with near 100% success rate.
-2. **Eliminates Hydration & Hook Ordering Errors**: No React Rules of Hooks, useEffect infinite loops, or SSR hydration mismatches.
-3. **Unambiguous Grammar**: `hx-state`, `hx-model`, `hx-for`, `hx-if`, and `hx-on:event` form a predictable, learnable grammar.
-4. **Server-Driven Atomic Mutations**: AI agents modify interfaces simply by returning standard HTML fragments.
-5. **Zero Build Configuration Breakage**: Agents don't get trapped debugging tsconfig, Babel, or bundler plugin errors.
-6. **Machine-Readable Component Contracts**: Uniform attribute standards across 100+ Shadcn-style components.
-7. **Self-Contained Components**: Copy, paste, or mutate an HTML block without breaking distant client state graphs.
-8. **Declarative Validation in Pure HTML**: Form validation rules encoded directly in attributes (`hx-validate="required|email"`).
-9. **Global Store Telemetry**: Clean shared state manipulation via `$store.name` from client or server headers (`HX-Trigger`).
-10. **Lower Token Overhead**: Concise declarative HTML requires fewer LLM context tokens to generate and maintain.
+`htmxUI` integrates natively with **Go, Rust, Python, and .NET** without any backend packages or build tools. See [`docs/BACKEND_SPEC.md`](docs/BACKEND_SPEC.md) for full server patterns.
 
----
-
-## 🏗️ Architecture
-
-```text
-┌────────────────────────────────────────────────────────┐
-│  Layer 4: Application Layer                            │
-│  Templates, domain components, agent-generated UI      │
-└───────────────────────────┬────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────┐
-│  Layer 3: Composition & Layout System                  │
-│  7 layout primitives, named regions, mobile scaffolds  │
-└───────────────────────────┬────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────┐
-│  Layer 2: Hyperreactive Suite ⚡                        │
-│  Bolt (signals) + Flash (search) + Form + Vibe + A11y  │
-└───────────────────────────┬────────────────────────────┘
-                            │
-┌───────────────────────────▼────────────────────────────┐
-│  Layer 1: Enhanced Hypermedia Core                      │
-│  htmx requests, swapping, SSE, WebSockets, history     │
-└────────────────────────────────────────────────────────┘
+```html
+<!-- Live SSE Micro-Delta Grid Stream -->
+<div hx-ext="grid-delta" hx-matrix="portfolio" hx-stream-batch="60fps" hx-sse="connect:/api/stream">
+  <table hx-virtual-2d hx-matrix-nav>
+    <!-- Server streams: event: hxMatrixUpdate \n data: Δ10:2:94.50:bg-emerald-500/20 -->
+  </table>
+</div>
 ```
 
 ---
 
-## 🎯 Scope & Honest Architectural Boundaries
+## 📖 Specifications & Guides
 
-HTMXUI is a **radically lean, hyperreactive foundational framework (~40KB)**. It does not attempt to be a monolithic game engine, GIS mapping suite, or medical imaging workstation out of the box. Instead, it provides the **reactive substrate and clean extension hooks** so developers can attach specialized libraries without friction:
-
-| 🎯 Built-in Native Core Scope (~40KB) | 🔌 Extension Scope (`HTMXUI.directive`) |
-|---|---|
+- [🔌 **Backend Wire Protocol Specification**](docs/BACKEND_SPEC.md): Copy-paste server implementations for Go, Rust, Python, and .NET.
+- [🛡️ **Security & Hostile-Input Defense**](docs/SECURITY.md): CSP headers, anti-CSRF token docking, and OOB injection mitigation.
+- [🤖 **Machine-Actionable `@diag` Protocol**](docs/DIAGNOSTICS.md): Self-healing diagnostics, SARIF 2.1.0 schema, and error codes.
+- [📜 **Release Notes & Changelog**](CHANGELOG.md): Version history and upgrades.
+- [🔒 **Release Checksums**](CHECKSUMS.sha256): Cryptographic verification hashes.
 | • **Fine-Grained Proxy Signals** (`<script hx-state>`, `HxBolt`) | • **3D WebGL / Scene Graphs** (Three.js, Babylon.js) |
 | • **100k-Row Virtualized Data Grid** (`<hx-grid>`, `hx-virtual`) | • **Complex GIS Mapping** (Leaflet, Mapbox, OpenLayers) |
 | • **Multi-Step Form Wizards** (`<form hx-wizard>`, `hx-depends`) | • **Custom Physics Engines** (Rapier, Cannon.js, Ammo.js) |

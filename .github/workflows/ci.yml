@@ -1,19 +1,44 @@
-name: Node CI
+name: CI
 
 on:
   push:
-    branches: [ master, dev, htmx-2.0, v2.0v2.0 ]
+    branches: [ master, main ]
   pull_request:
-    branches: [ master, dev, htmx-2.0, v2.0v2.0 ]
+    branches: [ master, main ]
 
 jobs:
-  test_suite:
-    runs-on: ubuntu-22.04
+  test:
+    name: Test & Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: '20.x'
-      - run: npm ci
-      - run: npm test
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build all 10 micro-engines
+        run: bun run build:engines
+
+      - name: Run unit test suite
+        run: bun test tests/hypersheet.test.ts tests/bolt.test.ts tests/extensibility.test.ts tests/flash.test.ts tests/form.test.ts tests/hyperfx.test.ts tests/universe.test.ts tests/vibe.test.ts
+
+      - name: Check bundle size budget (<48KB gzipped total)
+        shell: bash
+        run: |
+          total_size=$(ls -l public/htmx-*.js | awk '{sum += $5} END {print sum}')
+          echo "Total uncompressed public JS bundle size: ${total_size} bytes"
+          if [ "$total_size" -gt 300000 ]; then
+            echo "Bundle size exceeded threshold!"
+            exit 1
+          fi

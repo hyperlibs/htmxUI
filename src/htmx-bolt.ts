@@ -1487,23 +1487,26 @@ const customEngines = new Map<string, any>();
 // -----------------------------------------------------------------------------
 export const HxSpatial = {
   mount(el: HTMLElement): void {
-    if (typeof window !== 'undefined' && (window as any).htmFX && typeof (window as any).htmFX.mount === 'function') {
-      (window as any).htmFX.mount(el);
+    const fx = typeof window !== 'undefined' ? ((window as any).htmFX || (window as any).HtmFX) : null;
+    if (fx && typeof fx.mount === 'function') {
+      fx.mount(el);
       return;
     }
     console.warn('@diag FX-0404: htmFX spatial companion required for 3D rendering. (Include /htmfx.js)');
   },
   focus(target: string | HTMLElement, options?: any): void {
-    if (typeof window !== 'undefined' && (window as any).htmFX && typeof (window as any).htmFX.focus === 'function') {
-      (window as any).htmFX.focus(target, options);
+    const fx = typeof window !== 'undefined' ? ((window as any).htmFX || (window as any).HtmFX) : null;
+    if (fx && typeof fx.focus === 'function') {
+      fx.focus(target, options);
     }
     if (typeof document !== 'undefined') {
       document.dispatchEvent(new CustomEvent('spatial:focus', { detail: { target, options } }));
     }
   },
   explode(target: string | HTMLElement, options?: any): void {
-    if (typeof window !== 'undefined' && (window as any).htmFX && typeof (window as any).htmFX.explode === 'function') {
-      (window as any).htmFX.explode(target, options);
+    const fx = typeof window !== 'undefined' ? ((window as any).htmFX || (window as any).HtmFX) : null;
+    if (fx && typeof fx.explode === 'function') {
+      fx.explode(target, options);
     }
     if (typeof document !== 'undefined') {
       document.dispatchEvent(new CustomEvent('spatial:explode', { detail: { target, options } }));

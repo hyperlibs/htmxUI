@@ -1453,23 +1453,26 @@ Fix: ${meta.fix}`;
   var customEngines = new Map;
   var HxSpatial = {
     mount(el) {
-      if (typeof window !== "undefined" && window.htmFX && typeof window.htmFX.mount === "function") {
-        window.htmFX.mount(el);
+      const fx = typeof window !== "undefined" ? window.htmFX || window.HtmFX : null;
+      if (fx && typeof fx.mount === "function") {
+        fx.mount(el);
         return;
       }
       console.warn("@diag FX-0404: htmFX spatial companion required for 3D rendering. (Include /htmfx.js)");
     },
     focus(target, options) {
-      if (typeof window !== "undefined" && window.htmFX && typeof window.htmFX.focus === "function") {
-        window.htmFX.focus(target, options);
+      const fx = typeof window !== "undefined" ? window.htmFX || window.HtmFX : null;
+      if (fx && typeof fx.focus === "function") {
+        fx.focus(target, options);
       }
       if (typeof document !== "undefined") {
         document.dispatchEvent(new CustomEvent("spatial:focus", { detail: { target, options } }));
       }
     },
     explode(target, options) {
-      if (typeof window !== "undefined" && window.htmFX && typeof window.htmFX.explode === "function") {
-        window.htmFX.explode(target, options);
+      const fx = typeof window !== "undefined" ? window.htmFX || window.HtmFX : null;
+      if (fx && typeof fx.explode === "function") {
+        fx.explode(target, options);
       }
       if (typeof document !== "undefined") {
         document.dispatchEvent(new CustomEvent("spatial:explode", { detail: { target, options } }));

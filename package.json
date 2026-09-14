@@ -10,9 +10,10 @@
     "test": "bun test tests/hypersheet.test.ts tests/bolt.test.ts tests/extensibility.test.ts tests/flash.test.ts tests/form.test.ts tests/hyperfx.test.ts tests/universe.test.ts tests/vibe.test.ts",
     "build:engines": "bun build src/htmx-bolt.ts --format iife --outfile public/htmx-bolt.js && bun build src/htmx-flash.ts --format iife --outfile public/htmx-flash.js && bun build src/htmx-form.ts --format iife --outfile public/htmx-form.js && bun build src/htmx-vibe.ts --format iife --outfile public/htmx-vibe.js && bun build src/htmx-a11y.ts --format iife --outfile public/htmx-a11y.js && bun build src/htmx-virtual.ts --format iife --outfile public/htmx-virtual.js && bun build src/htmx-grid.ts --format iife --outfile public/htmx-grid.js && bun build src/htmx-offline.ts --format iife --outfile public/htmx-offline.js && bun build src/htmx-devtools.ts --format iife --outfile public/htmx-devtools.js && bun build src/htmx-calc.ts --format iife --outfile public/htmx-calc.js",
     "build:css": "bunx tailwindcss -i public/styles/input.css -o public/styles/output.css",
-    "build": "bun run build:engines && bun run build:css",
-    "build:pages": "bun run build && bun run scripts/build-static.ts",
-    "deploy:pages": "bun run build:pages && wrangler pages deploy dist --project-name=htmxui",
+    "build": "bun run build:engines && bun run build:css && bun run scripts/build-static.ts",
+    "build:pages": "bun run build",
+    "deploy:pages": "bun run build && wrangler pages deploy dist --project-name=htmxui",
+    "deploy:worker": "bun run build && wrangler deploy",
     "test:ui": "bunx playwright test"
   },
   "keywords": [],

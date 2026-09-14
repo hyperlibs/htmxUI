@@ -1,3 +1,4 @@
 {
-  "startCommand": "bun run dev"
+  "startCommand": "node server.js",
+  "installDependencies": false
 }

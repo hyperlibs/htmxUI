@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full dark" id="html-root">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TailAdmin Dashboard — Built with HTMXUI</title>
+  
+  <!-- HTMX & HTMXUI Micro-Engines -->
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-devtools.js"></script>
+  
+  <!-- Tailwind CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex font-sans antialiased selection:bg-blue-600/30">
+  <script type="application/json" hx-state>
+  {
+    "sidebarOpen": true,
+    "activePage": "ecommerce",
+    "timeRange": "monthly",
+    "darkMode": true,
+    "notificationOpen": false,
+    "messageOpen": false,
+    "profileOpen": false,
+    "searchQuery": "",
+    "tableSearch": "",
+    "unreadNotifications": 3,
+    "unreadMessages": 4,
+    "chatInput": "",
+    "calendarMonth": "September 2026",
+    "newEventModal": false,
+    "kpis": {
+      "views": 34560,
+      "profit": 45200,
+      "products": 2450,
+      "users": 3456,
+      "sessions": 87400,
+      "bounceRate": "28.4%",
+      "avgDuration": "4m 32s"
+    },
+    "orders": [
+      { "id": "ORD-001", "name": "Macbook Pro M3 Max", "category": "Electronics", "price": "$2,499", "status": "Paid", "statusClass": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+      { "id": "ORD-002", "name": "Apple Watch Ultra 2", "category": "Wearables", "price": "$799", "status": "Paid", "statusClass": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+      { "id": "ORD-003", "name": "Dell XPS 16 Laptop", "category": "Electronics", "price": "$1,899", "status": "Pending", "statusClass": "bg-amber-500/10 text-amber-400 border-amber-500/20" },
+      { "id": "ORD-004", "name": "Sony WH-1000XM5", "category": "Audio", "price": "$399", "status": "Paid", "statusClass": "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" },
+      { "id": "ORD-005", "name": "Logitech MX Master 3S", "category": "Accessories", "price": "$99", "status": "Failed", "statusClass": "bg-rose-500/10 text-rose-400 border-rose-500/20" }
+    ],
+    "channels": [
+      { "source": "Google Search", "visitors": "3.5K", "revenues": "$5,768", "sales": "590", "conversion": "4.8%" },
+      { "source": "Twitter / X", "visitors": "2.2K", "revenues": "$4,635", "sales": "467", "conversion": "4.3%" },
+      { "source": "GitHub Referral", "visitors": "2.1K", "revenues": "$3,780", "sales": "420", "conversion": "3.7%" },
+      { "source": "Direct / Bookmarks", "visitors": "1.4K", "revenues": "$2,980", "sales": "389", "conversion": "2.5%" }
+    ],
+    "chatMessages": [
+      { "sender": "Sarah Connor", "time": "10:14 AM", "msg": "Hey David! Did the latest shipment metrics sync with the warehouse?", "isMe": false },
+      { "sender": "You", "time": "10:15 AM", "msg": "Yes! All 10,000 invoice records synced in 0ms via HTMXUI.", "isMe": true }
+    ],
+    "tableUsers": [
+      { "name": "Sarah Connor", "role": "Frontend Architect", "email": "sarah@tailadmin.io", "status": "Active", "date": "Sep 01, 2026" },
+      { "name": "Alex Murphy", "role": "Security Engineer", "email": "alex@tailadmin.io", "status": "Active", "date": "Aug 28, 2026" },
+      { "name": "Elena Rostova", "role": "Product Lead", "email": "elena@tailadmin.io", "status": "Pending", "date": "Sep 05, 2026" },
+      { "name": "Marcus Vance", "role": "DevOps Lead", "email": "marcus@tailadmin.io", "status": "Suspended", "date": "Jul 14, 2026" }
+    ],
+    "forms": {
+      "fullName": "David Admin",
+      "email": "david@tailadmin.io",
+      "notifyEmail": true,
+      "notifySMS": false,
+      "twoFactor": true,
+      "themePreference": "Dark"
+    }
+  }
+  </script>
+
+  <!-- Left Sidebar Navigation -->
+  <aside class="w-64 border-r border-slate-800 bg-slate-950 flex flex-col justify-between transition-all duration-300 z-40 shrink-0">
+    <div class="p-5 flex flex-col gap-6 overflow-y-auto">
+      <!-- Brand Logo -->
+      <div class="flex items-center justify-between">
+        <a href="/demo" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black flex items-center justify-center text-lg shadow-lg shadow-blue-500/20">
+            T
+          </div>
+          <div class="flex flex-col">
+            <span class="font-extrabold text-base tracking-tight text-white">TailAdmin</span>
+            <span class="text-[10px] font-mono text-blue-400 uppercase">HTMXUI Edition</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Navigation Menu Groups -->
+      <div class="space-y-6">
+        
+        <!-- DASHBOARD GROUP -->
+        <div>
+          <div class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">DASHBOARDS</div>
+          <nav class="space-y-1 text-xs">
+            <button @click="activePage = 'ecommerce'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'ecommerce', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'ecommerce' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>📊</span>
+              <span>E-Commerce</span>
+            </button>
+
+            <button @click="activePage = 'analytics'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'analytics', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'analytics' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>📈</span>
+              <span>Analytics</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- APPS GROUP -->
+        <div>
+          <div class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">APPS & PAGES</div>
+          <nav class="space-y-1 text-xs">
+            <button @click="activePage = 'calendar'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'calendar', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'calendar' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>📅</span>
+              <span>Calendar</span>
+            </button>
+
+            <button @click="activePage = 'profile'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'profile', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'profile' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>👤</span>
+              <span>Profile</span>
+            </button>
+
+            <button @click="activePage = 'forms'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'forms', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'forms' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>📝</span>
+              <span>Forms & Elements</span>
+            </button>
+
+            <button @click="activePage = 'tables'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'tables', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'tables' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>📋</span>
+              <span>Tables & Data Grid</span>
+            </button>
+
+            <button @click="activePage = 'settings'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'settings', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'settings' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>⚙️</span>
+              <span>Settings</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- UI ELEMENTS & AUTH -->
+        <div>
+          <div class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">UI & AUTH</div>
+          <nav class="space-y-1 text-xs">
+            <button @click="activePage = 'alerts'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'alerts', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'alerts' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>🔔</span>
+              <span>Alerts & Notifications</span>
+            </button>
+
+            <button @click="activePage = 'buttons'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'buttons', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'buttons' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>🔘</span>
+              <span>Buttons & Badges</span>
+            </button>
+
+            <button @click="activePage = 'signin'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'signin', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'signin' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>🔐</span>
+              <span>Sign In Screen</span>
+            </button>
+
+            <button @click="activePage = 'signup'"
+                    hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'signup', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'signup' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>✨</span>
+              <span>Sign Up Screen</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- SUPPORT & HUBS -->
+        <div>
+          <div class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">DEV & HUBS</div>
+          <nav class="space-y-1 text-xs">
+            <a href="/demo" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-colors">
+              <span>🚀</span>
+              <span>All Demos Hub</span>
+            </a>
+            <a href="/docs/components/introduction" class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-colors">
+              <span>📖</span>
+              <span>Framework Docs</span>
+            </a>
+            <button onclick="if(window.HxDevTools) window.HxDevTools.toggle()" class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-slate-900 hover:text-slate-200 transition-colors text-left">
+              <span>🛠️</span>
+              <span>Open DevTools</span>
+            </button>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom User Status -->
+    <div class="p-4 border-t border-slate-800/80 bg-slate-950/80 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-md shadow-blue-500/20">
+          DA
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-slate-200">David Admin</span>
+          <span class="text-[10px] text-slate-500 font-mono">admin@tailadmin.io</span>
+        </div>
+      </div>
+      <span class="w-2.5 h-2.5 rounded-full bg-emerald-400" title="Online"></span>
+    </div>
+  </aside>
+
+  <!-- Main View Area -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-900">
+
+    <!-- Top Global Header -->
+    <header class="h-16 border-b border-slate-800 bg-slate-950/90 backdrop-blur px-6 flex items-center justify-between sticky top-0 z-30 shrink-0">
+      <!-- Search Bar -->
+      <div class="flex items-center gap-3 w-96">
+        <div class="relative w-full">
+          <span class="absolute left-3 top-2.5 text-slate-500 text-sm">🔍</span>
+          <input type="text" 
+                 hx-model="searchQuery"
+                 placeholder="Type to search orders, metrics, channels..." 
+                 class="w-full pl-9 pr-12 py-2 bg-slate-900 border border-slate-800 rounded-lg text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 transition-colors">
+          <kbd class="absolute right-2.5 top-2.5 text-[10px] bg-slate-950 text-slate-500 px-1.5 py-0.5 rounded border border-slate-800 font-mono">⌘K</kbd>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-3 sm:gap-4">
+
+        <!-- Theme Toggle -->
+        <button @click="darkMode = !darkMode; document.getElementById('html-root').classList.toggle('dark')"
+                class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-sm transition-colors text-slate-300"
+                title="Toggle Theme">
+          <span>🌓</span>
+        </button>
+
+        <!-- Message Dropdown -->
+        <div class="relative">
+          <button @click="messageOpen = !messageOpen; notificationOpen = false; profileOpen = false"
+                  class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-sm relative transition-colors">
+            <span>💬</span>
+            <span hx-show="unreadMessages > 0"
+                  class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-blue-500 text-white text-[9px] font-bold flex items-center justify-center"
+                  hx-text="unreadMessages">4</span>
+          </button>
+
+          <!-- Messages Panel -->
+          <div hx-show="messageOpen" 
+               style="display:none;"
+               class="absolute right-0 mt-2 w-80 rounded-xl border border-slate-800 bg-slate-950 shadow-2xl p-4 space-y-3 z-50">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-slate-200">Messages</span>
+              <button @click="unreadMessages = 0; messageOpen = false" class="text-[10px] text-blue-400 hover:underline">Mark all read</button>
+            </div>
+            <div class="space-y-2 text-xs">
+              <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold text-slate-200">Sarah Connor</span>
+                  <span class="text-[10px] text-slate-500 font-mono">10:14 AM</span>
+                </div>
+                <p class="text-[11px] text-slate-400">Did the latest shipment metrics sync with warehouse?</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notification Dropdown -->
+        <div class="relative">
+          <button @click="notificationOpen = !notificationOpen; messageOpen = false; profileOpen = false"
+                  class="w-9 h-9 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center text-sm relative transition-colors">
+            <span>🔔</span>
+            <span hx-show="unreadNotifications > 0"
+                  class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center"
+                  hx-text="unreadNotifications">3</span>
+          </button>
+
+          <!-- Notification Dropdown Panel -->
+          <div hx-show="notificationOpen" 
+               style="display:none;"
+               class="absolute right-0 mt-2 w-80 rounded-xl border border-slate-800 bg-slate-950 shadow-2xl p-4 space-y-3 z-50">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span class="text-xs font-bold text-slate-200">Notifications</span>
+              <button @click="unreadNotifications = 0; notificationOpen = false" class="text-[10px] text-blue-400 hover:underline">Mark all read</button>
+            </div>
+            <div class="space-y-2 text-xs">
+              <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                <p class="font-semibold text-slate-200">⚡ High Volume Order Surge</p>
+                <p class="text-[11px] text-slate-400">Received 42 new orders in last 5 mins.</p>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+                <p class="font-semibold text-slate-200">🛡️ Casbin RBAC Verified</p>
+                <p class="text-[11px] text-slate-400">All permissions active with zero leaks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode Indicator Badge -->
+        <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-mono">
+          <span>⚡</span>
+          <span>HTMXUI Engine Active</span>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Scrollable Main View Area -->
+    <main class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8">
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 1: E-COMMERCE DASHBOARD -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'ecommerce'" class="space-y-8">
+
+        <!-- Breadcrumbs & Time Filter -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">E-Commerce Dashboard</h1>
+            <p class="text-xs text-slate-400 mt-1">Real-time store performance, visitor conversions, and recent orders.</p>
+          </div>
+
+          <!-- Time Range Selector -->
+          <div class="inline-flex rounded-lg bg-slate-950 p-1 border border-slate-800 text-xs font-medium">
+            <button @click="timeRange = 'daily'"
+                    hx-class="{ 'bg-blue-600 text-white shadow-sm': timeRange === 'daily', 'text-slate-400 hover:text-slate-200': timeRange !== 'daily' }"
+                    class="px-3 py-1.5 rounded-md transition-colors">Day</button>
+            <button @click="timeRange = 'weekly'"
+                    hx-class="{ 'bg-blue-600 text-white shadow-sm': timeRange === 'weekly', 'text-slate-400 hover:text-slate-200': timeRange !== 'weekly' }"
+                    class="px-3 py-1.5 rounded-md transition-colors">Week</button>
+            <button @click="timeRange = 'monthly'"
+                    hx-class="{ 'bg-blue-600 text-white shadow-sm': timeRange === 'monthly', 'text-slate-400 hover:text-slate-200': timeRange !== 'monthly' }"
+                    class="px-3 py-1.5 rounded-md transition-colors">Month</button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrics Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg">👁️</div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 flex items-center gap-1">↑ 0.43%</span>
+            </div>
+            <div>
+              <div class="text-2xl font-black text-white font-mono">$<span hx-text="(kpis.views * 1.25).toFixed(2)">43200.00</span></div>
+              <span class="text-xs text-slate-400">Total Views</span>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">💰</div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 flex items-center gap-1">↑ 4.35%</span>
+            </div>
+            <div>
+              <div class="text-2xl font-black text-white font-mono">$<span hx-text="kpis.profit.toLocaleString()">45,200</span></div>
+              <span class="text-xs text-slate-400">Total Profit</span>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">📦</div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 flex items-center gap-1">↑ 2.59%</span>
+            </div>
+            <div>
+              <div class="text-2xl font-black text-white font-mono"><span hx-text="kpis.products.toLocaleString()">2,450</span></div>
+              <span class="text-xs text-slate-400">Total Products</span>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">👥</div>
+              <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 flex items-center gap-1">↓ 0.95%</span>
+            </div>
+            <div>
+              <div class="text-2xl font-black text-white font-mono"><span hx-text="kpis.users.toLocaleString()">3,456</span></div>
+              <span class="text-xs text-slate-400">Active Customers</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart Section & Channels -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-base font-bold text-white">Revenue & Visitors Analytics</h2>
+                <p class="text-xs text-slate-400">Aggregated channel performance in real-time</p>
+              </div>
+              <span class="text-xs font-mono text-blue-400 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-md">60 FPS Ticker Ready</span>
+            </div>
+
+            <!-- Synthetic Interactive Bar Chart -->
+            <div class="h-64 flex items-end justify-between gap-3 pt-6 px-2 border-b border-slate-800">
+              <div class="w-full flex flex-col items-center gap-2 group">
+                <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-44 shadow-lg shadow-blue-500/20"></div>
+                <span class="text-[11px] font-mono text-slate-400">Jan</span>
+              </div>
+              <div class="w-full flex flex-col items-center gap-2 group">
+                <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-32 shadow-lg shadow-blue-500/20"></div>
+                <span class="text-[11px] font-mono text-slate-400">Feb</span>
+              </div>
+              <div class="w-full flex flex-col items-center gap-2 group">
+                <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-52 shadow-lg shadow-blue-500/20"></div>
+                <span class="text-[11px] font-mono text-slate-400">Mar</span>
+              </div>
+              <div class="w-full flex flex-col items-center gap-2 group">
+                <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-40 shadow-lg shadow-blue-500/20"></div>
+                <span class="text-[11px] font-mono text-slate-400">Apr</span>
+              </div>
+              <div class="w-full flex flex-col items-center gap-2 group">
+                <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-60 shadow-lg shadow-blue-500/20"></div>
+                <span class="text-[11px] font-mono text-slate-400">May</span>
+              </div>
+              <div class="w-full flex flex-col items-center gap-2 group">
+                <div class="w-full bg-blue-600 hover:bg-blue-500 rounded-t transition-all duration-300 h-48 shadow-lg shadow-blue-500/20"></div>
+                <span class="text-[11px] font-mono text-slate-400">Jun</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Referral Channels -->
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+            <h2 class="text-base font-bold text-white">Top Channels</h2>
+            <p class="text-xs text-slate-400">Acquisition breakdown by platform</p>
+            <div class="divide-y divide-slate-800/80">
+              <template hx-for="ch in channels">
+                <div class="py-3 flex items-center justify-between text-xs">
+                  <div class="space-y-0.5">
+                    <span class="font-semibold text-slate-200" hx-text="ch.source"></span>
+                    <div class="text-[10px] text-slate-500"><span hx-text="ch.visitors"></span> visitors</div>
+                  </div>
+                  <div class="text-right">
+                    <span class="font-mono font-bold text-emerald-400" hx-text="ch.revenues"></span>
+                    <div class="text-[10px] font-mono text-slate-400"><span hx-text="ch.conversion"></span> conv</div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders Table & Real-time Live Chat -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-base font-bold text-white">Recent Orders</h2>
+                <p class="text-xs text-slate-400">Directly synchronized with backend hypermedia</p>
+              </div>
+              <button onclick="window.HxBolt.getState(document.body).orders.unshift({ id: 'ORD-999', name: 'Mac Studio M3 Ultra', category: 'Workstation', price: '$3,999', status: 'Paid', statusClass: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' })"
+                      class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors shadow-sm">
+                + Inject Order (Bolt Signal)
+              </button>
+            </div>
+
+            <div class="overflow-x-auto border border-slate-800 rounded-xl">
+              <table id="recent-orders-table" class="w-full text-left text-xs border-collapse font-sans">
+                <thead>
+                  <tr class="border-b border-slate-800 bg-slate-900/60 text-slate-400 font-semibold">
+                    <th class="py-3 px-4">Order ID</th>
+                    <th class="py-3 px-4">Product</th>
+                    <th class="py-3 px-4">Category</th>
+                    <th class="py-3 px-4">Price</th>
+                    <th class="py-3 px-4">Status</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-mono">
+                  <template hx-for="ord in orders">
+                    <tr class="hover:bg-slate-900/40 transition-colors">
+                      <td class="py-3 px-4 font-bold text-blue-400" hx-text="ord.id"></td>
+                      <td class="py-3 px-4 font-sans font-medium text-slate-200" hx-text="ord.name"></td>
+                      <td class="py-3 px-4 font-sans text-slate-400" hx-text="ord.category"></td>
+                      <td class="py-3 px-4 font-bold text-slate-200" hx-text="ord.price"></td>
+                      <td class="py-3 px-4">
+                        <span class="px-2 py-0.5 rounded-md border text-[11px] font-sans font-medium"
+                              hx-class="ord.statusClass"
+                              hx-text="ord.status"></span>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Real-Time Chat Card -->
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm flex flex-col justify-between space-y-4">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 class="text-base font-bold text-white">Live Team Chat</h2>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              </div>
+              <div class="space-y-3 pt-3 text-xs max-h-56 overflow-y-auto">
+                <template hx-for="msg in chatMessages">
+                  <div class="p-2.5 rounded-xl border border-slate-800"
+                       hx-class="{ 'bg-blue-600/10 border-blue-500/30 text-blue-200': msg.isMe, 'bg-slate-900/80 text-slate-300': !msg.isMe }">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="font-bold text-[11px]" hx-text="msg.sender"></span>
+                      <span class="text-[10px] text-slate-500 font-mono" hx-text="msg.time"></span>
+                    </div>
+                    <p class="text-xs" hx-text="msg.msg"></p>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div class="flex gap-2">
+              <input type="text" 
+                     hx-model="chatInput" 
+                     placeholder="Type message..." 
+                     onkeydown="if(event.key === 'Enter' && this.value.trim()){ const st = window.HxBolt.getState(document.body); st.chatMessages.push({ sender: 'You', time: 'Just now', msg: this.value.trim(), isMe: true }); this.value = ''; }"
+                     class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+              <button onclick="const inp = document.querySelector('input[hx-model=\'chatInput\']'); if(inp && inp.value.trim()){ const st = window.HxBolt.getState(document.body); st.chatMessages.push({ sender: 'You', time: 'Just now', msg: inp.value.trim(), isMe: true }); inp.value = ''; }"
+                      class="px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold">
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 2: ANALYTICS DASHBOARD -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'analytics'" class="space-y-8" style="display:none;">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Analytics Overview</h1>
+          <p class="text-xs text-slate-400 mt-1">Deep-dive session analytics, geographic engagement, and bounce diagnostics.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-2">
+            <div class="text-xs text-slate-400 font-medium">Total Sessions</div>
+            <div class="text-2xl font-bold text-white font-mono" hx-text="kpis.sessions.toLocaleString()">87,400</div>
+            <div class="text-xs text-emerald-400 font-semibold">↑ +18.2% vs last month</div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-2">
+            <div class="text-xs text-slate-400 font-medium">Bounce Rate</div>
+            <div class="text-2xl font-bold text-white font-mono" hx-text="kpis.bounceRate">28.4%</div>
+            <div class="text-xs text-emerald-400 font-semibold">↓ -3.1% improved</div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-2">
+            <div class="text-xs text-slate-400 font-medium">Avg Session Duration</div>
+            <div class="text-2xl font-bold text-white font-mono" hx-text="kpis.avgDuration">4m 32s</div>
+            <div class="text-xs text-emerald-400 font-semibold">↑ +45s longer</div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 shadow-sm space-y-2">
+            <div class="text-xs text-slate-400 font-medium">Server Latency (P99)</div>
+            <div class="text-2xl font-bold text-emerald-400 font-mono">1.2ms</div>
+            <div class="text-xs text-slate-400 font-medium">Zero Virtual DOM</div>
+          </div>
+        </div>
+
+        <!-- Geo Breakdown & Device Donut -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-4">
+            <h2 class="text-base font-bold text-white">Top Geographic Markets</h2>
+            <div class="space-y-3 text-xs">
+              <div>
+                <div class="flex justify-between text-slate-300 font-medium mb-1">
+                  <span>United States</span>
+                  <span class="font-mono">42.5%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-500 h-full w-[42.5%]"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-slate-300 font-medium mb-1">
+                  <span>Germany</span>
+                  <span class="font-mono">22.1%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-500 h-full w-[22.1%]"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-slate-300 font-medium mb-1">
+                  <span>United Kingdom</span>
+                  <span class="font-mono">18.4%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div class="bg-blue-500 h-full w-[18.4%]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-4">
+            <h2 class="text-base font-bold text-white">Device Breakdown</h2>
+            <div class="flex items-center justify-around pt-4">
+              <div class="text-center space-y-1">
+                <div class="text-3xl">💻</div>
+                <div class="text-lg font-bold text-white font-mono">65%</div>
+                <div class="text-xs text-slate-400">Desktop</div>
+              </div>
+              <div class="text-center space-y-1">
+                <div class="text-3xl">📱</div>
+                <div class="text-lg font-bold text-white font-mono">25%</div>
+                <div class="text-xs text-slate-400">Mobile</div>
+              </div>
+              <div class="text-center space-y-1">
+                <div class="text-3xl">📟</div>
+                <div class="text-lg font-bold text-white font-mono">10%</div>
+                <div class="text-xs text-slate-400">Tablet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 3: CALENDAR APP -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'calendar'" class="space-y-6" style="display:none;">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">Interactive Calendar</h1>
+            <p class="text-xs text-slate-400 mt-1">Schedule sprints, meetings, and production release windows.</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono font-bold text-blue-400" hx-text="calendarMonth">September 2026</div>
+            <button @click="alert('Event Scheduler Modal opened!')" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+              + Add Event
+            </button>
+          </div>
+        </div>
+
+        <!-- 7x5 Calendar Grid -->
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/80 overflow-hidden shadow-xl">
+          <div class="grid grid-cols-7 border-b border-slate-800 bg-slate-900/80 text-center py-2.5 text-xs font-semibold text-slate-400">
+            <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+          </div>
+          <div class="grid grid-cols-7 divide-x divide-y divide-slate-800/60 text-xs min-h-[480px]">
+            <div class="p-2 text-slate-600 bg-slate-950/40 min-h-[90px]">30</div>
+            <div class="p-2 text-slate-600 bg-slate-950/40 min-h-[90px]">31</div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1">
+              <span class="font-bold">1</span>
+              <div class="p-1 rounded bg-blue-500/20 text-blue-400 text-[10px] font-medium border border-blue-500/30">🚀 v0.1.0 Release</div>
+            </div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">2</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">3</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1">
+              <span class="font-bold">4</span>
+              <div class="p-1 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-medium border border-emerald-500/30">💬 Dev Sync</div>
+            </div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">5</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">6</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">7</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">8</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">9</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1">
+              <span class="font-bold">10</span>
+              <div class="p-1 rounded bg-purple-500/20 text-purple-400 text-[10px] font-medium border border-purple-500/30">🎨 UI Elements Review</div>
+            </div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">11</span></div>
+            <div class="p-2 text-slate-300 min-h-[90px] space-y-1"><span class="font-bold">12</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 4: USER PROFILE -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'profile'" class="space-y-6" style="display:none;">
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/80 overflow-hidden shadow-xl">
+          <div class="h-44 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 relative"></div>
+          <div class="p-6 relative">
+            <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 -mt-16 sm:-mt-20 mb-6">
+              <div class="flex items-end gap-4">
+                <div class="w-24 h-24 rounded-2xl bg-slate-900 border-4 border-slate-950 text-blue-400 font-black text-2xl flex items-center justify-center shadow-xl">
+                  DA
+                </div>
+                <div class="space-y-0.5">
+                  <h1 class="text-xl font-bold text-white">David Admin</h1>
+                  <p class="text-xs text-slate-400">Principal Systems Architect &amp; HTMXUI Core</p>
+                </div>
+              </div>
+              <button @click="activePage = 'settings'" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition-colors">
+                Edit Profile Settings
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800/80 text-xs">
+              <div class="space-y-1">
+                <span class="text-slate-500 uppercase font-mono text-[10px]">Email Address</span>
+                <p class="text-slate-200 font-semibold">david@tailadmin.io</p>
+              </div>
+              <div class="space-y-1">
+                <span class="text-slate-500 uppercase font-mono text-[10px]">Location</span>
+                <p class="text-slate-200 font-semibold">San Francisco, CA</p>
+              </div>
+              <div class="space-y-1">
+                <span class="text-slate-500 uppercase font-mono text-[10px]">Engine Stack</span>
+                <p class="text-blue-400 font-mono font-semibold">Go + Rust + HTMXUI</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 5: FORMS & ELEMENTS -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'forms'" class="space-y-8" style="display:none;">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Form Elements &amp; Layouts</h1>
+          <p class="text-xs text-slate-400 mt-1">Reactive input components with zero client hydration mismatches.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-4">
+            <h2 class="text-base font-bold text-white">Input Elements</h2>
+            <div class="space-y-3 text-xs">
+              <div class="space-y-1">
+                <label class="text-slate-400">Default Input</label>
+                <input type="text" placeholder="Enter text..." class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500">
+              </div>
+              <div class="space-y-1">
+                <label class="text-slate-400">Select Menu</label>
+                <select class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500">
+                  <option>United States (USD)</option>
+                  <option>European Union (EUR)</option>
+                  <option>United Kingdom (GBP)</option>
+                </select>
+              </div>
+              <div class="flex items-center gap-3 pt-2">
+                <input type="checkbox" id="chk1" checked class="rounded bg-slate-900 border-slate-800 text-blue-600 focus:ring-0">
+                <label for="chk1" class="text-slate-300">Enable real-time push notifications</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-4">
+            <h2 class="text-base font-bold text-white">File Upload Dropzone</h2>
+            <div class="border-2 border-dashed border-slate-800 hover:border-blue-500/50 rounded-2xl p-8 text-center space-y-3 transition-colors cursor-pointer bg-slate-900/30">
+              <div class="text-3xl">📁</div>
+              <p class="text-xs text-slate-300 font-medium">Click or drag files here to upload</p>
+              <p class="text-[10px] text-slate-500">SVG, PNG, JPG or GIF (max. 800x400px)</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 6: TABLES & IN-MEMORY DATA GRID -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'tables'" class="space-y-6" style="display:none;">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">Data Tables &amp; User Records</h1>
+            <p class="text-xs text-slate-400 mt-1">Instant in-memory search and multi-column sort.</p>
+          </div>
+          <input type="text" hx-model="tableSearch" placeholder="Filter user records..." class="w-64 bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="rounded-2xl border border-slate-800 bg-slate-950/80 overflow-hidden shadow-xl">
+          <table id="users-table" class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-900/80 text-slate-400 font-semibold">
+                <th class="py-3 px-4">User</th>
+                <th class="py-3 px-4">Role</th>
+                <th class="py-3 px-4">Email</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">Date Joined</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 font-mono">
+              <template hx-for="user in tableUsers">
+                <tr class="hover:bg-slate-900/40 transition-colors font-sans">
+                  <td class="py-3.5 px-4 font-semibold text-slate-200" hx-text="user.name"></td>
+                  <td class="py-3.5 px-4 text-slate-400" hx-text="user.role"></td>
+                  <td class="py-3.5 px-4 font-mono text-slate-300" hx-text="user.email"></td>
+                  <td class="py-3.5 px-4">
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" hx-text="user.status"></span>
+                  </td>
+                  <td class="py-3.5 px-4 font-mono text-slate-400" hx-text="user.date"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 7: SETTINGS PAGE -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'settings'" class="space-y-6 max-w-4xl" style="display:none;">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Account &amp; Workspace Settings</h1>
+          <p class="text-xs text-slate-400 mt-1">Configure profile details, 2FA credentials, and notification rules.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-6">
+          <h2 class="text-base font-bold text-white border-b border-slate-800 pb-3">Personal Information</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div class="space-y-1">
+              <label class="text-slate-400">Full Name</label>
+              <input type="text" hx-model="forms.fullName" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <div class="space-y-1">
+              <label class="text-slate-400">Email Address</label>
+              <input type="email" hx-model="forms.email" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+          </div>
+          <button onclick="alert('Settings saved successfully!')" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+            Save Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 8: ALERTS & NOTIFICATIONS -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'alerts'" class="space-y-6 max-w-3xl" style="display:none;">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Alerts &amp; Banner Badges</h1>
+          <p class="text-xs text-slate-400 mt-1">Dismissible feedback components built in pure HTML.</p>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">✓</span>
+              <span><strong>Success:</strong> Payment processed and verified via Casbin RBAC policy.</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white">✕</button>
+          </div>
+
+          <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">⚠️</span>
+              <span><strong>Attention:</strong> Database cluster running automated vacuuming in background.</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white">✕</button>
+          </div>
+
+          <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">✕</span>
+              <span><strong>Error:</strong> API rate limit threshold exceeded on non-cached endpoint.</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 9: BUTTONS & BADGES -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'buttons'" class="space-y-6 max-w-3xl" style="display:none;">
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white">Buttons &amp; Badges Sandbox</h1>
+          <p class="text-xs text-slate-400 mt-1">TailAdmin button variants crafted with Tailwind and Bolt micro-states.</p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-6">
+          <div class="flex flex-wrap gap-3">
+            <button class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-sm">Primary</button>
+            <button class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700">Secondary</button>
+            <button class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Success</button>
+            <button class="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold">Destructive</button>
+            <button class="px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:bg-slate-900 text-xs font-semibold">Outline</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 10: AUTHENTICATION (SIGN IN & SIGN UP) -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'signin' || activePage === 'signup'" class="space-y-6 max-w-md mx-auto py-8" style="display:none;">
+        <div class="p-8 rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl space-y-6">
+          <div class="text-center space-y-2">
+            <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white font-black text-2xl flex items-center justify-center mx-auto shadow-xl shadow-blue-500/20">
+              T
+            </div>
+            <h2 class="text-xl font-bold text-white" hx-text="activePage === 'signin' ? 'Sign in to TailAdmin' : 'Create TailAdmin Account'"></h2>
+            <p class="text-xs text-slate-400">Zero Node.js • Powered by HTMXUI</p>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <div class="space-y-1">
+              <label class="text-slate-400">Email Address</label>
+              <input type="email" placeholder="admin@tailadmin.io" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <div class="space-y-1">
+              <label class="text-slate-400">Password</label>
+              <input type="password" placeholder="••••••••" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
+            </div>
+            <button onclick="alert('Authenticated successfully via HTMXUI!')" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors shadow-sm">
+              Continue →
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

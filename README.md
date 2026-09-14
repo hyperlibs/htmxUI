@@ -6,16 +6,12 @@
   <p>
     <a href="https://github.com/hyperlibs/htmxUI/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square" alt="CI"></a>
     <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/release-v0.1.0-blue?style=flat-square" alt="Release"></a>
+    <a href="https://htmxui.pages.dev"><img src="https://img.shields.io/badge/Cloudflare_Pages-Live_Deployment-F38020?logo=cloudflare&style=flat-square" alt="Cloudflare Pages"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
     <a href="CHECKSUMS.sha256"><img src="https://img.shields.io/badge/checksums-verified-success?style=flat-square" alt="Checksums"></a>
   </p>
   <p>
-    <a href="https://codespaces.new/hyperlibs/htmxUI" target="_blank"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>&nbsp;
-    <a href="https://stackblitz.com/github/hyperlibs/htmxUI" target="_blank"><img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz"></a>&nbsp;
-    <a href="https://gitpod.io/#https://github.com/hyperlibs/htmxUI" target="_blank"><img src="https://img.shields.io/badge/Gitpod-Open_in_Gitpod-blue?logo=gitpod&style=flat-square" alt="Open in Gitpod"></a>
-  </p>
-  <p>
-    <a href="https://stackblitz.com/github/hyperlibs/htmxUI"><strong>🚀 1-Click Live Preview</strong></a> &nbsp;•&nbsp; 
+    <a href="https://htmxui.pages.dev"><strong>⚡ Cloudflare Pages Live Demo</strong></a> &nbsp;•&nbsp; 
     <a href="views/components/introduction.html"><strong>📖 Documentation</strong></a> &nbsp;•&nbsp; 
     <a href="#-about-us--the-hyperlibs-mission"><strong>👥 About Us</strong></a> &nbsp;•&nbsp; 
     <a href="https://github.com/hyperlibs/htmxUI"><strong>⭐ GitHub</strong></a>
@@ -104,9 +100,9 @@ HTMXUI = HTMX (Hypermedia Core)
 Experience complete, production-grade applications built with zero React/Node runtime:
 
 > [!TIP]
-> **🚀 1-Click Instant Cloud Previews**:  
-> Launch the entire suite with one click in [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/hyperlibs/htmxUI) or [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/hyperlibs/htmxUI) or [![Open in Gitpod](https://img.shields.io/badge/Gitpod-Open_in_Gitpod-blue?logo=gitpod&style=flat-square)](https://gitpod.io/#https://github.com/hyperlibs/htmxUI).  
-> **💻 Instant Local Run**: `bun run dev` (opens `http://localhost:3000/demo`).
+> **⚡ Live on Cloudflare Pages**: [htmxui.pages.dev](https://htmxui.pages.dev)  
+> **💻 Instant Local Run**: `bun run dev` (or `node server.js` $\to$ `http://localhost:3000/demo`).  
+> **🚀 Deploy to Cloudflare Pages**: `bun run deploy:pages` (or connect your GitHub repository directly to Cloudflare Pages).
 
 | Flagship Demo | Route | Source View | Capabilities Demonstrated | Stack / Engines |
 | :--- | :--- | :--- | :--- | :--- |

@@ -1,0 +1,324 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://htmxui.dev/schema/htmxui.json",
+  "title": "HTMXUI Framework Attribute & Grammar Specification",
+  "description": "Formal machine-readable grammar, attribute rules, element targets, and scope definitions for HTMXUI.",
+  "version": "1.0.0",
+  "type": "object",
+  "properties": {
+    "version": { "type": "string", "const": "1.0.0" },
+    "engines": {
+      "type": "object",
+      "properties": {
+        "bolt": { "type": "string", "description": "Signal-based fine-grained reactive state engine & 2D sparse matrix" },
+        "flash": { "type": "string", "description": "In-memory typo-tolerant fuzzy search, multi-column filter & ColumnStore engine" },
+        "form": { "type": "string", "description": "Declarative validation state machine, cell transactions & optimistic UI engine" },
+        "vibe": { "type": "string", "description": "60fps FLIP layout animation & physics engine" },
+        "a11y": { "type": "string", "description": "WAI-ARIA focus trap, roving tabindex & 2D matrix navigation engine" },
+        "virtual": { "type": "string", "description": "1D and 2D bi-directional viewport virtualization engine (100k+ rows)" },
+        "grid": { "type": "string", "description": "Enterprise Data Grid with column resize, reorder, and CSV export" },
+        "calc": { "type": "string", "description": "Zero-dependency reactive formula engine with topological sorting DAG" },
+        "offline": { "type": "string", "description": "IndexedDB offline cache & 409 conflict resolution engine" },
+        "devtools": { "type": "string", "description": "In-browser telemetry profiler, signal visualizer & state inspector" },
+        "canvas": { "type": "string", "description": "Spatial node diagram engine" }
+      }
+    },
+    "attributes": {
+      "type": "object",
+      "properties": {
+        "hx-state": {
+          "description": "Declares local reactive component state context.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "formats": ["json", "js-object"],
+          "preferredAlternative": "<script type=\"application/json\" hx-state>...</script>",
+          "example": "hx-state=\"{ count: 0, open: false }\""
+        },
+        "hx-computed": {
+          "description": "Declares memoized derived reactive properties.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "requires": ["hx-state"],
+          "example": "hx-computed=\"{ total: price * qty, isValid: count > 0 }\""
+        },
+        "hx-effect": {
+          "description": "Runs a side effect function whenever tracked signal dependencies mutate.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-effect=\"console.log('Count updated:', count)\""
+        },
+        "hx-model": {
+          "description": "Two-way data binding for form controls.",
+          "type": "string",
+          "allowedElements": ["input", "textarea", "select"],
+          "modifiers": ["lazy", "number", "trim"],
+          "example": "hx-model.number=\"item.qty\""
+        },
+        "hx-text": {
+          "description": "Binds element innerText to a reactive expression.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-text=\"user.name\""
+        },
+        "hx-html": {
+          "description": "Binds element innerHTML to a reactive expression.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "securityWarning": "Ensure content is sanitized against XSS.",
+          "example": "hx-html=\"item.badgeHtml\""
+        },
+        "hx-show": {
+          "description": "Toggles element visibility using CSS display property with transition hooks.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-show=\"isOpen\""
+        },
+        "hx-if": {
+          "description": "Structural conditional mounting/unmounting of DOM elements.",
+          "type": "string",
+          "allowedElements": ["template", "*"],
+          "example": "<template hx-if=\"isLoggedIn\"><div>Welcome</div></template>"
+        },
+        "hx-for": {
+          "description": "Structural list loop rendering on template elements.",
+          "type": "string",
+          "allowedElements": ["template"],
+          "syntax": "item in items | (item, index) in items",
+          "example": "<template hx-for=\"(item, idx) in items\"><div>...</div></template>"
+        },
+        "hx-class": {
+          "description": "Conditionally applies CSS classes from an object map or string expression.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-class=\"{ 'bg-primary text-white': active, 'opacity-50': disabled }\""
+        },
+        "hx-style": {
+          "description": "Dynamically sets inline CSS styles from an object map.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-style=\"{ width: progress + '%', color: themeColor }\""
+        },
+        "hx-cell": {
+          "description": "Binds DOM element directly to atomic 2D sparse matrix coordinates with O(1) fine-grained signal reactivity.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-cell=\"42,5\" hx-matrix=\"portfolio\""
+        },
+        "hx-matrix": {
+          "description": "Assigns sparse matrix namespace context.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-matrix=\"portfolio\""
+        },
+        "hx-stream-batch": {
+          "description": "Enables 60fps RAF stream throttle and delta micro-batching for incoming SSE and WebSocket updates.",
+          "type": "string",
+          "enum": ["60fps", "30fps", "120fps"],
+          "allowedElements": ["*"],
+          "example": "hx-stream-batch=\"60fps\""
+        },
+        "hx-virtual-2d": {
+          "description": "Enables bi-directional (X + Y) matrix viewport virtualization with pinned column support.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-virtual-2d hx-pinned-left=\"2\" hx-virtual-row-height=\"32\""
+        },
+        "hx-matrix-nav": {
+          "description": "Enables Excel-grade 2D roving tabindex, Shift+Arrow range selection, and ARIA grid keyboard navigation.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-matrix-nav"
+        },
+        "hx-pinned-left": {
+          "description": "Number of columns pinned sticky to the left viewport boundary in 2D virtualized grid.",
+          "type": "integer",
+          "allowedElements": ["*"],
+          "example": "hx-pinned-left=\"2\""
+        },
+        "hx-pinned-right": {
+          "description": "Number of columns pinned sticky to the right viewport boundary in 2D virtualized grid.",
+          "type": "integer",
+          "allowedElements": ["*"],
+          "example": "hx-pinned-right=\"1\""
+        },
+        "hx-on": {
+          "description": "Attaches event listeners with modifiers. Short syntax: @event",
+          "type": "string",
+          "syntax": "hx-on:event.modifier=\"action\"",
+          "modifiers": ["prevent", "stop", "self", "once", "window", "document", "outside", "debounce.<ms>", "throttle.<ms>", "enter", "escape", "space", "tab"],
+          "example": "hx-on:click.prevent=\"count++\""
+        },
+        "hx-action": {
+          "description": "Executes expression on element click with audio/motion feedback.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-action=\"$toast('Saved!', 'success'); $sound('ping')\""
+        },
+        "hx-transition": {
+          "description": "Enables CSS enter/leave transitions.",
+          "type": "string",
+          "presets": ["fade", "slide", "scale"],
+          "customClasses": ["hx-transition:enter", "hx-transition:enter-start", "hx-transition:enter-end", "hx-transition:leave", "hx-transition:leave-start", "hx-transition:leave-end"],
+          "example": "hx-transition=\"fade\""
+        },
+        "hx-validate": {
+          "description": "Pipes validation rules on inputs (required, email, min:N, max:N, numeric, match:fieldName).",
+          "type": "string",
+          "allowedElements": ["input", "select", "textarea"],
+          "example": "hx-validate=\"required|email|min:5\""
+        },
+        "hx-error-for": {
+          "description": "Renders active validation error string for specified form control.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-error-for=\"email\""
+        },
+        "hx-wizard": {
+          "description": "Enables multi-step wizard state machine with step validation gates.",
+          "type": "boolean",
+          "allowedElements": ["form"],
+          "example": "<form hx-wizard>...</form>"
+        },
+        "hx-step": {
+          "description": "Declares wizard step index inside an hx-wizard form.",
+          "type": "integer",
+          "allowedElements": ["fieldset", "div"],
+          "example": "hx-step=\"1\""
+        },
+        "hx-depends": {
+          "description": "Cascading field dependency link (parent->child1,child2).",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-depends=\"country->state,city\""
+        },
+        "hx-optimistic": {
+          "description": "Enables optimistic UI swaps with automatic rollback on 4xx/5xx network errors.",
+          "type": "boolean",
+          "allowedElements": ["form", "button", "div"],
+          "example": "hx-optimistic"
+        },
+        "hx-virtual": {
+          "description": "Recycles DOM elements for 100k+ row datasets with top/bottom spacers.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-virtual hx-virtual-height=\"40\" hx-virtual-buffer=\"10\""
+        },
+        "hx-flash-search": {
+          "description": "Binds instant 0ms client-side fuzzy search input to in-memory database.",
+          "type": "string",
+          "allowedElements": ["input"],
+          "example": "hx-flash-search hx-flash-db=\"users\" hx-target=\"#results\""
+        },
+        "hx-flash-filter": {
+          "description": "Binds multi-column filter control to in-memory database.",
+          "type": "string",
+          "allowedElements": ["select", "input"],
+          "example": "hx-flash-filter=\"role\" hx-flash-db=\"users\" hx-target=\"#results\""
+        },
+        "hx-flash-sort": {
+          "description": "Binds sort column header to in-memory database.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-flash-sort=\"created_at\" hx-flash-db=\"users\" hx-target=\"#results\""
+        },
+        "hx-vibe-flip": {
+          "description": "Enables 60fps First-Last-Invert-Play (FLIP) layout animations on reordering.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-flip"
+        },
+        "hx-vibe-card": {
+          "description": "Enables interactive 3D perspective tilt following mouse movement.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-card"
+        },
+        "hx-vlt-glare": {
+          "description": "Adds holographic specular sheen glare overlay on 3D cards.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-vlt-glare"
+        },
+        "hx-vibe-magnetic": {
+          "description": "Enables elastic magnetic snapping to cursor pointer.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-magnetic=\"0.4\""
+        },
+        "hx-vibe-split": {
+          "description": "Kinetic typography engine splitting text into staggered 3D span reveals.",
+          "type": "string",
+          "enum": ["chars", "words", "lines"],
+          "allowedElements": ["h1", "h2", "h3", "p", "span", "div"],
+          "example": "hx-vibe-split=\"chars\""
+        },
+        "hx-vpx-blast": {
+          "description": "Explosive radial shockwave dispersing surrounding elements with physics impulses.",
+          "type": "boolean",
+          "allowedElements": ["button", "div"],
+          "example": "hx-vpx-blast hx-vpx-radius=\"300\" hx-vpx-force=\"50\""
+        },
+        "hx-tick": {
+          "description": "Evaluates a reactive expression on every frame of the 120 FPS game loop ticker.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-tick=\"angle += 0.02 * dt\""
+        },
+        "hx-vibe-stagger": {
+          "description": "Staggers animation delay across children elements.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-stagger=\"40ms\""
+        },
+        "hx-vibe-view": {
+          "description": "Scroll-triggered animation using IntersectionObserver.",
+          "type": "string",
+          "allowedElements": ["*"],
+          "example": "hx-vibe-view=\"opacity-100 translate-y-0\" hx-vibe-initial=\"opacity-0 translate-y-4\""
+        },
+        "hx-trap-focus": {
+          "description": "WAI-ARIA compliant modal focus trapping for dialogs and sheets.",
+          "type": "boolean",
+          "allowedElements": ["*"],
+          "example": "hx-trap-focus"
+        },
+        "scaleui": {
+          "description": "Enables fluid responsive component resizing testing.",
+          "type": "string",
+          "enum": ["1"],
+          "example": "scaleui=\"1\""
+        }
+      }
+    },
+    "scopeVariables": {
+      "description": "Variables and HyperFX action helpers accessible inside expressions and event actions",
+      "properties": {
+        "$store": { "description": "Global shared reactive stores (e.g. $store.auth.user)" },
+        "$refs": { "description": "Dictionary of elements tagged with hx-ref=\"name\"" },
+        "$el": { "description": "The current DOM element" },
+        "$event": { "description": "The native DOM event in actions" },
+        "$form": { "description": "Form state object: { valid, dirty, touched, errors }" },
+        "$copy": { "description": "HyperFX: Copies string to clipboard ($copy('text'))" },
+        "$toast": { "description": "HyperFX: Emits global toast notification ($toast('Saved!', 'success'))" },
+        "$sound": { "description": "HyperFX: Synthesizes Web Audio tone ($sound('ping' | 'click' | 'whoosh' | 'success' | 'error'))" },
+        "$blast": { "description": "HyperFX: Triggers radial explosive shockwave ($blast({ radius: 300, force: 50 }))" },
+        "$focus": { "description": "HyperFX: Focuses target element ($focus('#input'))" },
+        "$toggle": { "description": "HyperFX: Inverts boolean state ($toggle('open'))" },
+        "$undo": { "description": "HyperFX: Triggers state history undo ($undo())" },
+        "$redo": { "description": "HyperFX: Triggers state history redo ($redo())" },
+        "$exportCSV": { "description": "HyperFX: Triggers instant client-side CSV download ($exportCSV('#grid', 'data.csv'))" }
+      }
+    },
+    "errorCatalog": {
+      "HTMXUI-BOLT-001": "Invalid JSON/JS syntax in hx-state or <script type=\"application/json\" hx-state>",
+      "HTMXUI-BOLT-002": "Circular dependency detected in hx-computed property",
+      "HTMXUI-BOLT-003": "Invalid hx-for expression syntax. Expected 'item in list' or '(item, index) in list'",
+      "HTMXUI-BOLT-004": "Referenced undefined property or store in expression",
+      "HTMXUI-BOLT-005": "Possible typo in attribute name (autocorrect suggestion provided)",
+      "HTMXUI-FORM-001": "Form validation failed on submit",
+      "HTMXUI-FLASH-001": "Flash database queried before initialization or fetch error",
+      "HTMXUI-CALC-001": "Formula syntax error in hx-calc expression",
+      "HTMXUI-CALC-002": "Circular reference (#CYCLE!) in spreadsheet formula DAG"
+    }
+  }
+}

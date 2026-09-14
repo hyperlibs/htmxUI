@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Installation — HTMXUI</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-virtual.js"></script>
+  <script src="/htmx-grid.js"></script>
+  <script src="/htmx-offline.js"></script>
+  <script src="/htmx-devtools.js"></script>
+  <script src="/htmx-canvas.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .code-block { background: #1e293b; color: #e2e8f0; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; font-size: 0.8rem; line-height: 1.6; }
+    .code-block code { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-background text-foreground antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <aside id="doc-sidebar" class="hidden lg:flex w-60 flex-col border-r border-border bg-card overflow-y-auto sticky top-0 h-screen">
+      <div class="flex h-14 items-center border-b border-border px-4">
+        <a href="/" class="flex items-center gap-2">
+          <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          <span class="font-bold text-lg tracking-tight">HTMXUI</span>
+        </a>
+      </div>
+      <div class="flex-1 p-3 overflow-y-auto"><div class="mb-6"><h4 class="mb-2 px-3 text-sm font-semibold tracking-tight">Getting Started</h4><div class="space-y-1"><a href="/docs/components/introduction/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Introduction</a>
+<a href="/docs/components/installation/" class="block rounded-md px-3 py-1.5 text-sm bg-accent font-medium text-accent-foreground transition-colors">Installation</a>
+<a href="/docs/components/rosetta-stone/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Rosetta Stone</a>
+<a href="/docs/components/common-ai-hallucinations/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Common Ai Hallucinations</a>
+<a href="/docs/components/directives-guide/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Directives Guide</a></div></div><div><h4 class="mb-2 px-3 text-sm font-semibold tracking-tight">Components</h4><div class="space-y-1"><a href="/docs/components/accordion/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Accordion</a>
+<a href="/docs/components/alert/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Alert</a>
+<a href="/docs/components/alert-dialog/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Alert Dialog</a>
+<a href="/docs/components/aspect-ratio/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Aspect Ratio</a>
+<a href="/docs/components/avatar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Avatar</a>
+<a href="/docs/components/avatar-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Avatar Group</a>
+<a href="/docs/components/badge/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Badge</a>
+<a href="/docs/components/banner/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Banner</a>
+<a href="/docs/components/breadcrumb/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Breadcrumb</a>
+<a href="/docs/components/button/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Button</a>
+<a href="/docs/components/button-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Button Group</a>
+<a href="/docs/components/calendar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Calendar</a>
+<a href="/docs/components/card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Card</a>
+<a href="/docs/components/carousel/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Carousel</a>
+<a href="/docs/components/checkbox/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Checkbox</a>
+<a href="/docs/components/checkbox-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Checkbox Group</a>
+<a href="/docs/components/chip/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Chip</a>
+<a href="/docs/components/collapsible/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Collapsible</a>
+<a href="/docs/components/color-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Color Picker</a>
+<a href="/docs/components/combobox/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Combobox</a>
+<a href="/docs/components/command/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Command</a>
+<a href="/docs/components/container/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Container</a>
+<a href="/docs/components/context-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Context Menu</a>
+<a href="/docs/components/data-table/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Data Table</a>
+<a href="/docs/components/date-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Date Picker</a>
+<a href="/docs/components/dialog/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Dialog</a>
+<a href="/docs/components/divider/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Divider</a>
+<a href="/docs/components/drawer/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Drawer</a>
+<a href="/docs/components/dropdown-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Dropdown Menu</a>
+<a href="/docs/components/empty-state/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Empty State</a>
+<a href="/docs/components/error-message/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Error Message</a>
+<a href="/docs/components/file-upload/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">File Upload</a>
+<a href="/docs/components/flash-search/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Flash Search</a>
+<a href="/docs/components/form/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Form</a>
+<a href="/docs/components/hover-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hover Card</a>
+<a href="/docs/components/icon/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Icon</a>
+<a href="/docs/components/image/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Image</a>
+<a href="/docs/components/indicator/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Indicator</a>
+<a href="/docs/components/input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Input</a>
+<a href="/docs/components/input-otp/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Input Otp</a>
+<a href="/docs/components/kbd/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Kbd</a>
+<a href="/docs/components/label/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Label</a>
+<a href="/docs/components/layout-block/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Block</a>
+<a href="/docs/components/layout-canvas/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Canvas</a>
+<a href="/docs/components/layout-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Grid</a>
+<a href="/docs/components/layout-page/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Page</a>
+<a href="/docs/components/layout-print/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Print</a>
+<a href="/docs/components/layout-scaffold/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Scaffold</a>
+<a href="/docs/components/layout-web/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Web</a>
+<a href="/docs/components/layout-mweb/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Mweb</a>
+<a href="/docs/components/layout-mapp/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Mapp</a>
+<a href="/docs/components/link/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Link</a>
+<a href="/docs/components/list/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">List</a>
+<a href="/docs/components/list-item/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">List Item</a>
+<a href="/docs/components/loading-spinner/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Loading Spinner</a>
+<a href="/docs/components/masonry-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Masonry Grid</a>
+<a href="/docs/components/menubar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Menubar</a>
+<a href="/docs/components/message-bubble/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Message Bubble</a>
+<a href="/docs/components/navigation-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Navigation Menu</a>
+<a href="/docs/components/notification/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Notification</a>
+<a href="/docs/components/number-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Number Input</a>
+<a href="/docs/components/page-header/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Page Header</a>
+<a href="/docs/components/pagination/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pagination</a>
+<a href="/docs/components/panel/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Panel</a>
+<a href="/docs/components/password-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Password Input</a>
+<a href="/docs/components/pin-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pin Input</a>
+<a href="/docs/components/popover/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Popover</a>
+<a href="/docs/components/profile-badge/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Profile Badge</a>
+<a href="/docs/components/progress/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Progress</a>
+<a href="/docs/components/progress-bar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Progress Bar</a>
+<a href="/docs/components/pulse/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pulse</a>
+<a href="/docs/components/radio-button/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Radio Button</a>
+<a href="/docs/components/radio-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Radio Group</a>
+<a href="/docs/components/rating/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Rating</a>
+<a href="/docs/components/resizable/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Resizable</a>
+<a href="/docs/components/ribbon/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Ribbon</a>
+<a href="/docs/components/scroll-area/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Scroll Area</a>
+<a href="/docs/components/search-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Search Input</a>
+<a href="/docs/components/select/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Select</a>
+<a href="/docs/components/separator/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Separator</a>
+<a href="/docs/components/sheet/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Sheet</a>
+<a href="/docs/components/sidebar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Sidebar</a>
+<a href="/docs/components/skeleton/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Skeleton</a>
+<a href="/docs/components/slider/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Slider</a>
+<a href="/docs/components/slider-range/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Slider Range</a>
+<a href="/docs/components/snackbar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Snackbar</a>
+<a href="/docs/components/splitter/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Splitter</a>
+<a href="/docs/components/stat-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Stat Card</a>
+<a href="/docs/components/stepper/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Stepper</a>
+<a href="/docs/components/submenu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Submenu</a>
+<a href="/docs/components/switch/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Switch</a>
+<a href="/docs/components/table/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Table</a>
+<a href="/docs/components/tabs/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tabs</a>
+<a href="/docs/components/tag/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tag</a>
+<a href="/docs/components/text/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Text</a>
+<a href="/docs/components/textarea/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Textarea</a>
+<a href="/docs/components/timeline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Timeline</a>
+<a href="/docs/components/time-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Time Picker</a>
+<a href="/docs/components/toast/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toast</a>
+<a href="/docs/components/toggle/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle</a>
+<a href="/docs/components/toggle-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle Group</a>
+<a href="/docs/components/toggle-switch/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle Switch</a>
+<a href="/docs/components/toolbar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toolbar</a>
+<a href="/docs/components/tooltip/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tooltip</a>
+<a href="/docs/components/tree-view/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tree View</a>
+<a href="/docs/components/user-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">User Card</a>
+<a href="/docs/components/video-player/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Video Player</a>
+<a href="/docs/components/watermark/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Watermark</a>
+<a href="/docs/components/wizard/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Wizard</a>
+<a href="/docs/components/hx-wizard/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Wizard</a>
+<a href="/docs/components/date-range-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Date Range Picker</a>
+<a href="/docs/components/hx-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Grid</a>
+<a href="/docs/components/hx-virtual/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Virtual</a>
+<a href="/docs/components/hx-offline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Offline</a>
+<a href="/docs/components/hollywood-webfx/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hollywood Webfx</a></div></div></div>
+    </aside>
+    <main class="flex-1 flex flex-col min-w-0">
+      <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-card sticky top-0 z-30">
+        <div class="flex items-center gap-4">
+          <h1 class="font-semibold text-base">Installation</h1>
+          <a href="/demo/" class="text-xs bg-primary/10 text-primary font-medium px-2.5 py-1 rounded-full hover:bg-primary/20 transition-colors">Live Demos Hub</a>
+        </div>
+        <a href="https://github.com/hyperlibs/htmxUI" target="_blank" class="text-xs text-muted-foreground hover:text-foreground">GitHub ↗</a>
+      </header>
+      <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
+        <div class="space-y-2">
+          <h1 class="text-3xl font-extrabold tracking-tight">Installation</h1>
+          <p class="text-muted-foreground text-sm">Interactive Shadcn-quality hypermedia component for HTMXUI.</p>
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>
+          <div class="rounded-xl border border-border p-8 bg-card shadow-sm flex items-center justify-center min-h-[160px]">
+            <div class="w-full max-w-xl flex flex-col items-center gap-4"><div class="space-y-10 max-w-4xl py-6">
+  <!-- Title & Subtitle -->
+  <div class="space-y-3">
+    <h1 class="text-4xl font-extrabold tracking-tight text-foreground">Installation & Quickstart</h1>
+    <p class="text-lg text-muted-foreground leading-relaxed font-medium">
+      Set up the hyperreactive HTMXUI suite in your project in under 2 minutes. Zero NPM build step required.
+    </p>
+  </div>
+
+  <!-- Section: Prerequisites -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Prerequisites</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="font-semibold text-sm mb-1 text-foreground">Tailwind CSS</div>
+        <div class="text-xs text-muted-foreground">v3 or v4 with standard design token variables</div>
+      </div>
+      <div class="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="font-semibold text-sm mb-1 text-foreground">Any Backend</div>
+        <div class="text-xs text-muted-foreground">Python, Go, Rust, PHP, Bun, Node, Ruby, Java</div>
+      </div>
+      <div class="p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <div class="font-semibold text-sm mb-1 text-foreground">Zero Node Modules</div>
+        <div class="text-xs text-muted-foreground">No React runtime, no JSX, no webpack bundler</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Step 1 — Include Core Scripts -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 1 — Include Core Scripts</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Add HTMX and the HTMXUI engines to your base HTML layout. <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">htmx-bolt.js</code> is the only required extension for signals and reactivity.
+    </p>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>&lt;!-- 1. HTMX Core --&gt;
+&lt;script src="https://unpkg.com/htmx.org@2.0.4"&gt;&lt;/script&gt;
+
+&lt;!-- 2. Signal-Based Reactive Engine (~8KB) --&gt;
+&lt;script src="/htmx-bolt.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: In-Memory Fuzzy Search &amp; Multi-Filter Engine --&gt;
+&lt;script src="/htmx-flash.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: Form Validation &amp; Optimistic UI Engine --&gt;
+&lt;script src="/htmx-form.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: FLIP Vibe &amp; Layout Animation Engine --&gt;
+&lt;script src="/htmx-vibe.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: Focus Trap &amp; Roving Tabindex Engine --&gt;
+&lt;script src="/htmx-a11y.js"&gt;&lt;/script&gt;
+
+&lt;!-- Optional: Visual Spatial Node Canvas Engine --&gt;
+&lt;script src="/htmx-canvas.js"&gt;&lt;/script&gt;</pre>
+    </div>
+  </div>
+
+  <!-- Section: Step 2 — Setup Tailwind CSS Variables -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 2 — Configure CSS Design Tokens</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      HTMXUI components use CSS custom properties for instant dark mode and theme switching. Add these variables to your stylesheet:
+    </p>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- Section: Step 3 — Reactive Directives Cheat Sheet -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 3 — Reactive Grammar &amp; Directives</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Bolt provides a complete signal-based declarative grammar directly inside HTML attributes:
+    </p>
+    <div class="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
+      <table class="w-full text-left text-sm border-collapse">
+        <thead class="bg-muted/50 border-b border-border text-foreground font-semibold">
+          <tr>
+            <th class="py-3 px-4">Directive</th>
+            <th class="py-3 px-4">Description</th>
+            <th class="py-3 px-4">Example</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border text-muted-foreground text-xs font-mono">
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-state</td>
+            <td class="font-sans text-muted-foreground">Defines local reactive component context</td>
+            <td>hx-state="{ count: 0, items: [] }"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-computed</td>
+            <td class="font-sans text-muted-foreground">Derived memoized properties</td>
+            <td>hx-computed="{ total: price * qty }"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-model</td>
+            <td class="font-sans text-muted-foreground">Two-way data binding with modifiers</td>
+            <td>hx-model.number="qty"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-for</td>
+            <td class="font-sans text-muted-foreground">Structural list rendering on template</td>
+            <td>&lt;template hx-for="item in items"&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-if</td>
+            <td class="font-sans text-muted-foreground">Structural conditional DOM mounting</td>
+            <td>&lt;template hx-if="user.isLoggedIn"&gt;</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-on:event</td>
+            <td class="font-sans text-muted-foreground">Event handlers with modifiers (.prevent, .debounce)</td>
+            <td>hx-on:click.prevent="count++"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-transition</td>
+            <td class="font-sans text-muted-foreground">Smooth enter/leave CSS transitions</td>
+            <td>hx-transition="fade"</td>
+          </tr>
+          <tr class="hover:bg-muted/30">
+            <td class="py-2.5 px-4 text-primary font-bold">hx-validate</td>
+            <td class="font-sans text-muted-foreground">Declarative input validation rules</td>
+            <td>hx-validate="required|email|min:5"</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Section: Step 4 — Complete Working Example -->
+  <div class="space-y-4">
+    <h2 class="text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2">Step 4 — Complete Example</h2>
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm">
+      <pre>&lt;!-- Reactive Shopping Cart with Signals, Computed Total, and hx-for list --&gt;
+&lt;div hx-state='{
+  newItem: "",
+  items: [
+    { id: 1, name: "Mechanical Keyboard", price: 120, qty: 1 },
+    { id: 2, name: "Wireless Mouse", price: 60, qty: 2 }
+  ]
+}'
+hx-computed='{
+  totalPrice: items.reduce((sum, i) => sum + (i.price * i.qty), 0)
+}' class="p-6 border border-border rounded-xl bg-card space-y-4"&gt;
+
+  &lt;h3 class="text-lg font-bold"&gt;Hyperreactive Shopping Cart&lt;/h3&gt;
+
+  &lt;!-- Two-way input binding --&gt;
+  &lt;div class="flex gap-2"&gt;
+    &lt;input type="text" hx-model="newItem" placeholder="Add item name..." class="px-3 py-2 border rounded-md text-sm flex-1"&gt;
+    &lt;button hx-on:click='if(newItem.trim()) { items.push({ id: Date.now(), name: newItem, price: 40, qty: 1 }); newItem = ""; }' class="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium"&gt;Add&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;!-- List rendering with hx-for --&gt;
+  &lt;div class="divide-y border rounded-md overflow-hidden"&gt;
+    &lt;template hx-for="(item, idx) in items"&gt;
+      &lt;div class="p-3 flex items-center justify-between bg-background"&gt;
+        &lt;span hx-text="item.name" class="font-medium text-sm"&gt;&lt;/span&gt;
+        &lt;div class="flex items-center gap-3"&gt;
+          &lt;span class="text-sm text-muted-foreground"&gt;$&lt;span hx-text="item.price"&gt;&lt;/span&gt;&lt;/span&gt;
+          &lt;input type="number" hx-model.number="item.qty" min="1" class="w-16 px-2 py-1 border rounded text-xs"&gt;
+          &lt;button hx-on:click="items.splice(idx, 1)" class="text-destructive text-xs hover:underline"&gt;Remove&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/template&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Computed reactive total --&gt;
+  &lt;div class="flex justify-between items-center pt-2 font-bold text-base"&gt;
+    &lt;span&gt;Total Amount:&lt;/span&gt;
+    &lt;span class="text-primary"&gt;$&lt;span hx-text="totalPrice"&gt;0&lt;/span&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="pt-4 flex gap-4">
+    <a href="/docs/components/button" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90">
+      Browse Components →
+    </a>
+  </div>
+</div>
+</div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold tracking-tight">HTML Source</h2>
+          <div class="code-block"><pre><code>&lt;div class=&quot;space-y-10 max-w-4xl py-6&quot;&gt;
+  &lt;!-- Title &amp; Subtitle --&gt;
+  &lt;div class=&quot;space-y-3&quot;&gt;
+    &lt;h1 class=&quot;text-4xl font-extrabold tracking-tight text-foreground&quot;&gt;Installation &amp; Quickstart&lt;/h1&gt;
+    &lt;p class=&quot;text-lg text-muted-foreground leading-relaxed font-medium&quot;&gt;
+      Set up the hyperreactive HTMXUI suite in your project in under 2 minutes. Zero NPM build step required.
+    &lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Section: Prerequisites --&gt;
+  &lt;div class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2&quot;&gt;Prerequisites&lt;/h2&gt;
+    &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-3 gap-4&quot;&gt;
+      &lt;div class=&quot;p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm&quot;&gt;
+        &lt;div class=&quot;font-semibold text-sm mb-1 text-foreground&quot;&gt;Tailwind CSS&lt;/div&gt;
+        &lt;div class=&quot;text-xs text-muted-foreground&quot;&gt;v3 or v4 with standard design token variables&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm&quot;&gt;
+        &lt;div class=&quot;font-semibold text-sm mb-1 text-foreground&quot;&gt;Any Backend&lt;/div&gt;
+        &lt;div class=&quot;text-xs text-muted-foreground&quot;&gt;Python, Go, Rust, PHP, Bun, Node, Ruby, Java&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class=&quot;p-4 rounded-xl border border-border bg-card text-card-foreground shadow-sm&quot;&gt;
+        &lt;div class=&quot;font-semibold text-sm mb-1 text-foreground&quot;&gt;Zero Node Modules&lt;/div&gt;
+        &lt;div class=&quot;text-xs text-muted-foreground&quot;&gt;No React runtime, no JSX, no webpack bundler&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Section: Step 1 — Include Core Scripts --&gt;
+  &lt;div class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2&quot;&gt;Step 1 — Include Core Scripts&lt;/h2&gt;
+    &lt;p class=&quot;text-sm text-muted-foreground leading-relaxed&quot;&gt;
+      Add HTMX and the HTMXUI engines to your base HTML layout. &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;htmx-bolt.js&lt;/code&gt; is the only required extension for signals and reactivity.
+    &lt;/p&gt;
+    &lt;div class=&quot;bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm&quot;&gt;
+      &lt;pre&gt;&amp;lt;!-- 1. HTMX Core --&amp;gt;
+&amp;lt;script src=&quot;https://unpkg.com/htmx.org@2.0.4&quot;&amp;gt;&amp;lt;/script&amp;gt;
+
+&amp;lt;!-- 2. Signal-Based Reactive Engine (~8KB) --&amp;gt;
+&amp;lt;script src=&quot;/htmx-bolt.js&quot;&amp;gt;&amp;lt;/script&amp;gt;
+
+&amp;lt;!-- Optional: In-Memory Fuzzy Search &amp;amp; Multi-Filter Engine --&amp;gt;
+&amp;lt;script src=&quot;/htmx-flash.js&quot;&amp;gt;&amp;lt;/script&amp;gt;
+
+&amp;lt;!-- Optional: Form Validation &amp;amp; Optimistic UI Engine --&amp;gt;
+&amp;lt;script src=&quot;/htmx-form.js&quot;&amp;gt;&amp;lt;/script&amp;gt;
+
+&amp;lt;!-- Optional: FLIP Vibe &amp;amp; Layout Animation Engine --&amp;gt;
+&amp;lt;script src=&quot;/htmx-vibe.js&quot;&amp;gt;&amp;lt;/script&amp;gt;
+
+&amp;lt;!-- Optional: Focus Trap &amp;amp; Roving Tabindex Engine --&amp;gt;
+&amp;lt;script src=&quot;/htmx-a11y.js&quot;&amp;gt;&amp;lt;/script&amp;gt;
+
+&amp;lt;!-- Optional: Visual Spatial Node Canvas Engine --&amp;gt;
+&amp;lt;script src=&quot;/htmx-canvas.js&quot;&amp;gt;&amp;lt;/script&amp;gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Section: Step 2 — Setup Tailwind CSS Variables --&gt;
+  &lt;div class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2&quot;&gt;Step 2 — Configure CSS Design Tokens&lt;/h2&gt;
+    &lt;p class=&quot;text-sm text-muted-foreground leading-relaxed&quot;&gt;
+      HTMXUI components use CSS custom properties for instant dark mode and theme switching. Add these variables to your stylesheet:
+    &lt;/p&gt;
+    &lt;div class=&quot;bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm&quot;&gt;
+      &lt;pre&gt;@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+  }
+}&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Section: Step 3 — Reactive Directives Cheat Sheet --&gt;
+  &lt;div class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2&quot;&gt;Step 3 — Reactive Grammar &amp;amp; Directives&lt;/h2&gt;
+    &lt;p class=&quot;text-sm text-muted-foreground leading-relaxed&quot;&gt;
+      Bolt provides a complete signal-based declarative grammar directly inside HTML attributes:
+    &lt;/p&gt;
+    &lt;div class=&quot;overflow-x-auto rounded-xl border border-border bg-card shadow-sm&quot;&gt;
+      &lt;table class=&quot;w-full text-left text-sm border-collapse&quot;&gt;
+        &lt;thead class=&quot;bg-muted/50 border-b border-border text-foreground font-semibold&quot;&gt;
+          &lt;tr&gt;
+            &lt;th class=&quot;py-3 px-4&quot;&gt;Directive&lt;/th&gt;
+            &lt;th class=&quot;py-3 px-4&quot;&gt;Description&lt;/th&gt;
+            &lt;th class=&quot;py-3 px-4&quot;&gt;Example&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody class=&quot;divide-y divide-border text-muted-foreground text-xs font-mono&quot;&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-state&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Defines local reactive component context&lt;/td&gt;
+            &lt;td&gt;hx-state=&quot;{ count: 0, items: [] }&quot;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-computed&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Derived memoized properties&lt;/td&gt;
+            &lt;td&gt;hx-computed=&quot;{ total: price * qty }&quot;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-model&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Two-way data binding with modifiers&lt;/td&gt;
+            &lt;td&gt;hx-model.number=&quot;qty&quot;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-for&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Structural list rendering on template&lt;/td&gt;
+            &lt;td&gt;&amp;lt;template hx-for=&quot;item in items&quot;&amp;gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-if&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Structural conditional DOM mounting&lt;/td&gt;
+            &lt;td&gt;&amp;lt;template hx-if=&quot;user.isLoggedIn&quot;&amp;gt;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-on:event&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Event handlers with modifiers (.prevent, .debounce)&lt;/td&gt;
+            &lt;td&gt;hx-on:click.prevent=&quot;count++&quot;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-transition&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Smooth enter/leave CSS transitions&lt;/td&gt;
+            &lt;td&gt;hx-transition=&quot;fade&quot;&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr class=&quot;hover:bg-muted/30&quot;&gt;
+            &lt;td class=&quot;py-2.5 px-4 text-primary font-bold&quot;&gt;hx-validate&lt;/td&gt;
+            &lt;td class=&quot;font-sans text-muted-foreground&quot;&gt;Declarative input validation rules&lt;/td&gt;
+            &lt;td&gt;hx-validate=&quot;required|email|min:5&quot;&lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Section: Step 4 — Complete Working Example --&gt;
+  &lt;div class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-bold tracking-tight text-foreground border-b border-border pb-2&quot;&gt;Step 4 — Complete Example&lt;/h2&gt;
+    &lt;div class=&quot;bg-[#1e293b] text-[#e2e8f0] rounded-xl p-4 font-mono text-xs overflow-x-auto leading-relaxed shadow-sm&quot;&gt;
+      &lt;pre&gt;&amp;lt;!-- Reactive Shopping Cart with Signals, Computed Total, and hx-for list --&amp;gt;
+&amp;lt;div hx-state='{
+  newItem: &quot;&quot;,
+  items: [
+    { id: 1, name: &quot;Mechanical Keyboard&quot;, price: 120, qty: 1 },
+    { id: 2, name: &quot;Wireless Mouse&quot;, price: 60, qty: 2 }
+  ]
+}'
+hx-computed='{
+  totalPrice: items.reduce((sum, i) =&gt; sum + (i.price * i.qty), 0)
+}' class=&quot;p-6 border border-border rounded-xl bg-card space-y-4&quot;&amp;gt;
+
+  &amp;lt;h3 class=&quot;text-lg font-bold&quot;&amp;gt;Hyperreactive Shopping Cart&amp;lt;/h3&amp;gt;
+
+  &amp;lt;!-- Two-way input binding --&amp;gt;
+  &amp;lt;div class=&quot;flex gap-2&quot;&amp;gt;
+    &amp;lt;input type=&quot;text&quot; hx-model=&quot;newItem&quot; placeholder=&quot;Add item name...&quot; class=&quot;px-3 py-2 border rounded-md text-sm flex-1&quot;&amp;gt;
+    &amp;lt;button hx-on:click='if(newItem.trim()) { items.push({ id: Date.now(), name: newItem, price: 40, qty: 1 }); newItem = &quot;&quot;; }' class=&quot;bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-medium&quot;&amp;gt;Add&amp;lt;/button&amp;gt;
+  &amp;lt;/div&amp;gt;
+
+  &amp;lt;!-- List rendering with hx-for --&amp;gt;
+  &amp;lt;div class=&quot;divide-y border rounded-md overflow-hidden&quot;&amp;gt;
+    &amp;lt;template hx-for=&quot;(item, idx) in items&quot;&amp;gt;
+      &amp;lt;div class=&quot;p-3 flex items-center justify-between bg-background&quot;&amp;gt;
+        &amp;lt;span hx-text=&quot;item.name&quot; class=&quot;font-medium text-sm&quot;&amp;gt;&amp;lt;/span&amp;gt;
+        &amp;lt;div class=&quot;flex items-center gap-3&quot;&amp;gt;
+          &amp;lt;span class=&quot;text-sm text-muted-foreground&quot;&amp;gt;$&amp;lt;span hx-text=&quot;item.price&quot;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;
+          &amp;lt;input type=&quot;number&quot; hx-model.number=&quot;item.qty&quot; min=&quot;1&quot; class=&quot;w-16 px-2 py-1 border rounded text-xs&quot;&amp;gt;
+          &amp;lt;button hx-on:click=&quot;items.splice(idx, 1)&quot; class=&quot;text-destructive text-xs hover:underline&quot;&amp;gt;Remove&amp;lt;/button&amp;gt;
+        &amp;lt;/div&amp;gt;
+      &amp;lt;/div&amp;gt;
+    &amp;lt;/template&amp;gt;
+  &amp;lt;/div&amp;gt;
+
+  &amp;lt;!-- Computed reactive total --&amp;gt;
+  &amp;lt;div class=&quot;flex justify-between items-center pt-2 font-bold text-base&quot;&amp;gt;
+    &amp;lt;span&amp;gt;Total Amount:&amp;lt;/span&amp;gt;
+    &amp;lt;span class=&quot;text-primary&quot;&amp;gt;$&amp;lt;span hx-text=&quot;totalPrice&quot;&amp;gt;0&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;
+  &amp;lt;/div&amp;gt;
+&amp;lt;/div&amp;gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;!-- CTA --&gt;
+  &lt;div class=&quot;pt-4 flex gap-4&quot;&gt;
+    &lt;a href=&quot;/docs/components/button&quot; class=&quot;inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90&quot;&gt;
+      Browse Components →
+    &lt;/a&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

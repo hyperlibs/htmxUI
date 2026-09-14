@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hollywood Webfx — HTMXUI</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-virtual.js"></script>
+  <script src="/htmx-grid.js"></script>
+  <script src="/htmx-offline.js"></script>
+  <script src="/htmx-devtools.js"></script>
+  <script src="/htmx-canvas.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .code-block { background: #1e293b; color: #e2e8f0; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; font-size: 0.8rem; line-height: 1.6; }
+    .code-block code { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-background text-foreground antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <aside id="doc-sidebar" class="hidden lg:flex w-60 flex-col border-r border-border bg-card overflow-y-auto sticky top-0 h-screen">
+      <div class="flex h-14 items-center border-b border-border px-4">
+        <a href="/" class="flex items-center gap-2">
+          <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          <span class="font-bold text-lg tracking-tight">HTMXUI</span>
+        </a>
+      </div>
+      <div class="flex-1 p-3 overflow-y-auto"><div class="mb-6"><h4 class="mb-2 px-3 text-sm font-semibold tracking-tight">Getting Started</h4><div class="space-y-1"><a href="/docs/components/introduction/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Introduction</a>
+<a href="/docs/components/installation/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Installation</a>
+<a href="/docs/components/rosetta-stone/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Rosetta Stone</a>
+<a href="/docs/components/common-ai-hallucinations/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Common Ai Hallucinations</a>
+<a href="/docs/components/directives-guide/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Directives Guide</a></div></div><div><h4 class="mb-2 px-3 text-sm font-semibold tracking-tight">Components</h4><div class="space-y-1"><a href="/docs/components/accordion/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Accordion</a>
+<a href="/docs/components/alert/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Alert</a>
+<a href="/docs/components/alert-dialog/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Alert Dialog</a>
+<a href="/docs/components/aspect-ratio/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Aspect Ratio</a>
+<a href="/docs/components/avatar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Avatar</a>
+<a href="/docs/components/avatar-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Avatar Group</a>
+<a href="/docs/components/badge/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Badge</a>
+<a href="/docs/components/banner/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Banner</a>
+<a href="/docs/components/breadcrumb/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Breadcrumb</a>
+<a href="/docs/components/button/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Button</a>
+<a href="/docs/components/button-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Button Group</a>
+<a href="/docs/components/calendar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Calendar</a>
+<a href="/docs/components/card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Card</a>
+<a href="/docs/components/carousel/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Carousel</a>
+<a href="/docs/components/checkbox/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Checkbox</a>
+<a href="/docs/components/checkbox-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Checkbox Group</a>
+<a href="/docs/components/chip/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Chip</a>
+<a href="/docs/components/collapsible/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Collapsible</a>
+<a href="/docs/components/color-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Color Picker</a>
+<a href="/docs/components/combobox/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Combobox</a>
+<a href="/docs/components/command/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Command</a>
+<a href="/docs/components/container/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Container</a>
+<a href="/docs/components/context-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Context Menu</a>
+<a href="/docs/components/data-table/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Data Table</a>
+<a href="/docs/components/date-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Date Picker</a>
+<a href="/docs/components/dialog/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Dialog</a>
+<a href="/docs/components/divider/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Divider</a>
+<a href="/docs/components/drawer/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Drawer</a>
+<a href="/docs/components/dropdown-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Dropdown Menu</a>
+<a href="/docs/components/empty-state/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Empty State</a>
+<a href="/docs/components/error-message/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Error Message</a>
+<a href="/docs/components/file-upload/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">File Upload</a>
+<a href="/docs/components/flash-search/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Flash Search</a>
+<a href="/docs/components/form/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Form</a>
+<a href="/docs/components/hover-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hover Card</a>
+<a href="/docs/components/icon/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Icon</a>
+<a href="/docs/components/image/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Image</a>
+<a href="/docs/components/indicator/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Indicator</a>
+<a href="/docs/components/input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Input</a>
+<a href="/docs/components/input-otp/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Input Otp</a>
+<a href="/docs/components/kbd/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Kbd</a>
+<a href="/docs/components/label/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Label</a>
+<a href="/docs/components/layout-block/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Block</a>
+<a href="/docs/components/layout-canvas/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Canvas</a>
+<a href="/docs/components/layout-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Grid</a>
+<a href="/docs/components/layout-page/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Page</a>
+<a href="/docs/components/layout-print/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Print</a>
+<a href="/docs/components/layout-scaffold/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Scaffold</a>
+<a href="/docs/components/layout-web/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Web</a>
+<a href="/docs/components/layout-mweb/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Mweb</a>
+<a href="/docs/components/layout-mapp/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Mapp</a>
+<a href="/docs/components/link/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Link</a>
+<a href="/docs/components/list/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">List</a>
+<a href="/docs/components/list-item/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">List Item</a>
+<a href="/docs/components/loading-spinner/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Loading Spinner</a>
+<a href="/docs/components/masonry-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Masonry Grid</a>
+<a href="/docs/components/menubar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Menubar</a>
+<a href="/docs/components/message-bubble/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Message Bubble</a>
+<a href="/docs/components/navigation-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Navigation Menu</a>
+<a href="/docs/components/notification/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Notification</a>
+<a href="/docs/components/number-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Number Input</a>
+<a href="/docs/components/page-header/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Page Header</a>
+<a href="/docs/components/pagination/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pagination</a>
+<a href="/docs/components/panel/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Panel</a>
+<a href="/docs/components/password-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Password Input</a>
+<a href="/docs/components/pin-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pin Input</a>
+<a href="/docs/components/popover/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Popover</a>
+<a href="/docs/components/profile-badge/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Profile Badge</a>
+<a href="/docs/components/progress/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Progress</a>
+<a href="/docs/components/progress-bar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Progress Bar</a>
+<a href="/docs/components/pulse/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pulse</a>
+<a href="/docs/components/radio-button/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Radio Button</a>
+<a href="/docs/components/radio-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Radio Group</a>
+<a href="/docs/components/rating/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Rating</a>
+<a href="/docs/components/resizable/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Resizable</a>
+<a href="/docs/components/ribbon/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Ribbon</a>
+<a href="/docs/components/scroll-area/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Scroll Area</a>
+<a href="/docs/components/search-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Search Input</a>
+<a href="/docs/components/select/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Select</a>
+<a href="/docs/components/separator/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Separator</a>
+<a href="/docs/components/sheet/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Sheet</a>
+<a href="/docs/components/sidebar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Sidebar</a>
+<a href="/docs/components/skeleton/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Skeleton</a>
+<a href="/docs/components/slider/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Slider</a>
+<a href="/docs/components/slider-range/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Slider Range</a>
+<a href="/docs/components/snackbar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Snackbar</a>
+<a href="/docs/components/splitter/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Splitter</a>
+<a href="/docs/components/stat-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Stat Card</a>
+<a href="/docs/components/stepper/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Stepper</a>
+<a href="/docs/components/submenu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Submenu</a>
+<a href="/docs/components/switch/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Switch</a>
+<a href="/docs/components/table/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Table</a>
+<a href="/docs/components/tabs/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tabs</a>
+<a href="/docs/components/tag/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tag</a>
+<a href="/docs/components/text/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Text</a>
+<a href="/docs/components/textarea/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Textarea</a>
+<a href="/docs/components/timeline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Timeline</a>
+<a href="/docs/components/time-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Time Picker</a>
+<a href="/docs/components/toast/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toast</a>
+<a href="/docs/components/toggle/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle</a>
+<a href="/docs/components/toggle-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle Group</a>
+<a href="/docs/components/toggle-switch/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle Switch</a>
+<a href="/docs/components/toolbar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toolbar</a>
+<a href="/docs/components/tooltip/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tooltip</a>
+<a href="/docs/components/tree-view/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tree View</a>
+<a href="/docs/components/user-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">User Card</a>
+<a href="/docs/components/video-player/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Video Player</a>
+<a href="/docs/components/watermark/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Watermark</a>
+<a href="/docs/components/wizard/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Wizard</a>
+<a href="/docs/components/hx-wizard/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Wizard</a>
+<a href="/docs/components/date-range-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Date Range Picker</a>
+<a href="/docs/components/hx-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Grid</a>
+<a href="/docs/components/hx-virtual/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Virtual</a>
+<a href="/docs/components/hx-offline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Offline</a>
+<a href="/docs/components/hollywood-webfx/" class="block rounded-md px-3 py-1.5 text-sm bg-accent font-medium text-accent-foreground transition-colors">Hollywood Webfx</a></div></div></div>
+    </aside>
+    <main class="flex-1 flex flex-col min-w-0">
+      <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-card sticky top-0 z-30">
+        <div class="flex items-center gap-4">
+          <h1 class="font-semibold text-base">Hollywood Webfx</h1>
+          <a href="/demo/" class="text-xs bg-primary/10 text-primary font-medium px-2.5 py-1 rounded-full hover:bg-primary/20 transition-colors">Live Demos Hub</a>
+        </div>
+        <a href="https://github.com/hyperlibs/htmxUI" target="_blank" class="text-xs text-muted-foreground hover:text-foreground">GitHub ↗</a>
+      </header>
+      <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
+        <div class="space-y-2">
+          <h1 class="text-3xl font-extrabold tracking-tight">Hollywood Webfx</h1>
+          <p class="text-muted-foreground text-sm">Interactive Shadcn-quality hypermedia component for HTMXUI.</p>
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>
+          <div class="rounded-xl border border-border p-8 bg-card shadow-sm flex items-center justify-center min-h-[160px]">
+            <div class="w-full max-w-xl flex flex-col items-center gap-4"><div class="space-y-12 max-w-5xl py-6 text-foreground" hx-state='{ "blastCount": 0, "activeTab": "overview" }'>
+  <!-- Header Title -->
+  <div>
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3">
+      <span>🎬</span> Hollywood WebFX &amp; Kinetic Motion
+    </div>
+    <h1 class="text-4xl font-extrabold tracking-tight">Kinetic Motion, Spring Physics &amp; WebFX</h1>
+    <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+      Hardware-accelerated WAAPI animations, 3D gyroscopic tilt, specular glare, magnetic pointer pull, kinetic typography, and explosive shockwaves — in pure declarative HTML.
+    </p>
+  </div>
+
+  <!-- Interactive Demo 1: 3D Tilt & Specular Glare -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">1. 3D Gyroscopic Tilt &amp; Specular Glare (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vibe-tilt</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vlt-glare</code>)</h2>
+    <p class="text-xs text-muted-foreground">Hover your mouse over the card below. Notice the 3D perspective rotation and dynamic reflection following your cursor.</p>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <div hx-vibe-tilt="20" hx-vlt-glare class="p-8 rounded-3xl bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-700 text-white shadow-2xl cursor-pointer flex flex-col justify-between h-64 border border-white/20">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold uppercase tracking-widest text-white/80">PIXAR-GRADE 3D TILT</span>
+          <span class="text-2xl">✨</span>
+        </div>
+        <div>
+          <h3 class="text-2xl font-black tracking-tight mb-1">Hyperreactive Canvas</h3>
+          <p class="text-xs text-white/80">Hardware-accelerated perspective matrix with real-time specular highlights.</p>
+        </div>
+      </div>
+
+      <div hx-vibe-tilt="15" hx-vlt-glare class="p-8 rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-800 text-white shadow-2xl cursor-pointer flex flex-col justify-between h-64 border border-white/20">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold uppercase tracking-widest text-white/80">MADBOX OPTICS</span>
+          <span class="text-2xl">🎮</span>
+        </div>
+        <div>
+          <h3 class="text-2xl font-black tracking-tight mb-1">Optical Glass Refraction</h3>
+          <p class="text-xs text-white/80">Smooth 60fps WAAPI transforms without Virtual DOM reflows.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Demo 2: Magnetic Snapping & Kinetic Split Typography -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">2. Magnetic Snapping &amp; Kinetic Typography (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vibe-magnetic</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vibe-split</code>)</h2>
+    
+    <div class="p-8 rounded-2xl border border-border bg-card flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+      <div>
+        <div class="text-xs text-muted-foreground font-mono mb-1">Character-Split Animation</div>
+        <h3 hx-vibe-split="chars" class="text-3xl font-black tracking-tight text-foreground">
+          REACTIVE MOTION ON STEROIDS
+        </h3>
+      </div>
+
+      <!-- Magnetic Button -->
+      <button hx-vibe-magnetic="0.4" class="px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-xl hover:shadow-primary/30 transition-shadow">
+        🧲 Magnetic Pull Me
+      </button>
+    </div>
+  </section>
+
+  <!-- Interactive Demo 3: Explosive Blast Physics Arena -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-bold tracking-tight">3. Explosive Radial Shockwave Arena (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-vpx-blast</code>)</h2>
+        <p class="text-xs text-muted-foreground">Click the central detonator to trigger a physical radial shockwave that blasts surrounding particles outward.</p>
+      </div>
+      <button hx-vpx-blast hx-vpx-radius="350" hx-vpx-force="60" hx-on:click="blastCount++" class="px-5 py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-xs shadow-lg hover:bg-destructive/90 transition-all">
+        💥 Detonate Shockwave (<span hx-text="blastCount">0</span>)
+      </button>
+    </div>
+
+    <div class="p-10 rounded-2xl border border-border bg-slate-950 flex items-center justify-center relative min-h-[220px] overflow-hidden">
+      <!-- Surrounding targets with hx-vpx-target -->
+      <div class="grid grid-cols-4 gap-6 w-full max-w-xl">
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element A</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element B</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element C</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element D</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element E</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element F</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element G</div>
+        <div hx-vpx-target class="p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow">Element H</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community Extension Guide -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">4. Extending HTMXUI: Building Community 3D / Game Engines</h2>
+    <p class="text-xs text-muted-foreground">Community developers can connect external WebGL / Three.js / Canvas engines in under 15 lines of code:</p>
+
+    <div class="bg-[#1e293b] text-[#e2e8f0] rounded-xl p-5 font-mono text-xs overflow-x-auto space-y-2 border border-slate-700">
+      <span class="text-slate-400">// Register a custom declarative 3D directive</span>
+      <div><span class="text-purple-400">HTMXUI</span>.<span class="text-sky-400">directive</span>(<span class="text-emerald-400">'hx-three-cube'</span>, (el, config, { state }) =&gt; {</div>
+      <div class="pl-4"><span class="text-slate-400">// Hook into HTMXUI's 120 FPS high-frequency game loop</span></div>
+      <div class="pl-4"><span class="text-purple-400">HxBolt</span>.<span class="text-sky-400">ticker</span>.<span class="text-sky-400">subscribe</span>((dt) =&gt; {</div>
+      <div class="pl-8">mesh.rotation.x += <span class="text-amber-400">0.01</span>;</div>
+      <div class="pl-8">mesh.position.y = state.height; <span class="text-slate-400">// Reactive 2-way sync</span></div>
+      <div class="pl-4">});</div>
+      <div>});</div>
+    </div>
+  </section>
+</div>
+</div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold tracking-tight">HTML Source</h2>
+          <div class="code-block"><pre><code>&lt;div class=&quot;space-y-12 max-w-5xl py-6 text-foreground&quot; hx-state='{ &quot;blastCount&quot;: 0, &quot;activeTab&quot;: &quot;overview&quot; }'&gt;
+  &lt;!-- Header Title --&gt;
+  &lt;div&gt;
+    &lt;div class=&quot;inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3&quot;&gt;
+      &lt;span&gt;🎬&lt;/span&gt; Hollywood WebFX &amp;amp; Kinetic Motion
+    &lt;/div&gt;
+    &lt;h1 class=&quot;text-4xl font-extrabold tracking-tight&quot;&gt;Kinetic Motion, Spring Physics &amp;amp; WebFX&lt;/h1&gt;
+    &lt;p class=&quot;text-muted-foreground mt-2 text-sm leading-relaxed&quot;&gt;
+      Hardware-accelerated WAAPI animations, 3D gyroscopic tilt, specular glare, magnetic pointer pull, kinetic typography, and explosive shockwaves — in pure declarative HTML.
+    &lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Interactive Demo 1: 3D Tilt &amp; Specular Glare --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-xl font-bold tracking-tight&quot;&gt;1. 3D Gyroscopic Tilt &amp;amp; Specular Glare (&lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-vibe-tilt&lt;/code&gt;, &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-vlt-glare&lt;/code&gt;)&lt;/h2&gt;
+    &lt;p class=&quot;text-xs text-muted-foreground&quot;&gt;Hover your mouse over the card below. Notice the 3D perspective rotation and dynamic reflection following your cursor.&lt;/p&gt;
+
+    &lt;div class=&quot;grid md:grid-cols-2 gap-6&quot;&gt;
+      &lt;div hx-vibe-tilt=&quot;20&quot; hx-vlt-glare class=&quot;p-8 rounded-3xl bg-gradient-to-br from-pink-500 via-purple-600 to-indigo-700 text-white shadow-2xl cursor-pointer flex flex-col justify-between h-64 border border-white/20&quot;&gt;
+        &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+          &lt;span class=&quot;text-xs font-bold uppercase tracking-widest text-white/80&quot;&gt;PIXAR-GRADE 3D TILT&lt;/span&gt;
+          &lt;span class=&quot;text-2xl&quot;&gt;✨&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;h3 class=&quot;text-2xl font-black tracking-tight mb-1&quot;&gt;Hyperreactive Canvas&lt;/h3&gt;
+          &lt;p class=&quot;text-xs text-white/80&quot;&gt;Hardware-accelerated perspective matrix with real-time specular highlights.&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div hx-vibe-tilt=&quot;15&quot; hx-vlt-glare class=&quot;p-8 rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-800 text-white shadow-2xl cursor-pointer flex flex-col justify-between h-64 border border-white/20&quot;&gt;
+        &lt;div class=&quot;flex justify-between items-center&quot;&gt;
+          &lt;span class=&quot;text-xs font-bold uppercase tracking-widest text-white/80&quot;&gt;MADBOX OPTICS&lt;/span&gt;
+          &lt;span class=&quot;text-2xl&quot;&gt;🎮&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div&gt;
+          &lt;h3 class=&quot;text-2xl font-black tracking-tight mb-1&quot;&gt;Optical Glass Refraction&lt;/h3&gt;
+          &lt;p class=&quot;text-xs text-white/80&quot;&gt;Smooth 60fps WAAPI transforms without Virtual DOM reflows.&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Interactive Demo 2: Magnetic Snapping &amp; Kinetic Split Typography --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-xl font-bold tracking-tight&quot;&gt;2. Magnetic Snapping &amp;amp; Kinetic Typography (&lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-vibe-magnetic&lt;/code&gt;, &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-vibe-split&lt;/code&gt;)&lt;/h2&gt;
+    
+    &lt;div class=&quot;p-8 rounded-2xl border border-border bg-card flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm&quot;&gt;
+      &lt;div&gt;
+        &lt;div class=&quot;text-xs text-muted-foreground font-mono mb-1&quot;&gt;Character-Split Animation&lt;/div&gt;
+        &lt;h3 hx-vibe-split=&quot;chars&quot; class=&quot;text-3xl font-black tracking-tight text-foreground&quot;&gt;
+          REACTIVE MOTION ON STEROIDS
+        &lt;/h3&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Magnetic Button --&gt;
+      &lt;button hx-vibe-magnetic=&quot;0.4&quot; class=&quot;px-8 py-4 rounded-full bg-primary text-primary-foreground font-bold text-sm shadow-xl hover:shadow-primary/30 transition-shadow&quot;&gt;
+        🧲 Magnetic Pull Me
+      &lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Interactive Demo 3: Explosive Blast Physics Arena --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;div class=&quot;flex items-center justify-between&quot;&gt;
+      &lt;div&gt;
+        &lt;h2 class=&quot;text-xl font-bold tracking-tight&quot;&gt;3. Explosive Radial Shockwave Arena (&lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-vpx-blast&lt;/code&gt;)&lt;/h2&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground&quot;&gt;Click the central detonator to trigger a physical radial shockwave that blasts surrounding particles outward.&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;button hx-vpx-blast hx-vpx-radius=&quot;350&quot; hx-vpx-force=&quot;60&quot; hx-on:click=&quot;blastCount++&quot; class=&quot;px-5 py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-xs shadow-lg hover:bg-destructive/90 transition-all&quot;&gt;
+        💥 Detonate Shockwave (&lt;span hx-text=&quot;blastCount&quot;&gt;0&lt;/span&gt;)
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;p-10 rounded-2xl border border-border bg-slate-950 flex items-center justify-center relative min-h-[220px] overflow-hidden&quot;&gt;
+      &lt;!-- Surrounding targets with hx-vpx-target --&gt;
+      &lt;div class=&quot;grid grid-cols-4 gap-6 w-full max-w-xl&quot;&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element A&lt;/div&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element B&lt;/div&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element C&lt;/div&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element D&lt;/div&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element E&lt;/div&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element F&lt;/div&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element G&lt;/div&gt;
+        &lt;div hx-vpx-target class=&quot;p-4 rounded-xl bg-slate-900 border border-slate-800 text-center text-xs font-mono text-slate-300 shadow&quot;&gt;Element H&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Community Extension Guide --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-xl font-bold tracking-tight&quot;&gt;4. Extending HTMXUI: Building Community 3D / Game Engines&lt;/h2&gt;
+    &lt;p class=&quot;text-xs text-muted-foreground&quot;&gt;Community developers can connect external WebGL / Three.js / Canvas engines in under 15 lines of code:&lt;/p&gt;
+
+    &lt;div class=&quot;bg-[#1e293b] text-[#e2e8f0] rounded-xl p-5 font-mono text-xs overflow-x-auto space-y-2 border border-slate-700&quot;&gt;
+      &lt;span class=&quot;text-slate-400&quot;&gt;// Register a custom declarative 3D directive&lt;/span&gt;
+      &lt;div&gt;&lt;span class=&quot;text-purple-400&quot;&gt;HTMXUI&lt;/span&gt;.&lt;span class=&quot;text-sky-400&quot;&gt;directive&lt;/span&gt;(&lt;span class=&quot;text-emerald-400&quot;&gt;'hx-three-cube'&lt;/span&gt;, (el, config, { state }) =&amp;gt; {&lt;/div&gt;
+      &lt;div class=&quot;pl-4&quot;&gt;&lt;span class=&quot;text-slate-400&quot;&gt;// Hook into HTMXUI's 120 FPS high-frequency game loop&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;pl-4&quot;&gt;&lt;span class=&quot;text-purple-400&quot;&gt;HxBolt&lt;/span&gt;.&lt;span class=&quot;text-sky-400&quot;&gt;ticker&lt;/span&gt;.&lt;span class=&quot;text-sky-400&quot;&gt;subscribe&lt;/span&gt;((dt) =&amp;gt; {&lt;/div&gt;
+      &lt;div class=&quot;pl-8&quot;&gt;mesh.rotation.x += &lt;span class=&quot;text-amber-400&quot;&gt;0.01&lt;/span&gt;;&lt;/div&gt;
+      &lt;div class=&quot;pl-8&quot;&gt;mesh.position.y = state.height; &lt;span class=&quot;text-slate-400&quot;&gt;// Reactive 2-way sync&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;pl-4&quot;&gt;});&lt;/div&gt;
+      &lt;div&gt;});&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+</code></pre></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

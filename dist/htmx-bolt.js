@@ -744,6 +744,32 @@
     }
     return -1;
   }
+  function findMatchingOpenParen(str) {
+    if (!str.endsWith(")"))
+      return -1;
+    let depth = 0;
+    let inQuote = null;
+    for (let i = str.length - 1;i >= 0; i--) {
+      const ch = str[i];
+      if (inQuote) {
+        if (ch === inQuote && str[i - 1] !== "\\")
+          inQuote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inQuote = ch;
+        continue;
+      }
+      if (ch === ")")
+        depth++;
+      else if (ch === "(") {
+        depth--;
+        if (depth === 0)
+          return i;
+      }
+    }
+    return -1;
+  }
   function findTopLevelOperator(str, ops) {
     let depthParen = 0;
     let depthBrace = 0;
@@ -875,6 +901,33 @@
       return;
     const ctx = context && typeof context === "object" ? context : {};
     const scope = { ...ctx, ...extraScope };
+    const arrowMatch = findTopLevelOperator(trimmed, ["=>"]);
+    if (arrowMatch) {
+      const rawParams = trimmed.slice(0, arrowMatch.index).trim();
+      const rawBody = trimmed.slice(arrowMatch.index + 2).trim();
+      let cleanParamsStr = rawParams;
+      if (cleanParamsStr.startsWith("(") && cleanParamsStr.endsWith(")")) {
+        cleanParamsStr = cleanParamsStr.slice(1, -1).trim();
+      }
+      const paramNames = cleanParamsStr ? cleanParamsStr.split(",").map((p) => p.trim()) : [];
+      let bodyExpr = rawBody;
+      if (bodyExpr.startsWith("{") && bodyExpr.endsWith("}")) {
+        const innerBody = bodyExpr.slice(1, -1).trim();
+        if (innerBody.startsWith("return ")) {
+          bodyExpr = innerBody.slice(7).replace(/;$/, "").trim();
+        } else {
+          bodyExpr = innerBody.replace(/;$/, "").trim();
+        }
+      }
+      return (...args) => {
+        const callScope = { ...extraScope };
+        paramNames.forEach((name, idx) => {
+          if (name)
+            callScope[name] = args[idx];
+        });
+        return safeEvaluate(bodyExpr, context, callScope);
+      };
+    }
     const qIdx = findTopLevelChar(trimmed, "?");
     if (qIdx !== -1) {
       const colonIdx = findTopLevelChar(trimmed.slice(qIdx + 1), ":");
@@ -994,7 +1047,14 @@
         return [];
       return splitArguments(inner).map((arg) => safeEvaluate(arg, context, extraScope));
     }
-    if (trimmed.startsWith("'") && trimmed.endsWith("'") || trimmed.startsWith('"') && trimmed.endsWith('"') || trimmed.startsWith("`") && trimmed.endsWith("`")) {
+    if (trimmed.startsWith("`") && trimmed.endsWith("`")) {
+      const inner = trimmed.slice(1, -1);
+      return inner.replace(/\$\{([^}]+)\}/g, (_, expr2) => {
+        const evaluated = safeEvaluate(expr2, context, extraScope);
+        return evaluated !== undefined && evaluated !== null ? String(evaluated) : "";
+      });
+    }
+    if (trimmed.startsWith("'") && trimmed.endsWith("'") || trimmed.startsWith('"') && trimmed.endsWith('"')) {
       return trimmed.slice(1, -1);
     }
     if (!isNaN(Number(trimmed))) {
@@ -1009,7 +1069,7 @@
     if (trimmed === "undefined")
       return;
     if (trimmed.endsWith(")")) {
-      const openParenIdx = findTopLevelChar(trimmed, "(");
+      const openParenIdx = findMatchingOpenParen(trimmed);
       if (openParenIdx !== -1) {
         const calleeStr = trimmed.slice(0, openParenIdx).trim();
         const argsStr = trimmed.slice(openParenIdx + 1, -1).trim();
@@ -1020,9 +1080,10 @@
           const lastDot = calleeStr.lastIndexOf(".");
           const parentPath = calleeStr.slice(0, lastDot);
           const method = calleeStr.slice(lastDot + 1);
-          fnThis = parentPath in extraScope ? extraScope[parentPath] : getNestedProperty(scope, parentPath);
-          if (fnThis && typeof fnThis[method] === "function") {
-            fn = fnThis[method];
+          const parentVal = safeEvaluate(parentPath, context, extraScope);
+          if (parentVal && typeof parentVal[method] === "function") {
+            fn = parentVal[method];
+            fnThis = parentVal;
           }
         } else {
           if (calleeStr in extraScope && typeof extraScope[calleeStr] === "function") {

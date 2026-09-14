@@ -57,6 +57,33 @@ describe('Zero-Eval Safe Expression Evaluator & Action Executor', () => {
     expect(sampleState.open).toBe(false);
   });
 
+  test('evaluates arrow-function closures in array reduce, map and filter', () => {
+    const state = {
+      items: [
+        { id: 1, name: "Mechanical Keyboard", price: 120, qty: 1 },
+        { id: 2, name: "Wireless Mouse", price: 60, qty: 2 }
+      ]
+    };
+
+    // README Quickstart expression
+    const total = safeEvaluate('items.reduce((sum, i) => sum + (i.price * i.qty), 0)', state);
+    expect(total).toBe(240);
+
+    // Object containing computed reduce
+    const computedObj = safeEvaluate('{ totalPrice: items.reduce((sum, i) => sum + (i.price * i.qty), 0) }', state);
+    expect(computedObj).toEqual({ totalPrice: 240 });
+
+    // Chained filter and map
+    const premiumItems = safeEvaluate('items.filter(i => i.price > 100).map(i => i.name)', state);
+    expect(premiumItems).toEqual(['Mechanical Keyboard']);
+  });
+
+  test('interpolates expressions inside template literals', () => {
+    const state = { user: { name: 'Alice' }, count: 5, color: 'emerald' };
+    const str = safeEvaluate('`Hello ${user.name}, you have ${count} alerts (theme: bg-${color}-500)`', state);
+    expect(str).toBe('Hello Alice, you have 5 alerts (theme: bg-emerald-500)');
+  });
+
   test('generates standardized [@diag CODE] outputs', () => {
     const msg = formatDiag('HTMXUI-BOLT-006', 'Blocked by CSP policy');
     expect(msg).toContain('[@diag HTMXUI-BOLT-006]');

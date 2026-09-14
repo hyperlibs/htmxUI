@@ -681,6 +681,29 @@ function findTopLevelChar(str: string, char: string): number {
   return -1;
 }
 
+function findMatchingOpenParen(str: string): number {
+  if (!str.endsWith(')')) return -1;
+  let depth = 0;
+  let inQuote: string | null = null;
+  for (let i = str.length - 1; i >= 0; i--) {
+    const ch = str[i];
+    if (inQuote) {
+      if (ch === inQuote && str[i - 1] !== '\\') inQuote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === '`') {
+      inQuote = ch;
+      continue;
+    }
+    if (ch === ')') depth++;
+    else if (ch === '(') {
+      depth--;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
 function findTopLevelOperator(str: string, ops: string[]): { op: string; index: number } | null {
   let depthParen = 0;
   let depthBrace = 0;
@@ -791,7 +814,38 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
   const ctx = context && typeof context === 'object' ? context : {};
   const scope = { ...ctx, ...extraScope };
 
-  // 1. Ternary: cond ? trueVal : falseVal
+  // 1. Arrow Function Closure Construction: (sum, i) => sum + (i.price * i.qty) or x => x * 2
+  const arrowMatch = findTopLevelOperator(trimmed, ['=>']);
+  if (arrowMatch) {
+    const rawParams = trimmed.slice(0, arrowMatch.index).trim();
+    const rawBody = trimmed.slice(arrowMatch.index + 2).trim();
+    
+    let cleanParamsStr = rawParams;
+    if (cleanParamsStr.startsWith('(') && cleanParamsStr.endsWith(')')) {
+      cleanParamsStr = cleanParamsStr.slice(1, -1).trim();
+    }
+    const paramNames = cleanParamsStr ? cleanParamsStr.split(',').map(p => p.trim()) : [];
+
+    let bodyExpr = rawBody;
+    if (bodyExpr.startsWith('{') && bodyExpr.endsWith('}')) {
+      const innerBody = bodyExpr.slice(1, -1).trim();
+      if (innerBody.startsWith('return ')) {
+        bodyExpr = innerBody.slice(7).replace(/;$/, '').trim();
+      } else {
+        bodyExpr = innerBody.replace(/;$/, '').trim();
+      }
+    }
+
+    return (...args: any[]) => {
+      const callScope: Record<string, any> = { ...extraScope };
+      paramNames.forEach((name, idx) => {
+        if (name) callScope[name] = args[idx];
+      });
+      return safeEvaluate(bodyExpr, context, callScope);
+    };
+  }
+
+  // 2. Ternary: cond ? trueVal : falseVal
   const qIdx = findTopLevelChar(trimmed, '?');
   if (qIdx !== -1) {
     const colonIdx = findTopLevelChar(trimmed.slice(qIdx + 1), ':');
@@ -804,7 +858,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     }
   }
 
-  // 2. Logical OR / Nullish Coalescing
+  // 3. Logical OR / Nullish Coalescing
   const orMatch = findTopLevelOperator(trimmed, ['||', '??']);
   if (orMatch) {
     const left = safeEvaluate(trimmed.slice(0, orMatch.index), context, extraScope);
@@ -816,7 +870,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     }
   }
 
-  // 3. Logical AND
+  // 4. Logical AND
   const andMatch = findTopLevelOperator(trimmed, ['&&']);
   if (andMatch) {
     const left = safeEvaluate(trimmed.slice(0, andMatch.index), context, extraScope);
@@ -824,7 +878,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     return safeEvaluate(trimmed.slice(andMatch.index + andMatch.op.length), context, extraScope);
   }
 
-  // 4. Equality & Comparison
+  // 5. Equality & Comparison
   const compMatch = findTopLevelOperator(trimmed, ['===', '!==', '==', '!=', '<=', '>=', '<', '>']);
   if (compMatch) {
     const left = safeEvaluate(trimmed.slice(0, compMatch.index), context, extraScope);
@@ -841,7 +895,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     }
   }
 
-  // 5. Binary Arithmetic Addition / Subtraction
+  // 6. Binary Arithmetic Addition / Subtraction
   const addSubMatch = findTopLevelOperator(trimmed, ['+', '-']);
   if (addSubMatch && addSubMatch.index > 0) {
     const left = safeEvaluate(trimmed.slice(0, addSubMatch.index), context, extraScope);
@@ -849,7 +903,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     return addSubMatch.op === '+' ? left + right : left - right;
   }
 
-  // 6. Binary Arithmetic Mul / Div / Mod
+  // 7. Binary Arithmetic Mul / Div / Mod
   const mulDivMatch = findTopLevelOperator(trimmed, ['*', '/', '%']);
   if (mulDivMatch) {
     const left = safeEvaluate(trimmed.slice(0, mulDivMatch.index), context, extraScope);
@@ -859,7 +913,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     if (mulDivMatch.op === '%') return left % right;
   }
 
-  // 7. Unary Operators: !expr, +expr, -expr
+  // 8. Unary Operators: !expr, +expr, -expr
   if (trimmed.startsWith('!')) {
     return !safeEvaluate(trimmed.slice(1), context, extraScope);
   }
@@ -870,7 +924,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     return -safeEvaluate(trimmed.slice(1), context, extraScope);
   }
 
-  // 8. Parenthesized Expression: (expr)
+  // 9. Parenthesized Expression: (expr)
   if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
     let d = 0;
     let valid = true;
@@ -884,7 +938,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     }
   }
 
-  // 9. Object Literal: { 'class-a': cond1, 'class-b': cond2 } or { a: 1, b: 2 }
+  // 10. Object Literal: { 'class-a': cond1, 'class-b': cond2 } or { a: 1, b: 2 }
   if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
     const inner = trimmed.slice(1, -1).trim();
     if (!inner) return {};
@@ -904,32 +958,41 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     return result;
   }
 
-  // 10. Array Literal: [a, b, c]
+  // 11. Array Literal: [a, b, c]
   if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
     const inner = trimmed.slice(1, -1).trim();
     if (!inner) return [];
     return splitArguments(inner).map(arg => safeEvaluate(arg, context, extraScope));
   }
 
-  // 11. String Literals
-  if ((trimmed.startsWith("'") && trimmed.endsWith("'")) || (trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith('`') && trimmed.endsWith('`'))) {
+  // 12. Template Literals: `Hello ${user.name} - count: ${count}`
+  if (trimmed.startsWith('`') && trimmed.endsWith('`')) {
+    const inner = trimmed.slice(1, -1);
+    return inner.replace(/\$\{([^}]+)\}/g, (_, expr) => {
+      const evaluated = safeEvaluate(expr, context, extraScope);
+      return evaluated !== undefined && evaluated !== null ? String(evaluated) : '';
+    });
+  }
+
+  // 13. Regular String Literals
+  if ((trimmed.startsWith("'") && trimmed.endsWith("'")) || (trimmed.startsWith('"') && trimmed.endsWith('"'))) {
     return trimmed.slice(1, -1);
   }
 
-  // 12. Numeric Literals
+  // 14. Numeric Literals
   if (!isNaN(Number(trimmed))) {
     return Number(trimmed);
   }
 
-  // 13. Boolean & Null Literals
+  // 15. Boolean & Null Literals
   if (trimmed === 'true') return true;
   if (trimmed === 'false') return false;
   if (trimmed === 'null') return null;
   if (trimmed === 'undefined') return undefined;
 
-  // 14. Function / Method Calls: fn(a, b), obj.method(a, b), $toast('msg')
+  // 16. Function / Method Calls: fn(a, b), obj.method(a, b), items.filter(...).map(...)
   if (trimmed.endsWith(')')) {
-    const openParenIdx = findTopLevelChar(trimmed, '(');
+    const openParenIdx = findMatchingOpenParen(trimmed);
     if (openParenIdx !== -1) {
       const calleeStr = trimmed.slice(0, openParenIdx).trim();
       const argsStr = trimmed.slice(openParenIdx + 1, -1).trim();
@@ -942,9 +1005,12 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
         const lastDot = calleeStr.lastIndexOf('.');
         const parentPath = calleeStr.slice(0, lastDot);
         const method = calleeStr.slice(lastDot + 1);
-        fnThis = parentPath in extraScope ? extraScope[parentPath] : getNestedProperty(scope, parentPath);
-        if (fnThis && typeof fnThis[method] === 'function') {
-          fn = fnThis[method];
+        
+        // Evaluate parent expression (supports chained calls like items.filter(...))
+        const parentVal = safeEvaluate(parentPath, context, extraScope);
+        if (parentVal && typeof parentVal[method] === 'function') {
+          fn = parentVal[method];
+          fnThis = parentVal;
         }
       } else {
         if (calleeStr in extraScope && typeof extraScope[calleeStr] === 'function') {
@@ -965,7 +1031,7 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     }
   }
 
-  // 15. Property lookup: scope (extraScope -> ctx -> global)
+  // 17. Property lookup: scope (extraScope -> ctx -> global)
   if (trimmed in extraScope) return extraScope[trimmed];
   if (trimmed in ctx) return ctx[trimmed];
   const nestedVal = getNestedProperty(scope, trimmed);

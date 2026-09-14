@@ -6,13 +6,13 @@
   <p>
     <a href="https://github.com/hyperlibs/htmxUI/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square" alt="CI"></a>
     <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/release-v0.1.0-blue?style=flat-square" alt="Release"></a>
-    <a href="https://htmxui.pages.dev"><img src="https://img.shields.io/badge/Cloudflare_Pages-Live_Deployment-F38020?logo=cloudflare&style=flat-square" alt="Cloudflare Pages"></a>
+    <a href="https://htmxui.cgb.workers.dev/demo/"><img src="https://img.shields.io/badge/Cloudflare-Live_Deployment-F38020?logo=cloudflare&style=flat-square" alt="Cloudflare Deployment"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
     <a href="CHECKSUMS.sha256"><img src="https://img.shields.io/badge/checksums-verified-success?style=flat-square" alt="Checksums"></a>
   </p>
   <p>
-    <a href="https://htmxui.pages.dev"><strong>⚡ Cloudflare Pages Live Demo</strong></a> &nbsp;•&nbsp; 
-    <a href="views/components/introduction.html"><strong>📖 Documentation</strong></a> &nbsp;•&nbsp; 
+    <a href="https://htmxui.cgb.workers.dev/demo/"><strong>⚡ Live Demos on Cloudflare</strong></a> &nbsp;•&nbsp; 
+    <a href="https://htmxui.cgb.workers.dev/docs/components/introduction/"><strong>📖 Documentation</strong></a> &nbsp;•&nbsp; 
     <a href="#-about-us--the-hyperlibs-mission"><strong>👥 About Us</strong></a> &nbsp;•&nbsp; 
     <a href="https://github.com/hyperlibs/htmxUI"><strong>⭐ GitHub</strong></a>
   </p>
@@ -100,17 +100,17 @@ HTMXUI = HTMX (Hypermedia Core)
 Experience complete, production-grade applications built with zero React/Node runtime:
 
 > [!TIP]
-> **⚡ Live on Cloudflare Pages**: [htmxui.pages.dev](https://htmxui.pages.dev)  
+> **⚡ Live Cloudflare Deployment**: [htmxui.cgb.workers.dev/demo/](https://htmxui.cgb.workers.dev/demo/)  
 > **💻 Instant Local Run**: `bun run dev` (or `node server.js` $\to$ `http://localhost:3000/demo`).  
-> **🚀 Deploy to Cloudflare Pages**: `bun run deploy:pages` (or connect your GitHub repository directly to Cloudflare Pages).
+> **🚀 Deploy to Cloudflare**: `bun run deploy:pages` (or `bun run deploy:worker`).
 
-| Flagship Demo | Route | Source View | Capabilities Demonstrated | Stack / Engines |
+| Flagship Demo | Live Cloudflare URL | Source View | Capabilities Demonstrated | Stack / Engines |
 | :--- | :--- | :--- | :--- | :--- |
-| **🎯 Verifiable Demos Hub** | `/demo` | [`views/demos-hub.html`](views/demos-hub.html) | Master index of live interactive previews, stress tests, and showcases. | All 10 Engines |
-| **📊 TailAdmin Dashboard** | `/demo/tailadmin` | [`views/app-tailadmin.html`](views/app-tailadmin.html) | 100% pure HTMXUI recreation of the TailAdmin Next.js admin panel. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
-| **🏢 Enterprise HyperERP** | `/demo/erp` | [`views/app-erp.html`](views/app-erp.html) | 10,000+ virtualized rows, zero-latency in-memory fuzzy search, and multi-tier analytics. | `HxVirtual`, `HxFlash`, `HxGrid` |
-| **📈 HyperSheet Spreadsheet** | `/demo/hypersheet` | [`views/app-hypersheet.html`](views/app-hypersheet.html) | 2D reactive spreadsheet with topological formula DAGs, coordinate resolution (`SUM(A1:B5)`), cycle detection, and roving 2D tabindex navigation. | `HxCalc`, `HxA11y`, `HxBolt.matrix` |
-| **🌌 Cosmic 3D Universe** | `/demo/universe` | [`views/app-universe.html`](views/app-universe.html) | Autonomous 3D spatial viewport with Keplerian orbital kinematics and WebGPU/WebGL2 particle advection. | `HxSpatial`, `htmFX`, `HxVibe` |
+| **🎯 Verifiable Demos Hub** | [**/demo/**](https://htmxui.cgb.workers.dev/demo/) | [`views/demos-hub.html`](views/demos-hub.html) | Master index of live interactive previews, stress tests, and showcases. | All 10 Engines |
+| **📊 TailAdmin Dashboard** | [**/demo/tailadmin/**](https://htmxui.cgb.workers.dev/demo/tailadmin/) | [`views/app-tailadmin.html`](views/app-tailadmin.html) | 100% pure HTMXUI recreation of TailAdmin admin panel with zero React/Node runtime. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
+| **🏢 Enterprise HyperERP** | [**/demo/erp/**](https://htmxui.cgb.workers.dev/demo/erp/) | [`views/app-erp.html`](views/app-erp.html) | 10,000+ virtualized rows, zero-latency in-memory fuzzy search, and multi-tier analytics. | `HxVirtual`, `HxFlash`, `HxGrid` |
+| **📈 HyperSheet Spreadsheet** | [**/demo/hypersheet/**](https://htmxui.cgb.workers.dev/demo/hypersheet/) | [`views/app-hypersheet.html`](views/app-hypersheet.html) | 2D reactive spreadsheet with topological formula DAGs, coordinate resolution (`SUM(A1:B5)`), cycle detection, and roving 2D tabindex navigation. | `HxCalc`, `HxA11y`, `HxBolt.matrix` |
+| **🌌 Cosmic 3D Universe** | [**/demo/universe/**](https://htmxui.cgb.workers.dev/demo/universe/) | [`views/app-universe.html`](views/app-universe.html) | Autonomous 3D spatial viewport with Keplerian orbital kinematics and WebGPU/WebGL2 particle advection. | `HxSpatial`, `htmFX`, `HxVibe` |
 
 ---
 

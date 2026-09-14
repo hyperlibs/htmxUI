@@ -1,0 +1,8 @@
+name = "htmxui-demo"
+main = "server.ts"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "public"
+binding = "ASSETS"

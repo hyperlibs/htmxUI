@@ -1,0 +1,3 @@
+{
+  "startCommand": "bun run dev"
+}

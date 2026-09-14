@@ -10,8 +10,13 @@
     <a href="CHECKSUMS.sha256"><img src="https://img.shields.io/badge/checksums-verified-success?style=flat-square" alt="Checksums"></a>
   </p>
   <p>
-    <a href="http://localhost:3000/demo"><strong>🚀 Explore Live Demos</strong></a> &nbsp;•&nbsp; 
-    <a href="http://localhost:3000/docs/components/introduction"><strong>📖 Documentation</strong></a> &nbsp;•&nbsp; 
+    <a href="https://codespaces.new/hyperlibs/htmxUI" target="_blank"><img src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces"></a>&nbsp;
+    <a href="https://stackblitz.com/github/hyperlibs/htmxUI" target="_blank"><img src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz"></a>&nbsp;
+    <a href="https://gitpod.io/#https://github.com/hyperlibs/htmxUI" target="_blank"><img src="https://img.shields.io/badge/Gitpod-Open_in_Gitpod-blue?logo=gitpod&style=flat-square" alt="Open in Gitpod"></a>
+  </p>
+  <p>
+    <a href="https://stackblitz.com/github/hyperlibs/htmxUI"><strong>🚀 1-Click Live Preview</strong></a> &nbsp;•&nbsp; 
+    <a href="views/components/introduction.html"><strong>📖 Documentation</strong></a> &nbsp;•&nbsp; 
     <a href="#-about-us--the-hyperlibs-mission"><strong>👥 About Us</strong></a> &nbsp;•&nbsp; 
     <a href="https://github.com/hyperlibs/htmxUI"><strong>⭐ GitHub</strong></a>
   </p>
@@ -98,13 +103,18 @@ HTMXUI = HTMX (Hypermedia Core)
 
 Experience complete, production-grade applications built with zero React/Node runtime:
 
-| Flagship Demo | Live URL | Capabilities Demonstrated | Stack / Engines |
-| :--- | :--- | :--- | :--- |
-| **🎯 Verifiable Demos Hub** | [`/demo`](http://localhost:3000/demo) | Master index of live interactive previews, stress tests, and showcases. | All 10 Engines |
-| **📊 TailAdmin Dashboard** | [`/demo/tailadmin`](http://localhost:3000/demo/tailadmin) | 100% pure HTMXUI recreation of the TailAdmin Next.js admin panel. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
-| **🏢 Enterprise HyperERP** | [`/demo/erp`](http://localhost:3000/demo/erp) | 10,000+ virtualized rows, zero-latency in-memory fuzzy search, and multi-tier analytics. | `HxVirtual`, `HxFlash`, `HxGrid` |
-| **📈 HyperSheet Spreadsheet** | [`/demo/hypersheet`](http://localhost:3000/demo/hypersheet) | 2D reactive spreadsheet with topological formula DAGs, coordinate resolution (`SUM(A1:B5)`), cycle detection, and roving 2D tabindex navigation. | `HxCalc`, `HxA11y`, `HxBolt.matrix` |
-| **🌌 Cosmic 3D Universe** | [`/demo/universe`](http://localhost:3000/demo/universe) | Autonomous 3D spatial viewport with Keplerian orbital kinematics and WebGPU/WebGL2 particle advection. | `HxSpatial`, `htmFX`, `HxVibe` |
+> [!TIP]
+> **🚀 1-Click Instant Cloud Previews**:  
+> Launch the entire suite with one click in [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/hyperlibs/htmxUI) or [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/hyperlibs/htmxUI) or [![Open in Gitpod](https://img.shields.io/badge/Gitpod-Open_in_Gitpod-blue?logo=gitpod&style=flat-square)](https://gitpod.io/#https://github.com/hyperlibs/htmxUI).  
+> **💻 Instant Local Run**: `bun run dev` (opens `http://localhost:3000/demo`).
+
+| Flagship Demo | Route | Source View | Capabilities Demonstrated | Stack / Engines |
+| :--- | :--- | :--- | :--- | :--- |
+| **🎯 Verifiable Demos Hub** | `/demo` | [`views/demos-hub.html`](views/demos-hub.html) | Master index of live interactive previews, stress tests, and showcases. | All 10 Engines |
+| **📊 TailAdmin Dashboard** | `/demo/tailadmin` | [`views/app-tailadmin.html`](views/app-tailadmin.html) | 100% pure HTMXUI recreation of the TailAdmin Next.js admin panel. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
+| **🏢 Enterprise HyperERP** | `/demo/erp` | [`views/app-erp.html`](views/app-erp.html) | 10,000+ virtualized rows, zero-latency in-memory fuzzy search, and multi-tier analytics. | `HxVirtual`, `HxFlash`, `HxGrid` |
+| **📈 HyperSheet Spreadsheet** | `/demo/hypersheet` | [`views/app-hypersheet.html`](views/app-hypersheet.html) | 2D reactive spreadsheet with topological formula DAGs, coordinate resolution (`SUM(A1:B5)`), cycle detection, and roving 2D tabindex navigation. | `HxCalc`, `HxA11y`, `HxBolt.matrix` |
+| **🌌 Cosmic 3D Universe** | `/demo/universe` | [`views/app-universe.html`](views/app-universe.html) | Autonomous 3D spatial viewport with Keplerian orbital kinematics and WebGPU/WebGL2 particle advection. | `HxSpatial`, `htmFX`, `HxVibe` |
 
 ---
 
@@ -234,7 +244,7 @@ bun test:ui
 3. **Agentic-Native Ergonomics**: Predictable declarative attributes (`hx-state`, `hx-action`, `hx-text`, `hx-show`, `@diag`) allow AI coders to generate, modify, and repair UI with near-100% determinism.
 4. **Backend Freedom**: First-class support for Go, Rust, Python, .NET, PHP, and Bun with zero client build toolchains.
 
-- 📖 **Read More**: [Introduction to HTMXUI](http://localhost:3000/docs/components/introduction)
+- 📖 **Read More**: [Introduction to HTMXUI](views/components/introduction.html)
 - 💬 **Community & Discussions**: [GitHub Discussions](https://github.com/hyperlibs/htmxUI/discussions)
 - 🤝 **Organization**: [github.com/hyperlibs](https://github.com/hyperlibs)
 

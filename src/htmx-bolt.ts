@@ -175,7 +175,9 @@ const KNOWN_ATTRIBUTES = new Set([
   // Accessibility
   'hx-trap-focus', 'hx-roving', 'scaleui',
   // Spatial 3D
-  'hx-3d', '3denv', '3datmos', '3dfx', 'hx-spatial', 'hx-spatial-focus', 'hx-spatial-explode'
+  'hx-3d', '3denv', '3datmos', '3dfx', 'hx-spatial', 'hx-spatial-focus', 'hx-spatial-explode',
+  // Simulations (Boids, Gravity, Collisions, Life, Slime)
+  'hx-sim', 'hx-sim-count', 'hx-sim-speed', 'hx-sim-interactive', 'hx-sim-trails', 'hx-sim-theme'
 ]);
 
 function levenshteinDistance(a: string, b: string): number {
@@ -694,6 +696,18 @@ export const HyperFX = {
         gridEl._hxGrid.exportCSV(filename);
       }
     }
+  },
+  sim(selector: string, action: 'preset' | 'reset' | 'speed', val?: any): any {
+    if (typeof window !== 'undefined' && (window as any).HxSim) {
+      const runner = (window as any).HxSim.getRunner(selector);
+      if (runner) {
+        if (action === 'preset') runner.setPreset(val);
+        else if (action === 'reset') runner.reset();
+        else if (action === 'speed') runner.config.speed = Number(val) || 1.0;
+        return runner.getStats();
+      }
+    }
+    return undefined;
   }
 };
 
@@ -1319,6 +1333,7 @@ export function evaluateExpression(expr: string, context: any, extraScope: Recor
     $undo: HyperFX.undo,
     $redo: HyperFX.redo,
     $exportCSV: HyperFX.exportCSV,
+    $sim: HyperFX.sim,
     $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
     ...HyperFX.registry,
     ...extraScope
@@ -1381,6 +1396,7 @@ export function executeAction(expr: string, context: any, extraScope: Record<str
     $undo: HyperFX.undo,
     $redo: HyperFX.redo,
     $exportCSV: HyperFX.exportCSV,
+    $sim: HyperFX.sim,
     $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
     ...HyperFX.registry,
     ...extraScope

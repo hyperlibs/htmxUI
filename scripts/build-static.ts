@@ -24,7 +24,7 @@ const COMPONENTS = [
   "select","separator","sheet","sidebar","skeleton","slider","slider-range","snackbar","splitter",
   "stat-card","stepper","submenu","switch","table","tabs","tag","text","textarea","timeline",
   "time-picker","toast","toggle","toggle-group","toggle-switch","toolbar","tooltip","tree-view","user-card",
-  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual","hx-offline","hollywood-webfx"
+  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual","hx-offline","hollywood-webfx","simulation"
 ];
 
 function formatName(slug: string): string {
@@ -72,6 +72,8 @@ function buildComponentPage(slug: string): string {
   <script src="/htmx-grid.js"></script>
   <script src="/htmx-offline.js"></script>
   <script src="/htmx-devtools.js"></script>
+  <script src="/htmx-calc.js"></script>
+  <script src="/htmx-sim.js"></script>
   <script src="/htmx-canvas.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>

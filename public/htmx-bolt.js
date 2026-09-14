@@ -283,7 +283,13 @@
     "3dfx",
     "hx-spatial",
     "hx-spatial-focus",
-    "hx-spatial-explode"
+    "hx-spatial-explode",
+    "hx-sim",
+    "hx-sim-count",
+    "hx-sim-speed",
+    "hx-sim-interactive",
+    "hx-sim-trails",
+    "hx-sim-theme"
   ]);
   function levenshteinDistance(a, b) {
     if (a.length === 0)
@@ -743,6 +749,21 @@
           gridEl._hxGrid.exportCSV(filename);
         }
       }
+    },
+    sim(selector, action, val) {
+      if (typeof window !== "undefined" && window.HxSim) {
+        const runner = window.HxSim.getRunner(selector);
+        if (runner) {
+          if (action === "preset")
+            runner.setPreset(val);
+          else if (action === "reset")
+            runner.reset();
+          else if (action === "speed")
+            runner.config.speed = Number(val) || 1;
+          return runner.getStats();
+        }
+      }
+      return;
     }
   };
   function findTopLevelChar(str, char) {
@@ -1384,6 +1405,7 @@
       $undo: HyperFX.undo,
       $redo: HyperFX.redo,
       $exportCSV: HyperFX.exportCSV,
+      $sim: HyperFX.sim,
       $toggle: (key) => {
         if (ctx)
           ctx[key] = !ctx[key];
@@ -1442,6 +1464,7 @@
       $undo: HyperFX.undo,
       $redo: HyperFX.redo,
       $exportCSV: HyperFX.exportCSV,
+      $sim: HyperFX.sim,
       $toggle: (key) => {
         if (ctx)
           ctx[key] = !ctx[key];

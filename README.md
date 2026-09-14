@@ -9,6 +9,12 @@
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
     <a href="CHECKSUMS.sha256"><img src="https://img.shields.io/badge/checksums-verified-success?style=flat-square" alt="Checksums"></a>
   </p>
+  <p>
+    <a href="http://localhost:3000/demo"><strong>🚀 Explore Live Demos</strong></a> &nbsp;•&nbsp; 
+    <a href="http://localhost:3000/docs/components/introduction"><strong>📖 Documentation</strong></a> &nbsp;•&nbsp; 
+    <a href="#-about-us--the-hyperlibs-mission"><strong>👥 About Us</strong></a> &nbsp;•&nbsp; 
+    <a href="https://github.com/hyperlibs/htmxUI"><strong>⭐ GitHub</strong></a>
+  </p>
 </div>
 
 ---
@@ -88,6 +94,20 @@ HTMXUI = HTMX (Hypermedia Core)
 
 ---
 
+## 🎮 Live Flagship Demos
+
+Experience complete, production-grade applications built with zero React/Node runtime:
+
+| Flagship Demo | Live URL | Capabilities Demonstrated | Stack / Engines |
+| :--- | :--- | :--- | :--- |
+| **🎯 Verifiable Demos Hub** | [`/demo`](http://localhost:3000/demo) | Master index of live interactive previews, stress tests, and showcases. | All 10 Engines |
+| **📊 TailAdmin Dashboard** | [`/demo/tailadmin`](http://localhost:3000/demo/tailadmin) | 100% pure HTMXUI recreation of the TailAdmin Next.js admin panel. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
+| **🏢 Enterprise HyperERP** | [`/demo/erp`](http://localhost:3000/demo/erp) | 10,000+ virtualized rows, zero-latency in-memory fuzzy search, and multi-tier analytics. | `HxVirtual`, `HxFlash`, `HxGrid` |
+| **📈 HyperSheet Spreadsheet** | [`/demo/hypersheet`](http://localhost:3000/demo/hypersheet) | 2D reactive spreadsheet with topological formula DAGs, coordinate resolution (`SUM(A1:B5)`), cycle detection, and roving 2D tabindex navigation. | `HxCalc`, `HxA11y`, `HxBolt.matrix` |
+| **🌌 Cosmic 3D Universe** | [`/demo/universe`](http://localhost:3000/demo/universe) | Autonomous 3D spatial viewport with Keplerian orbital kinematics and WebGPU/WebGL2 particle advection. | `HxSpatial`, `htmFX`, `HxVibe` |
+
+---
+
 ## 📖 Specifications & Guides
 
 - [🔌 **Backend Wire Protocol Specification**](docs/BACKEND_SPEC.md): Copy-paste server implementations for Go, Rust, Python, and .NET.
@@ -95,6 +115,9 @@ HTMXUI = HTMX (Hypermedia Core)
 - [🤖 **Machine-Actionable `@diag` Protocol**](docs/DIAGNOSTICS.md): Self-healing diagnostics, SARIF 2.1.0 schema, and error codes.
 - [📜 **Release Notes & Changelog**](CHANGELOG.md): Version history and upgrades.
 - [🔒 **Release Checksums**](CHECKSUMS.sha256): Cryptographic verification hashes.
+
+| What HTMXUI Solves Natively | What to Delegate to Spatial Companions (`htmFX`) |
+| :--- | :--- |
 | • **Fine-Grained Proxy Signals** (`<script hx-state>`, `HxBolt`) | • **3D WebGL / Scene Graphs** (Three.js, Babylon.js) |
 | • **100k-Row Virtualized Data Grid** (`<hx-grid>`, `hx-virtual`) | • **Complex GIS Mapping** (Leaflet, Mapbox, OpenLayers) |
 | • **Multi-Step Form Wizards** (`<form hx-wizard>`, `hx-depends`) | • **Custom Physics Engines** (Rapier, Cannon.js, Ammo.js) |
@@ -193,6 +216,27 @@ bun run build
 # Run Playwright E2E UI tests
 bun test:ui
 ```
+
+---
+
+## 👥 About Us & The Hyperlibs Mission
+
+[**Hyperlibs**](https://github.com/hyperlibs) is an open-source systems research and engineering collective dedicated to liberating backend engineers, systems developers, and AI agent swarms from the complexity of modern client-side JavaScript stacks.
+
+### 🌐 The Triad Ecosystem
+- **[`htmxUI`](https://github.com/hyperlibs/htmxUI)**: The lean, hypermedia-first reactive frontend platform with 10 modular micro-engines and 120+ copy-paste components.
+- **[`htmFX`](https://github.com/hyperlibs/htmfx)**: Spatial 3D WebGL/WebGPU and physics companion DSL for atmospheric and Keplerian particle simulations.
+- **[`HMLR`](https://github.com/hyperlibs/HMLR)**: HyperMedia Language Runtime, Wasm compiler, DevTools velocity auditor, and distributed `<flow>` saga coordinator.
+
+### 🧭 Core Principles
+1. **Zero Virtual DOM**: HTML elements are the primary components; the server remains the single source of truth.
+2. **Lean & Hyperreactive**: All 10 micro-engines together weigh under ~48KB gzipped—smaller than a typical React hydration runtime.
+3. **Agentic-Native Ergonomics**: Predictable declarative attributes (`hx-state`, `hx-action`, `hx-text`, `hx-show`, `@diag`) allow AI coders to generate, modify, and repair UI with near-100% determinism.
+4. **Backend Freedom**: First-class support for Go, Rust, Python, .NET, PHP, and Bun with zero client build toolchains.
+
+- 📖 **Read More**: [Introduction to HTMXUI](http://localhost:3000/docs/components/introduction)
+- 💬 **Community & Discussions**: [GitHub Discussions](https://github.com/hyperlibs/htmxUI/discussions)
+- 🤝 **Organization**: [github.com/hyperlibs](https://github.com/hyperlibs)
 
 ---
 

@@ -128,8 +128,9 @@ function writePage(relPath: string, content: string) {
 
 console.log("Building static HTMXUI site for Cloudflare Pages...");
 
-// 1. Root redirect / landing
-writePage("index.html", `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=/demo/"></head><body><script>location.href='/demo/';</script></body></html>`);
+// 1. Root Landing Page (No automatic redirect)
+const landingHtml = fs.readFileSync(path.join(__dirname, "..", "views", "landing.html"), "utf8");
+writePage("index.html", landingHtml);
 
 // 2. Demos Hub
 const demoHubHtml = fs.readFileSync(path.join(__dirname, "..", "views", "demos-hub.html"), "utf8");

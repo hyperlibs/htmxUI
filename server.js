@@ -130,9 +130,12 @@ const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
 
-  if (pathname === '/') {
-    res.writeHead(302, { 'Location': '/demo' });
-    return res.end();
+  if (pathname === '/' || pathname === '/index.html') {
+    const file = path.join(__dirname, 'views', 'landing.html');
+    if (fs.existsSync(file)) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(fs.readFileSync(file));
+    }
   }
 
   if (pathname === '/demo' || pathname === '/demos') {

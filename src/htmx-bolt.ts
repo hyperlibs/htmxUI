@@ -704,6 +704,69 @@ function findMatchingOpenParen(str: string): number {
   return -1;
 }
 
+function findLastTopLevelChar(str: string, char: string): number {
+  let depthParen = 0;
+  let depthBrace = 0;
+  let depthBracket = 0;
+  let inQuote: string | null = null;
+  let lastIdx = -1;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (inQuote) {
+      if (ch === inQuote && str[i - 1] !== '\\') inQuote = null;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === '`') {
+      inQuote = ch;
+      continue;
+    }
+    if (depthParen === 0 && depthBrace === 0 && depthBracket === 0 && ch === char) {
+      lastIdx = i;
+    }
+    if (ch === '(') depthParen++;
+    else if (ch === ')') depthParen--;
+    else if (ch === '{') depthBrace++;
+    else if (ch === '}') depthBrace--;
+    else if (ch === '[') depthBracket++;
+    else if (ch === ']') depthBracket--;
+  }
+  return lastIdx;
+}
+
+function interpolateTemplateLiteral(str: string, context: any, extraScope: Record<string, any>): string {
+  let result = '';
+  let i = 0;
+  while (i < str.length) {
+    if (str[i] === '$' && str[i + 1] === '{') {
+      const start = i + 2;
+      let depth = 1;
+      let j = start;
+      let inQuote: string | null = null;
+      while (j < str.length && depth > 0) {
+        const ch = str[j];
+        if (inQuote) {
+          if (ch === inQuote && str[j - 1] !== '\\') inQuote = null;
+        } else if (ch === '"' || ch === "'" || ch === '`') {
+          inQuote = ch;
+        } else if (ch === '{') {
+          depth++;
+        } else if (ch === '}') {
+          depth--;
+        }
+        j++;
+      }
+      const expr = str.slice(start, j - 1);
+      const val = safeEvaluate(expr, context, extraScope);
+      result += (val !== undefined && val !== null) ? String(val) : '';
+      i = j;
+    } else {
+      result += str[i];
+      i++;
+    }
+  }
+  return result;
+}
+
 function findTopLevelOperator(str: string, ops: string[]): { op: string; index: number } | null {
   let depthParen = 0;
   let depthBrace = 0;
@@ -814,7 +877,20 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
   const ctx = context && typeof context === 'object' ? context : {};
   const scope = { ...ctx, ...extraScope };
 
-  // 1. Arrow Function Closure Construction: (sum, i) => sum + (i.price * i.qty) or x => x * 2
+  // 1. Ternary First: cond ? trueVal : falseVal (Handles arrows cleanly inside ternary branches)
+  const qIdx = findTopLevelChar(trimmed, '?');
+  if (qIdx !== -1) {
+    const colonIdx = findTopLevelChar(trimmed.slice(qIdx + 1), ':');
+    if (colonIdx !== -1) {
+      const condStr = trimmed.slice(0, qIdx).trim();
+      const trueStr = trimmed.slice(qIdx + 1, qIdx + 1 + colonIdx).trim();
+      const falseStr = trimmed.slice(qIdx + 1 + colonIdx + 1).trim();
+      const condVal = safeEvaluate(condStr, context, extraScope);
+      return condVal ? safeEvaluate(trueStr, context, extraScope) : safeEvaluate(falseStr, context, extraScope);
+    }
+  }
+
+  // 2. Arrow Function Closure Construction: (sum, i) => sum + (i.price * i.qty) or x => x * 2
   const arrowMatch = findTopLevelOperator(trimmed, ['=>']);
   if (arrowMatch) {
     const rawParams = trimmed.slice(0, arrowMatch.index).trim();
@@ -843,19 +919,6 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
       });
       return safeEvaluate(bodyExpr, context, callScope);
     };
-  }
-
-  // 2. Ternary: cond ? trueVal : falseVal
-  const qIdx = findTopLevelChar(trimmed, '?');
-  if (qIdx !== -1) {
-    const colonIdx = findTopLevelChar(trimmed.slice(qIdx + 1), ':');
-    if (colonIdx !== -1) {
-      const condStr = trimmed.slice(0, qIdx).trim();
-      const trueStr = trimmed.slice(qIdx + 1, qIdx + 1 + colonIdx).trim();
-      const falseStr = trimmed.slice(qIdx + 1 + colonIdx + 1).trim();
-      const condVal = safeEvaluate(condStr, context, extraScope);
-      return condVal ? safeEvaluate(trueStr, context, extraScope) : safeEvaluate(falseStr, context, extraScope);
-    }
   }
 
   // 3. Logical OR / Nullish Coalescing
@@ -965,13 +1028,10 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     return splitArguments(inner).map(arg => safeEvaluate(arg, context, extraScope));
   }
 
-  // 12. Template Literals: `Hello ${user.name} - count: ${count}`
+  // 12. Template Literals: `Hello ${user.name} - count: ${count}` (Balanced brace interpolation)
   if (trimmed.startsWith('`') && trimmed.endsWith('`')) {
     const inner = trimmed.slice(1, -1);
-    return inner.replace(/\$\{([^}]+)\}/g, (_, expr) => {
-      const evaluated = safeEvaluate(expr, context, extraScope);
-      return evaluated !== undefined && evaluated !== null ? String(evaluated) : '';
-    });
+    return interpolateTemplateLiteral(inner, context, extraScope);
   }
 
   // 13. Regular String Literals
@@ -1031,7 +1091,20 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     }
   }
 
-  // 17. Property lookup: scope (extraScope -> ctx -> global)
+  // 17. Member access on compound expression: expr.prop or expr[key]
+  const lastDotIdx = findLastTopLevelChar(trimmed, '.');
+  if (lastDotIdx > 0) {
+    const leftExpr = trimmed.slice(0, lastDotIdx).trim();
+    const rightProp = trimmed.slice(lastDotIdx + 1).trim();
+    if (leftExpr.endsWith(')') || leftExpr.endsWith(']') || leftExpr.endsWith('}')) {
+      const leftVal = safeEvaluate(leftExpr, context, extraScope);
+      if (leftVal !== undefined && leftVal !== null) {
+        return leftVal[rightProp];
+      }
+    }
+  }
+
+  // 18. Property lookup: scope (extraScope -> ctx -> global)
   if (trimmed in extraScope) return extraScope[trimmed];
   if (trimmed in ctx) return ctx[trimmed];
   const nestedVal = getNestedProperty(scope, trimmed);

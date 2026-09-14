@@ -770,6 +770,75 @@
     }
     return -1;
   }
+  function findLastTopLevelChar(str, char) {
+    let depthParen = 0;
+    let depthBrace = 0;
+    let depthBracket = 0;
+    let inQuote = null;
+    let lastIdx = -1;
+    for (let i = 0;i < str.length; i++) {
+      const ch = str[i];
+      if (inQuote) {
+        if (ch === inQuote && str[i - 1] !== "\\")
+          inQuote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inQuote = ch;
+        continue;
+      }
+      if (depthParen === 0 && depthBrace === 0 && depthBracket === 0 && ch === char) {
+        lastIdx = i;
+      }
+      if (ch === "(")
+        depthParen++;
+      else if (ch === ")")
+        depthParen--;
+      else if (ch === "{")
+        depthBrace++;
+      else if (ch === "}")
+        depthBrace--;
+      else if (ch === "[")
+        depthBracket++;
+      else if (ch === "]")
+        depthBracket--;
+    }
+    return lastIdx;
+  }
+  function interpolateTemplateLiteral(str, context, extraScope) {
+    let result = "";
+    let i = 0;
+    while (i < str.length) {
+      if (str[i] === "$" && str[i + 1] === "{") {
+        const start = i + 2;
+        let depth = 1;
+        let j = start;
+        let inQuote = null;
+        while (j < str.length && depth > 0) {
+          const ch = str[j];
+          if (inQuote) {
+            if (ch === inQuote && str[j - 1] !== "\\")
+              inQuote = null;
+          } else if (ch === '"' || ch === "'" || ch === "`") {
+            inQuote = ch;
+          } else if (ch === "{") {
+            depth++;
+          } else if (ch === "}") {
+            depth--;
+          }
+          j++;
+        }
+        const expr = str.slice(start, j - 1);
+        const val = safeEvaluate(expr, context, extraScope);
+        result += val !== undefined && val !== null ? String(val) : "";
+        i = j;
+      } else {
+        result += str[i];
+        i++;
+      }
+    }
+    return result;
+  }
   function findTopLevelOperator(str, ops) {
     let depthParen = 0;
     let depthBrace = 0;
@@ -901,6 +970,17 @@
       return;
     const ctx = context && typeof context === "object" ? context : {};
     const scope = { ...ctx, ...extraScope };
+    const qIdx = findTopLevelChar(trimmed, "?");
+    if (qIdx !== -1) {
+      const colonIdx = findTopLevelChar(trimmed.slice(qIdx + 1), ":");
+      if (colonIdx !== -1) {
+        const condStr = trimmed.slice(0, qIdx).trim();
+        const trueStr = trimmed.slice(qIdx + 1, qIdx + 1 + colonIdx).trim();
+        const falseStr = trimmed.slice(qIdx + 1 + colonIdx + 1).trim();
+        const condVal = safeEvaluate(condStr, context, extraScope);
+        return condVal ? safeEvaluate(trueStr, context, extraScope) : safeEvaluate(falseStr, context, extraScope);
+      }
+    }
     const arrowMatch = findTopLevelOperator(trimmed, ["=>"]);
     if (arrowMatch) {
       const rawParams = trimmed.slice(0, arrowMatch.index).trim();
@@ -927,17 +1007,6 @@
         });
         return safeEvaluate(bodyExpr, context, callScope);
       };
-    }
-    const qIdx = findTopLevelChar(trimmed, "?");
-    if (qIdx !== -1) {
-      const colonIdx = findTopLevelChar(trimmed.slice(qIdx + 1), ":");
-      if (colonIdx !== -1) {
-        const condStr = trimmed.slice(0, qIdx).trim();
-        const trueStr = trimmed.slice(qIdx + 1, qIdx + 1 + colonIdx).trim();
-        const falseStr = trimmed.slice(qIdx + 1 + colonIdx + 1).trim();
-        const condVal = safeEvaluate(condStr, context, extraScope);
-        return condVal ? safeEvaluate(trueStr, context, extraScope) : safeEvaluate(falseStr, context, extraScope);
-      }
     }
     const orMatch = findTopLevelOperator(trimmed, ["||", "??"]);
     if (orMatch) {
@@ -1049,10 +1118,7 @@
     }
     if (trimmed.startsWith("`") && trimmed.endsWith("`")) {
       const inner = trimmed.slice(1, -1);
-      return inner.replace(/\$\{([^}]+)\}/g, (_, expr2) => {
-        const evaluated = safeEvaluate(expr2, context, extraScope);
-        return evaluated !== undefined && evaluated !== null ? String(evaluated) : "";
-      });
+      return interpolateTemplateLiteral(inner, context, extraScope);
     }
     if (trimmed.startsWith("'") && trimmed.endsWith("'") || trimmed.startsWith('"') && trimmed.endsWith('"')) {
       return trimmed.slice(1, -1);
@@ -1099,6 +1165,17 @@
         }
         if (typeof fn === "function") {
           return fn.apply(fnThis, args);
+        }
+      }
+    }
+    const lastDotIdx = findLastTopLevelChar(trimmed, ".");
+    if (lastDotIdx > 0) {
+      const leftExpr = trimmed.slice(0, lastDotIdx).trim();
+      const rightProp = trimmed.slice(lastDotIdx + 1).trim();
+      if (leftExpr.endsWith(")") || leftExpr.endsWith("]") || leftExpr.endsWith("}")) {
+        const leftVal = safeEvaluate(leftExpr, context, extraScope);
+        if (leftVal !== undefined && leftVal !== null) {
+          return leftVal[rightProp];
         }
       }
     }

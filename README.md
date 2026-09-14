@@ -240,7 +240,8 @@ bun test:ui
 3. **Agentic-Native Ergonomics**: Predictable declarative attributes (`hx-state`, `hx-action`, `hx-text`, `hx-show`, `@diag`) allow AI coders to generate, modify, and repair UI with near-100% determinism.
 4. **Backend Freedom**: First-class support for Go, Rust, Python, .NET, PHP, and Bun with zero client build toolchains.
 
-- 📖 **Read More**: [Introduction to HTMXUI](views/components/introduction.html)
+- 🚀 **Live Previews**: [Verifiable Live Demos — HTMXUI](https://htmxui.cgb.workers.dev/demo/)
+- 📖 **Read More**: [Introduction & Architecture Documentation](https://htmxui.cgb.workers.dev/docs/components/introduction/)
 - 💬 **Community & Discussions**: [GitHub Discussions](https://github.com/hyperlibs/htmxUI/discussions)
 - 🤝 **Organization**: [github.com/hyperlibs](https://github.com/hyperlibs)
 

@@ -25,8 +25,8 @@ HTMXUI is a hyperreactive, hypermedia-first web application framework engineered
 1. **Hypermedia Source of Truth**: The server handles data persistence, routing, and major mutations via standard HTTP (GET, POST, PUT, DELETE, PATCH).
 2. **Deterministic Declarative Grammar**: Local client state and reactivity are declared directly on DOM nodes via `hx-*` attributes.
 3. **Zero Virtual DOM & Zero Build**: HTML is parsed natively by the browser engine. No JSX compilation or bundlers required.
-4. **CSP-Safe Execution**: Zero `eval()` / `new Function()` execution when `HTMXUI.config.strictCSP = true` or under strict Content Security Policies.
-5. **Universal Diagnostic Protocol (`@diag`)**: Standardized error taxonomy (`HTMXUI-BOLT-xxx` ... `HTMXUI-SPATIAL-xxx`) with Levenshtein autocorrect.
+4. **Out-of-the-Box Zero-`eval` Strict CSP**: 18-stage AST recursive descent parser runs by default as primary engine (handling ternaries, array closures `.reduce()`, balanced template literals, and `|>` pipeline chaining) without dynamic `new Function()`.
+5. **Universal Diagnostic Protocol (`@diag`)**: Standardized error taxonomy (`HTMXUI-BOLT-xxx` ... `HTMXUI-SPATIAL-xxx`) with Levenshtein autocorrect and `htmx:diag` DOM events.
 
 ---
 

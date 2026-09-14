@@ -88,6 +88,25 @@ export const ERROR_CATALOG: Record<string, { title: string; fix: string }> = {
   }
 };
 
+export interface DiagnosticRecord {
+  code: string;
+  title: string;
+  fix: string;
+  detail: string;
+  target?: string;
+  timestamp: number;
+}
+
+export const diagnosticHistory: DiagnosticRecord[] = [];
+
+export function getDiagnostics(): DiagnosticRecord[] {
+  return [...diagnosticHistory];
+}
+
+export function clearDiagnostics(): void {
+  diagnosticHistory.length = 0;
+}
+
 export function formatDiag(code: keyof typeof ERROR_CATALOG, detail: string, el: HTMLElement | null = null): string {
   const meta = ERROR_CATALOG[code] || { title: 'Unknown runtime error', fix: 'Consult /schema/htmxui.json' };
   const tag = el ? `<${el.tagName.toLowerCase()}${el.id ? '#' + el.id : ''}${el.className ? '.' + el.className.split(' ').slice(0, 2).join('.') : ''}>` : '[Element]';
@@ -95,7 +114,26 @@ export function formatDiag(code: keyof typeof ERROR_CATALOG, detail: string, el:
 }
 
 export function reportError(code: keyof typeof ERROR_CATALOG, detail: string, el: HTMLElement | null = null): void {
+  const meta = ERROR_CATALOG[code] || { title: 'Unknown runtime error', fix: 'Consult /schema/htmxui.json' };
   const message = formatDiag(code, detail, el);
+
+  const diagRecord: DiagnosticRecord = {
+    code,
+    title: meta.title,
+    fix: meta.fix,
+    detail,
+    target: el ? el.tagName.toLowerCase() : undefined,
+    timestamp: Date.now()
+  };
+  diagnosticHistory.push(diagRecord);
+
+  if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+    try {
+      window.dispatchEvent(new CustomEvent('htmx:diag', { detail: diagRecord }));
+    } catch {
+      // Ignore if event dispatch fails in synthetic test environments
+    }
+  }
 
   if (config.strictMode) {
     throw new Error(message);
@@ -637,6 +675,16 @@ export const HyperFX = {
       if (target) target.focus();
     }
   },
+  registry: {} as Record<string, Function>,
+  register(name: string, fn: Function): void {
+    const key = name.startsWith('$') ? name : '$' + name;
+    HyperFX.registry[key] = fn;
+  },
+  extend(plugins: Record<string, Function>): void {
+    Object.entries(plugins).forEach(([name, fn]) => {
+      HyperFX.register(name, fn);
+    });
+  },
   undo: undoState,
   redo: redoState,
   exportCSV(gridSelector: string, filename?: string): void {
@@ -921,7 +969,42 @@ export function safeEvaluate(expr: string, context: any, extraScope: Record<stri
     };
   }
 
-  // 3. Logical OR / Nullish Coalescing
+  // 3. Functional Pipeline Operator: left |> rightFn |> rightFn2 (Left-to-Right reduction)
+  const firstPipe = findTopLevelOperator(trimmed, ['|>']);
+  if (firstPipe) {
+    const segments: string[] = [];
+    let curr = trimmed;
+    let match = findTopLevelOperator(curr, ['|>']);
+    while (match) {
+      segments.push(curr.slice(0, match.index).trim());
+      curr = curr.slice(match.index + 2).trim();
+      match = findTopLevelOperator(curr, ['|>']);
+    }
+    segments.push(curr.trim());
+
+    let val = safeEvaluate(segments[0], context, extraScope);
+    for (let i = 1; i < segments.length; i++) {
+      const seg = segments[i];
+      if (seg.endsWith(')') && seg.includes('(')) {
+        const openIdx = findMatchingOpenParen(seg);
+        if (openIdx !== -1) {
+          const fnTarget = safeEvaluate(seg.slice(0, openIdx), context, extraScope);
+          const innerArgs = splitArguments(seg.slice(openIdx + 1, -1)).map(a => safeEvaluate(a, context, extraScope));
+          if (typeof fnTarget === 'function') {
+            val = fnTarget(val, ...innerArgs);
+            continue;
+          }
+        }
+      }
+      const fn = safeEvaluate(seg, context, extraScope);
+      if (typeof fn === 'function') {
+        val = fn(val);
+      }
+    }
+    return val;
+  }
+
+  // 4. Logical OR / Nullish Coalescing
   const orMatch = findTopLevelOperator(trimmed, ['||', '??']);
   if (orMatch) {
     const left = safeEvaluate(trimmed.slice(0, orMatch.index), context, extraScope);
@@ -1237,14 +1320,29 @@ export function evaluateExpression(expr: string, context: any, extraScope: Recor
     $redo: HyperFX.redo,
     $exportCSV: HyperFX.exportCSV,
     $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
+    ...HyperFX.registry,
     ...extraScope
   };
 
-  // If strictCSP is explicitly enabled, bypass new Function entirely
+  // 1. Zero-eval Safe Parser is the PRIMARY execution engine out-of-the-box
+  try {
+    const res = safeEvaluate(expr, ctx, fxScope);
+    if (res !== undefined || config.strictCSP) {
+      return res;
+    }
+  } catch (safeErr: any) {
+    if (config.strictCSP) {
+      reportError('HTMXUI-BOLT-006', `Zero-eval evaluation error: ${safeErr.message}`, extraScope.$el);
+      return undefined;
+    }
+  }
+
+  // 2. Under strictCSP, new Function is strictly forbidden
   if (config.strictCSP) {
     return safeEvaluate(expr, ctx, fxScope);
   }
 
+  // 3. Fallback to new Function only for unhandled dynamic edge cases
   const scopeKeys = Object.keys(fxScope);
   const scopeValues = Object.values(fxScope);
   const trimmed = expr.trim();
@@ -1253,25 +1351,12 @@ export function evaluateExpression(expr: string, context: any, extraScope: Recor
     const fn = new Function(...scopeKeys, `with(this) { return (${trimmed}); }`);
     return fn.apply(ctx, scopeValues);
   } catch (e: any) {
-    // If CSP blocks eval/new Function or expression fails, fall back to safe zero-eval parser
     try {
       const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
       return fn.apply(ctx, scopeValues);
     } catch (err: any) {
-      const isCSPBlocked = err instanceof EvalError || 
-        (err.message && (err.message.includes('eval') || err.message.includes('Content Security Policy') || err.message.includes('unsafe-eval')));
-      
-      if (isCSPBlocked && config.debug) {
-        console.warn(`[htmx-bolt] CSP blocked new Function evaluation. Using safe zero-eval fallback for "${expr}".`);
-      }
-      
-      const fallbackResult = safeEvaluate(expr, ctx, fxScope);
-      if (fallbackResult !== undefined) {
-        return fallbackResult;
-      }
-      
-      if (config.debug && !isCSPBlocked) {
-        console.warn(`[htmx-bolt] Evaluation error in "${expr}":`, err.message);
+      if (config.debug) {
+        console.warn(`[htmx-bolt] Evaluation fallback error in "${expr}":`, err.message);
       }
       return undefined;
     }
@@ -1297,14 +1382,26 @@ export function executeAction(expr: string, context: any, extraScope: Record<str
     $redo: HyperFX.redo,
     $exportCSV: HyperFX.exportCSV,
     $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
+    ...HyperFX.registry,
     ...extraScope
   };
 
-  // If strictCSP is explicitly enabled, bypass new Function entirely
+  // 1. Zero-eval Action Runner is the PRIMARY execution engine out-of-the-box
+  try {
+    return safeExecuteAction(expr, ctx, fxScope);
+  } catch (safeErr: any) {
+    if (config.strictCSP) {
+      reportError('HTMXUI-BOLT-006', `Zero-eval action error: ${safeErr.message}`, extraScope.$el);
+      return undefined;
+    }
+  }
+
+  // 2. Under strictCSP, new Function is strictly forbidden
   if (config.strictCSP) {
     return safeExecuteAction(expr, ctx, fxScope);
   }
 
+  // 3. Fallback for unhandled dynamic script blocks
   const scopeKeys = Object.keys(fxScope);
   const scopeValues = Object.values(fxScope);
 
@@ -1312,22 +1409,7 @@ export function executeAction(expr: string, context: any, extraScope: Record<str
     const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
     return fn.apply(ctx, scopeValues);
   } catch (err: any) {
-    const isCSPBlocked = err instanceof EvalError || 
-      (err.message && (err.message.includes('eval') || err.message.includes('Content Security Policy') || err.message.includes('unsafe-eval')));
-    
-    if (isCSPBlocked) {
-      if (config.debug) {
-        console.warn(`[htmx-bolt] CSP blocked new Function action. Using safe zero-eval action runner for "${expr}".`);
-      }
-      return safeExecuteAction(expr, ctx, fxScope);
-    }
-
-    // Try safe execute action before reporting error
-    try {
-      return safeExecuteAction(expr, ctx, fxScope);
-    } catch (fallbackErr: any) {
-      reportError('HTMXUI-BOLT-004', `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
-    }
+    reportError('HTMXUI-BOLT-004', `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
   }
 }
 
@@ -2258,6 +2340,12 @@ export const HxBolt: HxBoltAPI = {
   },
   streamBatch,
   parseMicroDelta,
+  safeEvaluate,
+  safeExecuteAction,
+  evaluateExpression,
+  executeAction,
+  getDiagnostics,
+  clearDiagnostics,
   init(root: HTMLElement | Document) {
     const scopeRoots = (root.querySelectorAll ? root.querySelectorAll('[hx-state], [hx-ext="reactive"]') : []) as NodeListOf<HTMLElement>;
     scopeRoots.forEach(initComponent);
@@ -2285,6 +2373,10 @@ if (typeof window !== 'undefined') {
     bolt: HxBolt,
     fx: HyperFX,
     spatial: HxSpatial,
+    safeEvaluate,
+    safeExecuteAction,
+    getDiagnostics,
+    clearDiagnostics,
     directive(name: string, handler: DirectiveHandler) {
       customDirectives.set(name.startsWith('hx-') ? name : `hx-${name}`, handler);
     },

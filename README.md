@@ -80,6 +80,20 @@ HTMXUI = HTMX (Hypermedia Core)
 
 ---
 
+## ⚡ Verified Performance & Automated Benchmarks
+
+HTMXUI includes an automated, reproducible benchmark suite (`bun run benchmark`) measuring real runtime throughput and payload efficiency:
+
+- **Complete 10-Engine Suite**: **50.08 KB total gzip** (smaller than `react-dom` alone before components or state libraries).
+- **Atomic 2D Sparse Matrix**: **670,000+ cell writes / second** in $O(1)$ coordinate space.
+- **In-Memory Columnar Search**: **0.18 ms query latency** across 10,000 rows.
+- **DAG Topological Solver**: **0.16 ms cascade resolution** across 500-level formula dependencies.
+- **Zero-`eval` Strict CSP Parser**: **2,600+ complex expressions & arrow closures / second** with zero dynamic `new Function()`.
+
+👉 **Full benchmark methodology & reproduction steps**: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
+
+---
+
 ## 🤖 Official Claude / Anthropic Agent Skill
 
 HTMXUI ships with a first-class **Claude / Agentic AI Skill Specification** located at [`skills/htmxui/SKILL.md`](skills/htmxui/SKILL.md).

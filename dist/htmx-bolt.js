@@ -43,11 +43,14 @@
     playProceduralSound: () => playProceduralSound,
     parseMicroDelta: () => parseMicroDelta,
     initComponent: () => initComponent,
+    getDiagnostics: () => getDiagnostics,
     formatDiag: () => formatDiag,
     executeAction: () => executeAction,
     evaluateExpression: () => evaluateExpression,
+    diagnosticHistory: () => diagnosticHistory,
     createReactiveObject: () => createReactiveObject,
     config: () => config,
+    clearDiagnostics: () => clearDiagnostics,
     applyTransition: () => applyTransition,
     SparseMatrix: () => SparseMatrix,
     SignalTracker: () => SignalTracker,
@@ -128,6 +131,13 @@
       fix: "Verify container has perspective and transform-style: preserve-3d configured."
     }
   };
+  var diagnosticHistory = [];
+  function getDiagnostics() {
+    return [...diagnosticHistory];
+  }
+  function clearDiagnostics() {
+    diagnosticHistory.length = 0;
+  }
   function formatDiag(code, detail, el = null) {
     const meta = ERROR_CATALOG[code] || { title: "Unknown runtime error", fix: "Consult /schema/htmxui.json" };
     const tag = el ? `<${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${el.className ? "." + el.className.split(" ").slice(0, 2).join(".") : ""}>` : "[Element]";
@@ -137,7 +147,22 @@
   Fix: ${meta.fix}`;
   }
   function reportError(code, detail, el = null) {
+    const meta = ERROR_CATALOG[code] || { title: "Unknown runtime error", fix: "Consult /schema/htmxui.json" };
     const message = formatDiag(code, detail, el);
+    const diagRecord = {
+      code,
+      title: meta.title,
+      fix: meta.fix,
+      detail,
+      target: el ? el.tagName.toLowerCase() : undefined,
+      timestamp: Date.now()
+    };
+    diagnosticHistory.push(diagRecord);
+    if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+      try {
+        window.dispatchEvent(new CustomEvent("htmx:diag", { detail: diagRecord }));
+      } catch {}
+    }
     if (config.strictMode) {
       throw new Error(message);
     } else {
@@ -699,6 +724,16 @@
           target.focus();
       }
     },
+    registry: {},
+    register(name, fn) {
+      const key = name.startsWith("$") ? name : "$" + name;
+      HyperFX.registry[key] = fn;
+    },
+    extend(plugins) {
+      Object.entries(plugins).forEach(([name, fn]) => {
+        HyperFX.register(name, fn);
+      });
+    },
     undo: undoState,
     redo: redoState,
     exportCSV(gridSelector, filename) {
@@ -1007,6 +1042,38 @@
         });
         return safeEvaluate(bodyExpr, context, callScope);
       };
+    }
+    const firstPipe = findTopLevelOperator(trimmed, ["|>"]);
+    if (firstPipe) {
+      const segments = [];
+      let curr = trimmed;
+      let match = findTopLevelOperator(curr, ["|>"]);
+      while (match) {
+        segments.push(curr.slice(0, match.index).trim());
+        curr = curr.slice(match.index + 2).trim();
+        match = findTopLevelOperator(curr, ["|>"]);
+      }
+      segments.push(curr.trim());
+      let val = safeEvaluate(segments[0], context, extraScope);
+      for (let i = 1;i < segments.length; i++) {
+        const seg = segments[i];
+        if (seg.endsWith(")") && seg.includes("(")) {
+          const openIdx = findMatchingOpenParen(seg);
+          if (openIdx !== -1) {
+            const fnTarget = safeEvaluate(seg.slice(0, openIdx), context, extraScope);
+            const innerArgs = splitArguments(seg.slice(openIdx + 1, -1)).map((a) => safeEvaluate(a, context, extraScope));
+            if (typeof fnTarget === "function") {
+              val = fnTarget(val, ...innerArgs);
+              continue;
+            }
+          }
+        }
+        const fn = safeEvaluate(seg, context, extraScope);
+        if (typeof fn === "function") {
+          val = fn(val);
+        }
+      }
+      return val;
     }
     const orMatch = findTopLevelOperator(trimmed, ["||", "??"]);
     if (orMatch) {
@@ -1321,8 +1388,20 @@
         if (ctx)
           ctx[key] = !ctx[key];
       },
+      ...HyperFX.registry,
       ...extraScope
     };
+    try {
+      const res = safeEvaluate(expr, ctx, fxScope);
+      if (res !== undefined || config.strictCSP) {
+        return res;
+      }
+    } catch (safeErr) {
+      if (config.strictCSP) {
+        reportError("HTMXUI-BOLT-006", `Zero-eval evaluation error: ${safeErr.message}`, extraScope.$el);
+        return;
+      }
+    }
     if (config.strictCSP) {
       return safeEvaluate(expr, ctx, fxScope);
     }
@@ -1337,16 +1416,8 @@
         const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
         return fn.apply(ctx, scopeValues);
       } catch (err) {
-        const isCSPBlocked = err instanceof EvalError || err.message && (err.message.includes("eval") || err.message.includes("Content Security Policy") || err.message.includes("unsafe-eval"));
-        if (isCSPBlocked && config.debug) {
-          console.warn(`[htmx-bolt] CSP blocked new Function evaluation. Using safe zero-eval fallback for "${expr}".`);
-        }
-        const fallbackResult = safeEvaluate(expr, ctx, fxScope);
-        if (fallbackResult !== undefined) {
-          return fallbackResult;
-        }
-        if (config.debug && !isCSPBlocked) {
-          console.warn(`[htmx-bolt] Evaluation error in "${expr}":`, err.message);
+        if (config.debug) {
+          console.warn(`[htmx-bolt] Evaluation fallback error in "${expr}":`, err.message);
         }
         return;
       }
@@ -1375,8 +1446,17 @@
         if (ctx)
           ctx[key] = !ctx[key];
       },
+      ...HyperFX.registry,
       ...extraScope
     };
+    try {
+      return safeExecuteAction(expr, ctx, fxScope);
+    } catch (safeErr) {
+      if (config.strictCSP) {
+        reportError("HTMXUI-BOLT-006", `Zero-eval action error: ${safeErr.message}`, extraScope.$el);
+        return;
+      }
+    }
     if (config.strictCSP) {
       return safeExecuteAction(expr, ctx, fxScope);
     }
@@ -1386,18 +1466,7 @@
       const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
       return fn.apply(ctx, scopeValues);
     } catch (err) {
-      const isCSPBlocked = err instanceof EvalError || err.message && (err.message.includes("eval") || err.message.includes("Content Security Policy") || err.message.includes("unsafe-eval"));
-      if (isCSPBlocked) {
-        if (config.debug) {
-          console.warn(`[htmx-bolt] CSP blocked new Function action. Using safe zero-eval action runner for "${expr}".`);
-        }
-        return safeExecuteAction(expr, ctx, fxScope);
-      }
-      try {
-        return safeExecuteAction(expr, ctx, fxScope);
-      } catch (fallbackErr) {
-        reportError("HTMXUI-BOLT-004", `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
-      }
+      reportError("HTMXUI-BOLT-004", `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
     }
   }
   function runWithEffect(effectFn) {
@@ -2225,6 +2294,12 @@
     },
     streamBatch,
     parseMicroDelta,
+    safeEvaluate,
+    safeExecuteAction,
+    evaluateExpression,
+    executeAction,
+    getDiagnostics,
+    clearDiagnostics,
     init(root) {
       const scopeRoots = root.querySelectorAll ? root.querySelectorAll('[hx-state], [hx-ext="reactive"]') : [];
       scopeRoots.forEach(initComponent);
@@ -2304,6 +2379,10 @@
       bolt: HxBolt,
       fx: HyperFX,
       spatial: HxSpatial,
+      safeEvaluate,
+      safeExecuteAction,
+      getDiagnostics,
+      clearDiagnostics,
       directive(name, handler) {
         customDirectives.set(name.startsWith("hx-") ? name : `hx-${name}`, handler);
       },

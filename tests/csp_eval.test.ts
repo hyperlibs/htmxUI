@@ -84,6 +84,40 @@ describe('Zero-Eval Safe Expression Evaluator & Action Executor', () => {
     expect(str).toBe('Hello Alice, you have 5 alerts (theme: bg-emerald-500)');
   });
 
+  test('evaluates pipeline operator |> expressions in .fx functional style', () => {
+    const state = {
+      price: 100,
+      addTax: (n: number) => n * 1.2,
+      formatUSD: (n: number) => `$${n.toFixed(2)}`
+    };
+    const result = safeEvaluate('price |> addTax |> formatUSD', state);
+    expect(result).toBe('$120.00');
+  });
+
+  test('registers and calls custom HyperFX plugins', () => {
+    const { HyperFX, evaluateExpression } = require('../src/index');
+    HyperFX.register('calcTax', (amount: number) => amount * 0.15);
+    
+    const state = { subtotal: 200 };
+    const tax = evaluateExpression('$calcTax(subtotal)', state);
+    expect(tax).toBe(30);
+  });
+
+  test('tracks and clears diagnostic history records', () => {
+    const { reportError, getDiagnostics, clearDiagnostics } = require('../src/index');
+    clearDiagnostics();
+    expect(getDiagnostics().length).toBe(0);
+
+    reportError('HTMXUI-BOLT-005', 'Typo in hx-click attribute');
+    const records = getDiagnostics();
+    expect(records.length).toBe(1);
+    expect(records[0].code).toBe('HTMXUI-BOLT-005');
+    expect(records[0].detail).toContain('Typo in hx-click');
+
+    clearDiagnostics();
+    expect(getDiagnostics().length).toBe(0);
+  });
+
   test('generates standardized [@diag CODE] outputs', () => {
     const msg = formatDiag('HTMXUI-BOLT-006', 'Blocked by CSP policy');
     expect(msg).toContain('[@diag HTMXUI-BOLT-006]');

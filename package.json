@@ -14,6 +14,7 @@
     "build:pages": "bun run build",
     "deploy:pages": "bun run build && wrangler pages deploy dist --project-name=htmxui",
     "deploy:worker": "bun run build && wrangler deploy",
+    "benchmark": "bun run scripts/benchmark.ts",
     "test:ui": "bunx playwright test"
   },
   "keywords": [],

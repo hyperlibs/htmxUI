@@ -15,9 +15,21 @@ If user-generated content (e.g. comments, usernames) is rendered raw into server
 
 ---
 
-## 📋 2. Content Security Policy (CSP) Compatibility
+## 📋 2. Content Security Policy (CSP) Compatibility & Zero-Eval Guarantees
 
-`htmxUI` is designed to operate under strict CSP environments **without requiring `'unsafe-inline'` for script execution or `'unsafe-eval'`**.
+`htmxUI` is designed to operate under strict CSP environments **without requiring `'unsafe-eval'` or `'unsafe-inline'`**.
+
+### Zero-Eval Safe Evaluator Mode
+When running in high-security enterprise environments, activate strict CSP mode:
+
+```javascript
+HTMXUI.config.strictCSP = true;
+```
+
+When `strictCSP` is active:
+1. `new Function()` and `eval()` are **completely bypassed**.
+2. All `hx-text`, `hx-show`, `hx-class`, `hx-style`, `hx-model`, and `hx-action` expressions are parsed deterministically by the built-in AST recursive-descent parser (`safeEvaluate` and `safeExecuteAction`).
+3. If `strictCSP` is not explicitly set, `HxBolt` attempts JIT evaluation and automatically catches CSP `EvalError` violations, falling back seamlessly to `safeEvaluate` with zero runtime crash.
 
 ### Recommended Production CSP Header
 
@@ -26,7 +38,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-rAnd0m123'
 ```
 
 ### JSON-Based State Parsing
-`HxBolt` supports declarative JSON state via safe `<script type="application/json" hx-state>` children, avoiding `eval()` and adhering strictly to CSP nonces.
+`HxBolt` supports declarative JSON state via safe `<script type="application/json" hx-state>` children, avoiding string evaluation and adhering strictly to CSP nonces.
 
 ```html
 <div hx-state>
@@ -55,6 +67,12 @@ To prevent unauthorized form mutations and state modifications, `htmxUI` automat
 
 ---
 
-## 🚫 4. DOM Clobbering Mitigation
+## 🚫 4. DOM Clobbering & Sandbox Isolation
 
-`htmxUI` attributes use the standardized `hx-*` prefix and access state through explicit proxy sandboxes (`$store`, `$refs`, `$el`, `$event`) rather than polluting the global `window` object with element IDs.
+`htmxUI` attributes use the standardized `hx-*` prefix and access state through explicit proxy sandboxes (`$store`, `$refs`, `$el`, `$event`, `$form`) rather than polluting the global `window` object with element IDs.
+
+---
+
+## 🔬 5. Universal Diagnostics & Anomaly Detection
+
+All micro-engines report numbered errors conforming to `[@diag CODE]` taxonomy. In `strictMode: true`, invalid attribute mutations, circular DAG cycles, or unauthenticated state mutations throw immediate descriptive exceptions preventing silent state corruption.

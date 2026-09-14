@@ -65,18 +65,30 @@ HTMXUI = HTMX (Hypermedia Core)
 
 ## 📦 The 10 Modular Core Micro-Engines (~48KB Total)
 
-| Engine | Source (`src/`) | Distribution (`public/`) | Size (Gzipped) | Capabilities |
-|---|---|---|---|---|
-| **⚡ Bolt** | `htmx-bolt.ts` | `htmx-bolt.js` | ~16.2 KB | Signals, dependency tracking via deep Proxies, microtask batching, computed properties, `$store`, `HxBolt.matrix`, 120 FPS ticker. |
-| **🔍 Flash** | `htmx-flash.ts` | `htmx-flash.js` | ~4.8 KB | In-memory fuzzy search (`hx-flash-search`), multi-column filters, TypedArray columnar store (`createColumnStore`). |
-| **🪟 Virtual** | `htmx-virtual.ts` | `htmx-virtual.js` | ~3.9 KB | Bi-directional 2D windowing virtualization with pinned rows/columns for million-row tables. |
-| **📊 Calc** | `htmx-calc.ts` | `htmx-calc.js` | ~3.2 KB | Reactive formula DAG engine with coordinate references (`A1`, `SUM(A1:B10)`) and `#CYCLE!` detection. |
-| **📝 Form** | `htmx-form.ts` | `htmx-form.js` | ~5.1 KB | Declarative validation (`hx-validate="required\|email"`), optimistic cell transactions with undo/redo (`Ctrl+Z`). |
-| **🌊 Vibe** | `htmx-vibe.ts` | `htmx-vibe.js` | ~3.4 KB | FLIP layout animation engine, spring physics solver (`SpringSolver`), stagger sequences, scroll triggers. |
-| **♿ A11y** | `htmx-a11y.ts` | `htmx-a11y.js` | ~3.1 KB | Modal focus trapping (`hx-trap-focus`), roving tabindex, 2D matrix navigation, Excel range selection. |
-| **📶 Offline** | `htmx-offline.ts` | `htmx-offline.js` | ~2.1 KB | IndexedDB mutation queues with exponential retry backoff and online sync. |
-| **🛠️ DevTools** | `htmx-devtools.ts` | `htmx-devtools.js` | ~1.8 KB | Real-time signal inspector, swap latency timing metrics, `@diag` HUD. |
-| **🎨 Canvas** | `htmx-canvas.js` | `htmx-canvas.js` | ~3.5 KB | Spatial node editor engine with draggable nodes (`hx-drag`), snapping (`hx-snap`), Bézier connectors (`hx-connect`). |
+| Engine | Source (`src/`) | Distribution (`public/`) | Size (Gzipped) | Mathematical & Algorithmic Foundation | Capabilities |
+|---|---|---|---|---|---|
+| **⚡ Bolt** | `htmx-bolt.ts` | `htmx-bolt.js` | ~16.2 KB | $O(1)$ coordinate-keyed sparse matrix & microtask batching | Signals, dependency tracking via deep Proxies, computed properties, `$store`, `HxBolt.matrix`, 120 FPS ticker, zero-eval safe evaluator. |
+| **🔍 Flash** | `htmx-flash.ts` | `htmx-flash.js` | ~4.8 KB | TypedArray columnar indexing & bitmask query filters | In-memory fuzzy search (`hx-flash-search`), multi-column filters, TypedArray columnar store (`createColumnStore`). |
+| **🪟 Virtual** | `htmx-virtual.ts` | `htmx-virtual.js` | ~3.9 KB | $O(1)$ spatial slicing & binary row-height bisecting | Bi-directional 2D windowing virtualization with pinned rows/columns for million-row tables. |
+| **📊 Calc** | `htmx-calc.ts` | `htmx-calc.js` | ~3.2 KB | Kahn's algorithm topological DAG sort & cycle detection | Reactive formula DAG engine with coordinate references (`A1`, `SUM(A1:B10)`) and `#CYCLE!` detection. |
+| **📝 Form** | `htmx-form.ts` | `htmx-form.js` | ~5.1 KB | Deterministic finite-state machine (FSM) validation | Declarative validation (`hx-validate="required\|email"`), optimistic cell transactions with undo/redo (`Ctrl+Z`). |
+| **🌊 Vibe** | `htmx-vibe.ts` | `htmx-vibe.js` | ~3.4 KB | Damped harmonic oscillator kinematics: $m \ddot{x} + c \dot{x} + kx = 0$ | FLIP layout animation engine, spring physics solver (`SpringSolver`), stagger sequences, scroll triggers. |
+| **♿ A11y** | `htmx-a11y.ts` | `htmx-a11y.js` | ~3.1 KB | WAI-ARIA roving coordinate space navigation | Modal focus trapping (`hx-trap-focus`), roving tabindex, 2D matrix navigation, Excel range selection. |
+| **📶 Offline** | `htmx-offline.ts` | `htmx-offline.js` | ~2.1 KB | FIFO transaction journal with exponential backoff | IndexedDB mutation queues with exponential retry backoff and online sync. |
+| **🛠️ DevTools** | `htmx-devtools.ts` | `htmx-devtools.js` | ~1.8 KB | Telemetry bridge & SARIF 2.1.0 diagnostic stream | Real-time signal inspector, swap latency timing metrics, `@diag` HUD. |
+| **🎨 Canvas** | `htmx-canvas.js` | `htmx-canvas.js` | ~3.5 KB | Cubic Bézier elastic curves & orthogonal routing | Spatial node editor engine with draggable nodes (`hx-drag`), snapping (`hx-snap`), Bézier connectors (`hx-connect`). |
+
+---
+
+## 🤖 Official Claude / Anthropic Agent Skill
+
+HTMXUI ships with a first-class **Claude / Agentic AI Skill Specification** located at [`skills/htmxui/SKILL.md`](skills/htmxui/SKILL.md).
+
+AI coding agents (Claude, DeepSeek, ChatGPT, Copilot) can directly load and adhere to the HTMXUI grammar:
+- **Zero-JSX / Zero-DOM Hallucination Guards**: Guarantees pure declarative HTML attribute generation.
+- **Universal Machine-Actionable `@diag` Protocol**: Structured error formatting for automated agent self-healing.
+- **Zero-`eval` Strict CSP Compliance**: Guaranteed safe expression evaluation without `new Function()`.
+- **Pre-validated Copy-Paste Templates**: High-velocity scaffolding for forms, dashboards, spreadsheets, and search grids.
 
 ---
 

@@ -33,6 +33,8 @@
     unregisterModal: () => unregisterModal,
     undoState: () => undoState,
     streamBatch: () => streamBatch,
+    safeExecuteAction: () => safeExecuteAction,
+    safeEvaluate: () => safeEvaluate,
     runWithEffect: () => runWithEffect,
     reportError: () => reportError,
     registerModal: () => registerModal,
@@ -41,6 +43,7 @@
     playProceduralSound: () => playProceduralSound,
     parseMicroDelta: () => parseMicroDelta,
     initComponent: () => initComponent,
+    formatDiag: () => formatDiag,
     executeAction: () => executeAction,
     evaluateExpression: () => evaluateExpression,
     createReactiveObject: () => createReactiveObject,
@@ -55,6 +58,7 @@
   });
   var config = {
     strictMode: false,
+    strictCSP: false,
     debug: false,
     version: "1.0.0"
   };
@@ -78,13 +82,62 @@
     "HTMXUI-BOLT-005": {
       title: "Unrecognized hx-* attribute detected (potential AI hallucination or typo).",
       fix: "Check the attribute spelling against the official HTMXUI schema in /schema/htmxui.json."
+    },
+    "HTMXUI-BOLT-006": {
+      title: "CSP EvalError blocked dynamic evaluation. Automatic fallback engaged.",
+      fix: "Set HTMXUI.config.strictCSP = true to bypass new Function completely, or ensure expression matches safe parser grammar."
+    },
+    "HTMXUI-CALC-001": {
+      title: "Cycle or unbounded dependency detected in formula calculation graph.",
+      fix: "Review spreadsheet formulas to ensure topological ordering DAG is acyclic without recursive self-references."
+    },
+    "HTMXUI-FORM-001": {
+      title: "Invalid form validation pattern or missing constraint handler.",
+      fix: "Verify regex syntax in hx-validate pattern or ensure named custom validator is registered."
+    },
+    "HTMXUI-VIBE-001": {
+      title: "Invalid spring physics parameters (mass, stiffness, damping <= 0).",
+      fix: "Ensure stiffness > 0, mass > 0, and damping >= 0 for stable harmonic oscillator convergence."
+    },
+    "HTMXUI-FLASH-001": {
+      title: "IndexedDB or Columnar Store schema synchronization error.",
+      fix: "Verify search field descriptors and ensure typed buffer allocations match column types."
+    },
+    "HTMXUI-A11Y-001": {
+      title: "Missing accessible name (aria-label/aria-labelledby) or roving tabindex boundary violation.",
+      fix: "Add descriptive aria-label to interactive element or wrap roving children in container with hx-roving."
+    },
+    "HTMXUI-VIRTUAL-001": {
+      title: "Invalid or negative viewport/item dimensions in virtual scroller.",
+      fix: "Ensure hx-virtual-height, item height, and container clientHeight are positive non-zero numbers."
+    },
+    "HTMXUI-GRID-001": {
+      title: "Column definition type mismatch or missing accessor in enterprise data grid.",
+      fix: "Verify column defs array matches data record keys and column renderer types."
+    },
+    "HTMXUI-OFFLINE-001": {
+      title: "Mutation replay queue persistence or sync conflict.",
+      fix: "Inspect IndexedDB mutation queue and ensure server endpoint accepts batch replay schema."
+    },
+    "HTMXUI-DEVTOOLS-001": {
+      title: "DevTools telemetry bridge disconnected or invalid state inspection payload.",
+      fix: "Ensure HxDevTools.mount() is active and inspect target element contains valid reactive proxy."
+    },
+    "HTMXUI-SPATIAL-001": {
+      title: "Depth layer overflow or missing 3D transform-style context.",
+      fix: "Verify container has perspective and transform-style: preserve-3d configured."
     }
   };
-  function reportError(code, detail, el = null) {
+  function formatDiag(code, detail, el = null) {
     const meta = ERROR_CATALOG[code] || { title: "Unknown runtime error", fix: "Consult /schema/htmxui.json" };
-    const message = `[${code}] ${meta.title}
-Detail: ${detail}
-Fix: ${meta.fix}`;
+    const tag = el ? `<${el.tagName.toLowerCase()}${el.id ? "#" + el.id : ""}${el.className ? "." + el.className.split(" ").slice(0, 2).join(".") : ""}>` : "[Element]";
+    return `[@diag ${code}] ${meta.title}
+  Target: ${tag}
+  Detail: ${detail}
+  Fix: ${meta.fix}`;
+  }
+  function reportError(code, detail, el = null) {
+    const message = formatDiag(code, detail, el);
     if (config.strictMode) {
       throw new Error(message);
     } else {
@@ -92,6 +145,38 @@ Fix: ${meta.fix}`;
     }
   }
   var KNOWN_ATTRIBUTES = new Set([
+    "hx-get",
+    "hx-post",
+    "hx-put",
+    "hx-delete",
+    "hx-patch",
+    "hx-target",
+    "hx-swap",
+    "hx-trigger",
+    "hx-ext",
+    "hx-select",
+    "hx-select-oob",
+    "hx-indicator",
+    "hx-push-url",
+    "hx-replace-url",
+    "hx-params",
+    "hx-headers",
+    "hx-vals",
+    "hx-vars",
+    "hx-include",
+    "hx-sync",
+    "hx-boost",
+    "hx-confirm",
+    "hx-disabled-elt",
+    "hx-disinherit",
+    "hx-encoding",
+    "hx-history",
+    "hx-history-elt",
+    "hx-preserve",
+    "hx-prompt",
+    "hx-request",
+    "hx-ws",
+    "hx-sse",
     "hx-state",
     "hx-computed",
     "hx-effect",
@@ -104,6 +189,13 @@ Fix: ${meta.fix}`;
     "hx-class",
     "hx-style",
     "hx-ref",
+    "hx-action",
+    "hx-can",
+    "hx-role",
+    "hx-modal",
+    "hx-undoable",
+    "hx-undo",
+    "hx-redo",
     "hx-cell",
     "hx-matrix",
     "hx-matrix-cell",
@@ -132,12 +224,6 @@ Fix: ${meta.fix}`;
     "hx-wizard-prev",
     "hx-wizard-next-text",
     "hx-wizard-submit-text",
-    "hx-undoable",
-    "hx-undo",
-    "hx-redo",
-    "hx-can",
-    "hx-role",
-    "hx-modal",
     "hx-virtual",
     "hx-virtual-item",
     "hx-virtual-height",
@@ -172,22 +258,7 @@ Fix: ${meta.fix}`;
     "3dfx",
     "hx-spatial",
     "hx-spatial-focus",
-    "hx-spatial-explode",
-    "hx-get",
-    "hx-post",
-    "hx-put",
-    "hx-delete",
-    "hx-patch",
-    "hx-target",
-    "hx-swap",
-    "hx-trigger",
-    "hx-ext",
-    "hx-select",
-    "hx-indicator",
-    "hx-push-url",
-    "hx-params",
-    "hx-headers",
-    "hx-vals"
+    "hx-spatial-explode"
   ]);
   function levenshteinDistance(a, b) {
     if (a.length === 0)
@@ -215,7 +286,7 @@ Fix: ${meta.fix}`;
       return;
     for (const attr of Array.from(el.attributes)) {
       const name = attr.name;
-      if (name.startsWith("hx-") && !name.startsWith("hx-on:") && !name.startsWith("hx-bind:") && !name.startsWith("hx-model.") && !name.startsWith("hx-action-") && !name.startsWith("hx-msg-")) {
+      if (name.startsWith("hx-") && !name.startsWith("hx-on:") && !name.startsWith("hx-bind:") && !name.startsWith("hx-model.") && !name.startsWith("hx-action-") && !name.startsWith("hx-msg-") && !name.startsWith("hx-state:") && !name.startsWith("hx-transition:") && !name.startsWith("hx-validate:") && !name.startsWith("hx-stream:") && !name.startsWith("hx-matrix:")) {
         if (!KNOWN_ATTRIBUTES.has(name)) {
           let closest = "";
           let minDistance = 4;
@@ -639,6 +710,456 @@ Fix: ${meta.fix}`;
       }
     }
   };
+  function findTopLevelChar(str, char) {
+    let depthParen = 0;
+    let depthBrace = 0;
+    let depthBracket = 0;
+    let inQuote = null;
+    for (let i = 0;i < str.length; i++) {
+      const ch = str[i];
+      if (inQuote) {
+        if (ch === inQuote && str[i - 1] !== "\\")
+          inQuote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inQuote = ch;
+        continue;
+      }
+      if (depthParen === 0 && depthBrace === 0 && depthBracket === 0 && ch === char) {
+        return i;
+      }
+      if (ch === "(")
+        depthParen++;
+      else if (ch === ")")
+        depthParen--;
+      else if (ch === "{")
+        depthBrace++;
+      else if (ch === "}")
+        depthBrace--;
+      else if (ch === "[")
+        depthBracket++;
+      else if (ch === "]")
+        depthBracket--;
+    }
+    return -1;
+  }
+  function findTopLevelOperator(str, ops) {
+    let depthParen = 0;
+    let depthBrace = 0;
+    let depthBracket = 0;
+    let inQuote = null;
+    for (let i = 0;i < str.length; i++) {
+      const ch = str[i];
+      if (inQuote) {
+        if (ch === inQuote && str[i - 1] !== "\\")
+          inQuote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inQuote = ch;
+        continue;
+      }
+      if (depthParen === 0 && depthBrace === 0 && depthBracket === 0) {
+        for (const op of ops) {
+          if (str.startsWith(op, i)) {
+            if (op === "=" && (str.startsWith("==", i) || str.startsWith("===", i) || str.startsWith("=>", i)))
+              continue;
+            if (op === "!" && (str.startsWith("!=", i) || str.startsWith("!==", i)))
+              continue;
+            if (op === "<" && (str.startsWith("<=", i) || str.startsWith("<<", i)))
+              continue;
+            if (op === ">" && (str.startsWith(">=", i) || str.startsWith(">>", i)))
+              continue;
+            if (op === "+" && str.startsWith("++", i))
+              continue;
+            if (op === "-" && str.startsWith("--", i))
+              continue;
+            if (op === "&" && str.startsWith("&&", i))
+              continue;
+            if (op === "|" && str.startsWith("||", i))
+              continue;
+            return { op, index: i };
+          }
+        }
+      }
+      if (ch === "(")
+        depthParen++;
+      else if (ch === ")")
+        depthParen--;
+      else if (ch === "{")
+        depthBrace++;
+      else if (ch === "}")
+        depthBrace--;
+      else if (ch === "[")
+        depthBracket++;
+      else if (ch === "]")
+        depthBracket--;
+    }
+    return null;
+  }
+  function splitArguments(argsStr) {
+    const result = [];
+    let depthParen = 0;
+    let depthBrace = 0;
+    let depthBracket = 0;
+    let inQuote = null;
+    let current = "";
+    for (let i = 0;i < argsStr.length; i++) {
+      const ch = argsStr[i];
+      if (inQuote) {
+        current += ch;
+        if (ch === inQuote && argsStr[i - 1] !== "\\")
+          inQuote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inQuote = ch;
+        current += ch;
+        continue;
+      }
+      if (ch === "," && depthParen === 0 && depthBrace === 0 && depthBracket === 0) {
+        result.push(current.trim());
+        current = "";
+        continue;
+      }
+      if (ch === "(")
+        depthParen++;
+      else if (ch === ")")
+        depthParen--;
+      else if (ch === "{")
+        depthBrace++;
+      else if (ch === "}")
+        depthBrace--;
+      else if (ch === "[")
+        depthBracket++;
+      else if (ch === "]")
+        depthBracket--;
+      current += ch;
+    }
+    if (current.trim())
+      result.push(current.trim());
+    return result;
+  }
+  function getNestedProperty(obj, path) {
+    if (!obj)
+      return;
+    const tokens = path.replace(/\[['"]?([^\]'"]+)['"]?\]/g, ".$1").replace(/^\./, "").split(".");
+    let curr = obj;
+    for (const token of tokens) {
+      if (curr === null || curr === undefined)
+        return;
+      curr = curr[token];
+    }
+    return curr;
+  }
+  function setNestedProperty(obj, path, value) {
+    if (!obj)
+      return;
+    const tokens = path.replace(/\[['"]?([^\]'"]+)['"]?\]/g, ".$1").replace(/^\./, "").split(".");
+    let curr = obj;
+    for (let i = 0;i < tokens.length - 1; i++) {
+      const token = tokens[i];
+      if (!(token in curr) || curr[token] === null || typeof curr[token] !== "object") {
+        curr[token] = {};
+      }
+      curr = curr[token];
+    }
+    curr[tokens[tokens.length - 1]] = value;
+  }
+  function safeEvaluate(expr, context, extraScope = {}) {
+    if (!expr || typeof expr !== "string")
+      return;
+    const trimmed = expr.trim();
+    if (!trimmed)
+      return;
+    const ctx = context && typeof context === "object" ? context : {};
+    const scope = { ...ctx, ...extraScope };
+    const qIdx = findTopLevelChar(trimmed, "?");
+    if (qIdx !== -1) {
+      const colonIdx = findTopLevelChar(trimmed.slice(qIdx + 1), ":");
+      if (colonIdx !== -1) {
+        const condStr = trimmed.slice(0, qIdx).trim();
+        const trueStr = trimmed.slice(qIdx + 1, qIdx + 1 + colonIdx).trim();
+        const falseStr = trimmed.slice(qIdx + 1 + colonIdx + 1).trim();
+        const condVal = safeEvaluate(condStr, context, extraScope);
+        return condVal ? safeEvaluate(trueStr, context, extraScope) : safeEvaluate(falseStr, context, extraScope);
+      }
+    }
+    const orMatch = findTopLevelOperator(trimmed, ["||", "??"]);
+    if (orMatch) {
+      const left = safeEvaluate(trimmed.slice(0, orMatch.index), context, extraScope);
+      const rightStr = trimmed.slice(orMatch.index + orMatch.op.length);
+      if (orMatch.op === "||") {
+        return left || safeEvaluate(rightStr, context, extraScope);
+      } else {
+        return left ?? safeEvaluate(rightStr, context, extraScope);
+      }
+    }
+    const andMatch = findTopLevelOperator(trimmed, ["&&"]);
+    if (andMatch) {
+      const left = safeEvaluate(trimmed.slice(0, andMatch.index), context, extraScope);
+      if (!left)
+        return left;
+      return safeEvaluate(trimmed.slice(andMatch.index + andMatch.op.length), context, extraScope);
+    }
+    const compMatch = findTopLevelOperator(trimmed, ["===", "!==", "==", "!=", "<=", ">=", "<", ">"]);
+    if (compMatch) {
+      const left = safeEvaluate(trimmed.slice(0, compMatch.index), context, extraScope);
+      const right = safeEvaluate(trimmed.slice(compMatch.index + compMatch.op.length), context, extraScope);
+      switch (compMatch.op) {
+        case "===":
+          return left === right;
+        case "!==":
+          return left !== right;
+        case "==":
+          return left == right;
+        case "!=":
+          return left != right;
+        case "<=":
+          return left <= right;
+        case ">=":
+          return left >= right;
+        case "<":
+          return left < right;
+        case ">":
+          return left > right;
+      }
+    }
+    const addSubMatch = findTopLevelOperator(trimmed, ["+", "-"]);
+    if (addSubMatch && addSubMatch.index > 0) {
+      const left = safeEvaluate(trimmed.slice(0, addSubMatch.index), context, extraScope);
+      const right = safeEvaluate(trimmed.slice(addSubMatch.index + addSubMatch.op.length), context, extraScope);
+      return addSubMatch.op === "+" ? left + right : left - right;
+    }
+    const mulDivMatch = findTopLevelOperator(trimmed, ["*", "/", "%"]);
+    if (mulDivMatch) {
+      const left = safeEvaluate(trimmed.slice(0, mulDivMatch.index), context, extraScope);
+      const right = safeEvaluate(trimmed.slice(mulDivMatch.index + mulDivMatch.op.length), context, extraScope);
+      if (mulDivMatch.op === "*")
+        return left * right;
+      if (mulDivMatch.op === "/")
+        return left / right;
+      if (mulDivMatch.op === "%")
+        return left % right;
+    }
+    if (trimmed.startsWith("!")) {
+      return !safeEvaluate(trimmed.slice(1), context, extraScope);
+    }
+    if (trimmed.startsWith("+") && isNaN(Number(trimmed))) {
+      return +safeEvaluate(trimmed.slice(1), context, extraScope);
+    }
+    if (trimmed.startsWith("-") && isNaN(Number(trimmed))) {
+      return -safeEvaluate(trimmed.slice(1), context, extraScope);
+    }
+    if (trimmed.startsWith("(") && trimmed.endsWith(")")) {
+      let d = 0;
+      let valid = true;
+      for (let i = 0;i < trimmed.length - 1; i++) {
+        if (trimmed[i] === "(")
+          d++;
+        else if (trimmed[i] === ")")
+          d--;
+        if (d === 0) {
+          valid = false;
+          break;
+        }
+      }
+      if (valid) {
+        return safeEvaluate(trimmed.slice(1, -1), context, extraScope);
+      }
+    }
+    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+      const inner = trimmed.slice(1, -1).trim();
+      if (!inner)
+        return {};
+      const entries = splitArguments(inner);
+      const result = {};
+      for (const entry of entries) {
+        const colonIdx = findTopLevelChar(entry, ":");
+        if (colonIdx !== -1) {
+          let key = entry.slice(0, colonIdx).trim();
+          if (key.startsWith("'") && key.endsWith("'") || key.startsWith('"') && key.endsWith('"')) {
+            key = key.slice(1, -1);
+          }
+          const valExpr = entry.slice(colonIdx + 1).trim();
+          result[key] = safeEvaluate(valExpr, context, extraScope);
+        }
+      }
+      return result;
+    }
+    if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+      const inner = trimmed.slice(1, -1).trim();
+      if (!inner)
+        return [];
+      return splitArguments(inner).map((arg) => safeEvaluate(arg, context, extraScope));
+    }
+    if (trimmed.startsWith("'") && trimmed.endsWith("'") || trimmed.startsWith('"') && trimmed.endsWith('"') || trimmed.startsWith("`") && trimmed.endsWith("`")) {
+      return trimmed.slice(1, -1);
+    }
+    if (!isNaN(Number(trimmed))) {
+      return Number(trimmed);
+    }
+    if (trimmed === "true")
+      return true;
+    if (trimmed === "false")
+      return false;
+    if (trimmed === "null")
+      return null;
+    if (trimmed === "undefined")
+      return;
+    if (trimmed.endsWith(")")) {
+      const openParenIdx = findTopLevelChar(trimmed, "(");
+      if (openParenIdx !== -1) {
+        const calleeStr = trimmed.slice(0, openParenIdx).trim();
+        const argsStr = trimmed.slice(openParenIdx + 1, -1).trim();
+        const args = argsStr ? splitArguments(argsStr).map((arg) => safeEvaluate(arg, context, extraScope)) : [];
+        let fn;
+        let fnThis = ctx;
+        if (calleeStr.includes(".")) {
+          const lastDot = calleeStr.lastIndexOf(".");
+          const parentPath = calleeStr.slice(0, lastDot);
+          const method = calleeStr.slice(lastDot + 1);
+          fnThis = parentPath in extraScope ? extraScope[parentPath] : getNestedProperty(scope, parentPath);
+          if (fnThis && typeof fnThis[method] === "function") {
+            fn = fnThis[method];
+          }
+        } else {
+          if (calleeStr in extraScope && typeof extraScope[calleeStr] === "function") {
+            fn = extraScope[calleeStr];
+            fnThis = extraScope;
+          } else if (calleeStr in ctx && typeof ctx[calleeStr] === "function") {
+            fn = ctx[calleeStr];
+            fnThis = ctx;
+          } else if (typeof globalThis[calleeStr] === "function") {
+            fn = globalThis[calleeStr];
+            fnThis = globalThis;
+          }
+        }
+        if (typeof fn === "function") {
+          return fn.apply(fnThis, args);
+        }
+      }
+    }
+    if (trimmed in extraScope)
+      return extraScope[trimmed];
+    if (trimmed in ctx)
+      return ctx[trimmed];
+    const nestedVal = getNestedProperty(scope, trimmed);
+    if (nestedVal !== undefined)
+      return nestedVal;
+    if (trimmed in globalThis)
+      return globalThis[trimmed];
+    return;
+  }
+  function safeExecuteAction(expr, context, extraScope = {}) {
+    if (!expr || typeof expr !== "string")
+      return;
+    const ctx = context && typeof context === "object" ? context : {};
+    const statements = [];
+    let depthParen = 0;
+    let depthBrace = 0;
+    let depthBracket = 0;
+    let inQuote = null;
+    let current = "";
+    for (let i = 0;i < expr.length; i++) {
+      const ch = expr[i];
+      if (inQuote) {
+        current += ch;
+        if (ch === inQuote && expr[i - 1] !== "\\")
+          inQuote = null;
+        continue;
+      }
+      if (ch === '"' || ch === "'" || ch === "`") {
+        inQuote = ch;
+        current += ch;
+        continue;
+      }
+      if (ch === ";" && depthParen === 0 && depthBrace === 0 && depthBracket === 0) {
+        if (current.trim())
+          statements.push(current.trim());
+        current = "";
+        continue;
+      }
+      if (ch === "(")
+        depthParen++;
+      else if (ch === ")")
+        depthParen--;
+      else if (ch === "{")
+        depthBrace++;
+      else if (ch === "}")
+        depthBrace--;
+      else if (ch === "[")
+        depthBracket++;
+      else if (ch === "]")
+        depthBracket--;
+      current += ch;
+    }
+    if (current.trim())
+      statements.push(current.trim());
+    let lastResult = undefined;
+    for (const stmt of statements) {
+      const trimmed = stmt.trim();
+      if (!trimmed)
+        continue;
+      if (trimmed.endsWith("++")) {
+        const target = trimmed.slice(0, -2).trim();
+        const val = safeEvaluate(target, ctx, extraScope);
+        setNestedProperty(ctx, target, (Number(val) || 0) + 1);
+        lastResult = (Number(val) || 0) + 1;
+        continue;
+      }
+      if (trimmed.endsWith("--")) {
+        const target = trimmed.slice(0, -2).trim();
+        const val = safeEvaluate(target, ctx, extraScope);
+        setNestedProperty(ctx, target, (Number(val) || 0) - 1);
+        lastResult = (Number(val) || 0) - 1;
+        continue;
+      }
+      if (trimmed.startsWith("++")) {
+        const target = trimmed.slice(2).trim();
+        const val = safeEvaluate(target, ctx, extraScope);
+        setNestedProperty(ctx, target, (Number(val) || 0) + 1);
+        lastResult = (Number(val) || 0) + 1;
+        continue;
+      }
+      if (trimmed.startsWith("--")) {
+        const target = trimmed.slice(2).trim();
+        const val = safeEvaluate(target, ctx, extraScope);
+        setNestedProperty(ctx, target, (Number(val) || 0) - 1);
+        lastResult = (Number(val) || 0) - 1;
+        continue;
+      }
+      const compoundMatch = findTopLevelOperator(trimmed, ["+=", "-=", "*=", "/="]);
+      if (compoundMatch) {
+        const target = trimmed.slice(0, compoundMatch.index).trim();
+        const rightVal = safeEvaluate(trimmed.slice(compoundMatch.index + compoundMatch.op.length), ctx, extraScope);
+        const leftVal = safeEvaluate(target, ctx, extraScope);
+        let newVal = leftVal;
+        if (compoundMatch.op === "+=")
+          newVal = leftVal + rightVal;
+        else if (compoundMatch.op === "-=")
+          newVal = leftVal - rightVal;
+        else if (compoundMatch.op === "*=")
+          newVal = leftVal * rightVal;
+        else if (compoundMatch.op === "/=")
+          newVal = leftVal / rightVal;
+        setNestedProperty(ctx, target, newVal);
+        lastResult = newVal;
+        continue;
+      }
+      const assignMatch = findTopLevelOperator(trimmed, ["="]);
+      if (assignMatch) {
+        const target = trimmed.slice(0, assignMatch.index).trim();
+        const rightVal = safeEvaluate(trimmed.slice(assignMatch.index + 1), ctx, extraScope);
+        setNestedProperty(ctx, target, rightVal);
+        lastResult = rightVal;
+        continue;
+      }
+      lastResult = safeEvaluate(trimmed, ctx, extraScope);
+    }
+    return lastResult;
+  }
   function evaluateExpression(expr, context, extraScope = {}) {
     if (!expr || typeof expr !== "string")
       return;
@@ -664,6 +1185,9 @@ Fix: ${meta.fix}`;
       },
       ...extraScope
     };
+    if (config.strictCSP) {
+      return safeEvaluate(expr, ctx, fxScope);
+    }
     const scopeKeys = Object.keys(fxScope);
     const scopeValues = Object.values(fxScope);
     const trimmed = expr.trim();
@@ -675,7 +1199,15 @@ Fix: ${meta.fix}`;
         const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
         return fn.apply(ctx, scopeValues);
       } catch (err) {
-        if (config.debug) {
+        const isCSPBlocked = err instanceof EvalError || err.message && (err.message.includes("eval") || err.message.includes("Content Security Policy") || err.message.includes("unsafe-eval"));
+        if (isCSPBlocked && config.debug) {
+          console.warn(`[htmx-bolt] CSP blocked new Function evaluation. Using safe zero-eval fallback for "${expr}".`);
+        }
+        const fallbackResult = safeEvaluate(expr, ctx, fxScope);
+        if (fallbackResult !== undefined) {
+          return fallbackResult;
+        }
+        if (config.debug && !isCSPBlocked) {
           console.warn(`[htmx-bolt] Evaluation error in "${expr}":`, err.message);
         }
         return;
@@ -707,13 +1239,27 @@ Fix: ${meta.fix}`;
       },
       ...extraScope
     };
+    if (config.strictCSP) {
+      return safeExecuteAction(expr, ctx, fxScope);
+    }
     const scopeKeys = Object.keys(fxScope);
     const scopeValues = Object.values(fxScope);
     try {
       const fn = new Function(...scopeKeys, `with(this) { ${expr}; }`);
       return fn.apply(ctx, scopeValues);
     } catch (err) {
-      reportError("HTMXUI-BOLT-004", `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
+      const isCSPBlocked = err instanceof EvalError || err.message && (err.message.includes("eval") || err.message.includes("Content Security Policy") || err.message.includes("unsafe-eval"));
+      if (isCSPBlocked) {
+        if (config.debug) {
+          console.warn(`[htmx-bolt] CSP blocked new Function action. Using safe zero-eval action runner for "${expr}".`);
+        }
+        return safeExecuteAction(expr, ctx, fxScope);
+      }
+      try {
+        return safeExecuteAction(expr, ctx, fxScope);
+      } catch (fallbackErr) {
+        reportError("HTMXUI-BOLT-004", `Action execution error in "${expr}": ${err.message}`, extraScope.$el);
+      }
     }
   }
   function runWithEffect(effectFn) {

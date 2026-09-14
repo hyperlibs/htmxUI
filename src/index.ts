@@ -5,8 +5,8 @@
  * bundlers, SSR runtimes, and TypeScript applications.
  */
 
-export * from './types';
-export { HxBolt, SignalTracker, SparseMatrix, streamBatch, parseMicroDelta, createReactiveObject, evaluateExpression, executeAction, runWithEffect } from './htmx-bolt';
+export type * from './types.d';
+export { HxBolt, SignalTracker, SparseMatrix, streamBatch, parseMicroDelta, createReactiveObject, evaluateExpression, executeAction, safeEvaluate, safeExecuteAction, formatDiag, ERROR_CATALOG, config, runWithEffect } from './htmx-bolt';
 export { HxFlash, FlashDatabase, ColumnStore } from './htmx-flash';
 export { HxForm, defaultValidators, defaultMessages, validateInput, initForm, cellTransaction, cellTransactions } from './htmx-form';
 export { HxVibe, FlipManager, initVibe } from './htmx-vibe';

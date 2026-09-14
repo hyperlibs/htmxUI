@@ -42,7 +42,7 @@ It executes `.fx` functional programs and `.mx` spatial documents natively, prov
 
 ## 🌐 Ecosystem Communication Bus Protocol | @model BusProtocol
 | rule                  | mechanism                                                                                 | format                                                     |
-| Periodic Sync Pull    | HMLR reads https://raw.githubusercontent.com/hyperlibs/htmxUI/master/docs/UPDATE.mx        | Pure .mx (@feed BuildFeed, @model EcosystemTimeline)       |
+| Periodic Sync Pull    | HMLR reads https://raw.githubusercontent.com/hyperlibs/htmxUI/main/docs/UPDATE.mx        | Pure .mx (@feed BuildFeed, @model EcosystemTimeline)       |
 | Directives Ingestion  | Ingest table @model RepoInstruction where target == "HMLR" or target == "all"             | Deterministic tabular action items (action_summary/detail) |
 | Feedback & Status Out | HMLR emits its build, test, and boundary status back in pure .mx syntax                   | @model BoundaryVerification & @diag FX-XXXX                |
 | Zero Polling Overhead | Sync occurs upon git commit trigger or developer command "UPDATE.mx"                      | Event-driven master bus                                    |

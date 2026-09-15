@@ -12,6 +12,8 @@
   <script src="/htmx-form.js"></script>
   <script src="/htmx-vibe.js"></script>
   <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-calc.js"></script>
+  <script src="/htmx-sim.js"></script>
   <script src="/htmx-devtools.js"></script>
   
   <!-- Tailwind CSS -->
@@ -28,6 +30,7 @@
   <script type="application/json" hx-state>
   {
     "sidebarOpen": true,
+    "activeRole": "admin",
     "activePage": "ecommerce",
     "timeRange": "monthly",
     "darkMode": true,
@@ -120,6 +123,14 @@
               <span>📈</span>
               <span>Analytics</span>
             </button>
+
+            <button @click="activePage = 'simulation'"
+                    hx-class="{ 'bg-cyan-600/15 text-cyan-400 font-semibold border-l-2 border-cyan-500': activePage === 'simulation', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'simulation' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>⚛️</span>
+              <span class="flex-1">Kinetic Physics (Sim)</span>
+              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-bold">120Hz</span>
+            </button>
           </nav>
         </div>
 
@@ -168,6 +179,13 @@
         <div>
           <div class="px-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">UI & AUTH</div>
           <nav class="space-y-1 text-xs">
+            <button @click="activePage = 'rbac'"
+                    hx-class="{ 'bg-emerald-600/15 text-emerald-400 font-semibold border-l-2 border-emerald-500': activePage === 'rbac', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'rbac' }"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
+              <span>🛡️</span>
+              <span class="flex-1">RBAC Security Matrix</span>
+              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">Bank</span>
+            </button>
             <button @click="activePage = 'alerts'"
                     hx-class="{ 'bg-blue-600/15 text-blue-400 font-semibold border-l-2 border-blue-500': activePage === 'alerts', 'text-slate-400 hover:bg-slate-900 hover:text-slate-200': activePage !== 'alerts' }"
                     class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left">
@@ -924,6 +942,183 @@
             <button onclick="alert('Authenticated successfully via HTMXUI!')" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors shadow-sm">
               Continue →
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 11: KINETIC PHYSICS & SIMULATION ENGINE -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'simulation'" class="space-y-6" style="display:none;">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              <span>⚛️</span> Kinetic Simulation Sandbox
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">120Hz Decoupled Physics Accumulator • Zero-WASM • Native Canvas HyperFX</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-1 rounded-md">Engine: htmx-sim.js</span>
+            <span class="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-md">60/120 FPS Decoupled</span>
+          </div>
+        </div>
+
+        <!-- Simulation Presets & Controls -->
+        <div class="p-4 rounded-2xl border border-slate-800 bg-slate-950/80 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 font-semibold mr-1">Presets:</span>
+            <button onclick="$sim('#admin-sim-canvas', 'preset', 'boids')" class="px-3 py-1.5 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-semibold transition-all">🦅 Boids Flocking</button>
+            <button onclick="$sim('#admin-sim-canvas', 'preset', 'gravity')" class="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 text-xs font-mono font-semibold transition-all">🪐 N-Body Gravity</button>
+            <button onclick="$sim('#admin-sim-canvas', 'preset', 'collision')" class="px-3 py-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 text-xs font-mono font-semibold transition-all">💥 Elastic Collision</button>
+            <button onclick="$sim('#admin-sim-canvas', 'preset', 'slime')" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-semibold transition-all">🦠 Physarum Slime</button>
+            <button onclick="$sim('#admin-sim-canvas', 'preset', 'life')" class="px-3 py-1.5 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 text-xs font-mono font-semibold transition-all">🧬 Game of Life</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="$sim('#admin-sim-canvas', 'reset')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">↺ Reset</button>
+            <button onclick="$sim('#admin-sim-canvas', 'burst', 100)" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold shadow-sm">+ Burst 100</button>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="rounded-2xl border border-slate-800 bg-slate-950 p-2 shadow-2xl relative overflow-hidden">
+          <canvas id="admin-sim-canvas"
+                  hx-sim="boids"
+                  hx-sim-particles="350"
+                  hx-sim-speed="1.0"
+                  hx-sim-responsive="true"
+                  class="w-full h-[480px] rounded-xl block bg-slate-950"></canvas>
+          
+          <div class="absolute bottom-5 left-5 pointer-events-none bg-slate-950/80 backdrop-blur border border-slate-800 rounded-lg p-3 text-[11px] font-mono text-slate-400 space-y-1">
+            <div>💡 Click &amp; drag on canvas to spawn force vortexes</div>
+            <div>⚡ Declarative attribute: <code class="text-cyan-300">hx-sim="boids"</code></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================================== -->
+      <!-- VIEW 12: BANK-GRADE RBAC SECURITY MATRIX -->
+      <!-- ==================================================================== -->
+      <div hx-show="activePage === 'rbac'" class="space-y-6" style="display:none;">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+              <span>🛡️</span> Bank-Grade RBAC Security Sandbox
+            </h1>
+            <p class="text-xs text-slate-400 mt-1">Reactive Fine-Grained Role &amp; Capability Enforcement (<code class="text-emerald-400 font-mono">hx-role</code>, <code class="text-emerald-400 font-mono">hx-can</code>, <code class="text-emerald-400 font-mono">hx-role.redact</code>)</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-md">Audit: Zero-Eval CSP Level 3</span>
+          </div>
+        </div>
+
+        <!-- Active Role Switcher Card -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-sm font-bold text-white uppercase tracking-wider">Simulate Active User Role:</h2>
+              <p class="text-xs text-slate-400">Toggle roles to inspect live DOM pruning, redaction, and capability gating.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">Current Active:</span>
+              <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase" hx-text="activeRole">admin</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+            <button @click="activeRole = 'admin'; window.HTMXUI && window.HTMXUI.setRole('admin', ['trade:execute', 'admin:access', 'wire:transfer', 'ledger:read'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'admin', 'bg-slate-900 text-slate-300 hover:bg-slate-800': activeRole !== 'admin' }"
+                    class="p-3 rounded-xl border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">👑 Admin</div>
+              <div class="text-[10px] text-slate-400 mt-1">Full Root Access</div>
+            </button>
+
+            <button @click="activeRole = 'compliance'; window.HTMXUI && window.HTMXUI.setRole('compliance', ['ledger:read', 'audit:export'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'compliance', 'bg-slate-900 text-slate-300 hover:bg-slate-800': activeRole !== 'compliance' }"
+                    class="p-3 rounded-xl border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">📋 Compliance</div>
+              <div class="text-[10px] text-slate-400 mt-1">Audit &amp; Oversight</div>
+            </button>
+
+            <button @click="activeRole = 'trader'; window.HTMXUI && window.HTMXUI.setRole('trader', ['trade:execute', 'ledger:read'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'trader', 'bg-slate-900 text-slate-300 hover:bg-slate-800': activeRole !== 'trader' }"
+                    class="p-3 rounded-xl border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">📈 Trader</div>
+              <div class="text-[10px] text-slate-400 mt-1">Order Execution</div>
+            </button>
+
+            <button @click="activeRole = 'auditor'; window.HTMXUI && window.HTMXUI.setRole('auditor', ['ledger:read'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'auditor', 'bg-slate-900 text-slate-300 hover:bg-slate-800': activeRole !== 'auditor' }"
+                    class="p-3 rounded-xl border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">🔍 Auditor</div>
+              <div class="text-[10px] text-slate-400 mt-1">Read-Only Logs</div>
+            </button>
+
+            <button @click="activeRole = 'guest'; window.HTMXUI && window.HTMXUI.setRole('guest', [])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'guest', 'bg-slate-900 text-slate-300 hover:bg-slate-800': activeRole !== 'guest' }"
+                    class="p-3 rounded-xl border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">👤 Guest</div>
+              <div class="text-[10px] text-slate-400 mt-1">Zero Permissions</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- High Value Bank Operations Card -->
+        <div class="p-6 rounded-2xl border border-slate-800 bg-slate-950 space-y-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span>🏦</span> High-Value Treasury &amp; Trading Actions
+            </h3>
+            <span class="text-xs font-mono text-slate-500">Security Policies Active</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Action 1: Wire Transfer (Admin only) -->
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">FedWire Outbound</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-500/10 text-rose-400">hx-role="admin"</span>
+              </div>
+              <p class="text-xs text-slate-400">Dispatch $2,500,000 liquidity transfer to SWIFT clearing.</p>
+              <div hx-role="admin">
+                <button onclick="alert('Wire transfer dispatched!')" class="w-full py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs transition-colors shadow-sm">
+                  Authorize $2.5M Transfer
+                </button>
+              </div>
+              <div hx-role.redact="admin" class="text-xs text-slate-500 italic p-2 bg-slate-950 rounded border border-slate-800/60">
+                [Redacted: Admin Role Required]
+              </div>
+            </div>
+
+            <!-- Action 2: Execute Trade (Admin or Trader) -->
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">Execute Block Trade</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400">hx-can="trade:execute"</span>
+              </div>
+              <p class="text-xs text-slate-400">Place 500-contract NASDAQ futures limit order.</p>
+              <button hx-can.disable="trade:execute" onclick="alert('Trade executed!')" class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs transition-colors shadow-sm">
+                Execute 500 NQ Contracts
+              </button>
+              <p class="text-[10px] text-slate-500">Disabled when role lacks <code class="text-slate-400">trade:execute</code></p>
+            </div>
+
+            <!-- Action 3: Compliance Audit Log Export -->
+            <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-white">Export Audit Trail</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-500/10 text-purple-400">hx-role="admin, compliance"</span>
+              </div>
+              <p class="text-xs text-slate-400">Download SOC2 / SEC 17a-4 immutable signed audit bundle.</p>
+              <div hx-role="admin, compliance">
+                <button onclick="alert('SOC2 Audit Trail exported!')" class="w-full py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs transition-colors shadow-sm">
+                  Export SEC Immutable Bundle
+                </button>
+              </div>
+              <div hx-role.redact="admin, compliance" class="text-xs text-slate-500 italic p-2 bg-slate-950 rounded border border-slate-800/60">
+                [Restricted to Compliance / Admin]
+              </div>
+            </div>
           </div>
         </div>
       </div>

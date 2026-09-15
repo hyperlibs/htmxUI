@@ -15,6 +15,7 @@
   <script src="/htmx-offline.js"></script>
   <script src="/htmx-devtools.js"></script>
   <script src="/htmx-calc.js"></script>
+  <script src="/htmx-sim.js"></script>
   <script src="/htmx-canvas.js"></script>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -32,6 +33,7 @@
       </div>
       <nav class="flex items-center gap-6 text-sm font-medium text-muted-foreground">
         <a href="/docs/components/introduction" class="hover:text-foreground transition-colors">Documentation</a>
+        <a href="/docs/components/simulation" class="hover:text-foreground transition-colors text-cyan-400 font-semibold">Sim Engine</a>
         <a href="/docs/components/button" class="hover:text-foreground transition-colors">120+ Components</a>
         <a href="https://github.com/hyperlibs/htmxUI" target="_blank" class="hover:text-foreground transition-colors">GitHub</a>
       </nav>
@@ -44,160 +46,182 @@
       <!-- Hero Header -->
       <div class="text-center space-y-4 max-w-3xl mx-auto">
         <div class="inline-flex items-center rounded-full border border-border bg-muted/50 px-4 py-1 text-xs font-semibold text-primary">
-          🧪 ZERO VIRTUAL DOM • ZERO HYDRATION • SUB-48KB RUNTIME
+          🧪 ZERO VIRTUAL DOM • STRICT ZERO-EVAL CSP • BANK-GRADE RBAC • 11 ENGINES
         </div>
         <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight">
           Verifiable Interactive Showcases
         </h1>
         <p class="text-lg text-muted-foreground leading-relaxed">
-          Experience the 10 micro-engines running live in the browser. Zero Node.js. Zero React. Pure server-authoritative hypermedia with microtask-batched signals.
+          Experience the 11 micro-engines running live in the browser. Zero Node.js. Zero React. Pure server-authoritative hypermedia with microtask-batched signals and decoupled 120Hz physics.
         </p>
       </div>
 
       <!-- Flagship Demo Cards Grid -->
-      <div class="grid md:grid-cols-2 gap-8">
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
         <!-- Flagship: TailAdmin Clone -->
-        <div class="rounded-2xl border border-border bg-card p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="rounded-2xl border border-border bg-card p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-3xl">🎛️</span>
               <span class="text-xs font-mono px-2.5 py-1 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 font-semibold">TailAdmin Clone</span>
             </div>
-            <h2 class="text-2xl font-bold tracking-tight">TailAdmin E-Commerce</h2>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Complete hypermedia clone of TailAdmin. Real-time metric KPI cards, interactive SVG revenue analytics, channel traffic tables, and live signal-reactive order stream with zero React/Node.
+            <h2 class="text-xl font-bold tracking-tight">TailAdmin E-Commerce & RBAC</h2>
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              Complete hypermedia clone of TailAdmin with real-time KPI metrics, interactive SVG analytics, and Bank-Grade RBAC role switching (<code>hx-role</code> & <code>hx-can</code>) with zero React/Node.
             </p>
-            <div class="flex flex-wrap gap-2 pt-2">
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxBolt Signals</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxFlash Search</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Tailwind CSS</span>
+            <div class="flex flex-wrap gap-1.5 pt-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxBolt Signals</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Bank RBAC</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Zero-Eval CSP</span>
             </div>
           </div>
-          <div class="pt-8">
-            <a href="/demo/tailadmin" class="inline-flex items-center justify-center w-full h-11 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors shadow-sm">
+          <div class="pt-6">
+            <a href="/demo/tailadmin" class="inline-flex items-center justify-center w-full h-10 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors shadow-sm">
               Launch TailAdmin Demo →
             </a>
           </div>
         </div>
 
         <!-- Flagship 1: ERP -->
-        <div class="rounded-2xl border border-border bg-card p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="rounded-2xl border border-border bg-card p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-3xl">📊</span>
               <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-semibold">Flagship ERP</span>
             </div>
-            <h2 class="text-2xl font-bold tracking-tight">Apex Logistics ERP</h2>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Enterprise management console rendering <strong>10,000+ real-time records</strong> with 60fps bi-directional virtualization, in-memory fuzzy search, offline mutation queues, and multi-step wizard state machines.
+            <h2 class="text-xl font-bold tracking-tight">Apex Logistics ERP</h2>
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              Enterprise management console rendering <strong>10,000+ real-time records</strong> with 60fps bi-directional virtualization, in-memory fuzzy search, offline IndexedDB mutation queues, and multi-step wizards.
             </p>
-            <div class="flex flex-wrap gap-2 pt-2">
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxVirtual</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxFlash</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxOffline</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxDevTools</span>
+            <div class="flex flex-wrap gap-1.5 pt-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxVirtual 2D</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxFlash Search</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxOffline</span>
             </div>
           </div>
-          <div class="pt-8">
-            <a href="/demo/erp" class="inline-flex items-center justify-center w-full h-11 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-colors shadow-sm">
+          <div class="pt-6">
+            <a href="/demo/erp" class="inline-flex items-center justify-center w-full h-10 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-colors shadow-sm">
               Launch Apex ERP Demo →
             </a>
           </div>
         </div>
 
         <!-- Flagship 2: Hypersheet -->
-        <div class="rounded-2xl border border-border bg-card p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="rounded-2xl border border-border bg-card p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-3xl">📑</span>
               <span class="text-xs font-mono px-2.5 py-1 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 font-semibold">1,000,000 Cells</span>
             </div>
-            <h2 class="text-2xl font-bold tracking-tight">Hypersheet Reactive Matrix</h2>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Hypermedia spreadsheet engine featuring <strong>2D Sparse Matrix Signals ($O(1)$ coordinate indexing)</strong>, topological formula DAG evaluation with <code>#CYCLE!</code> detection, 2D roving keyboard navigation, and optimistic transaction rollback (<kbd class="text-[10px] bg-muted px-1 rounded">Ctrl+Z</kbd>).
+            <h2 class="text-xl font-bold tracking-tight">Hypersheet Reactive Matrix</h2>
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              Hypermedia spreadsheet engine featuring <strong>2D Sparse Matrix Signals ($O(1)$ indexing)</strong>, Kahn DAG topological formula evaluation, <code>#CYCLE!</code> detection, and transaction rollback.
             </p>
-            <div class="flex flex-wrap gap-2 pt-2">
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxBolt.matrix</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxCalc DAG</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxA11y 2D Nav</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Grid-Delta SSE</span>
+            <div class="flex flex-wrap gap-1.5 pt-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Sparse Matrix</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxCalc DAG</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Undo / Redo</span>
             </div>
           </div>
-          <div class="pt-8">
-            <a href="/demo/hypersheet" class="inline-flex items-center justify-center w-full h-11 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition-colors shadow-sm">
-              Launch Hypersheet Matrix Demo →
+          <div class="pt-6">
+            <a href="/demo/hypersheet" class="inline-flex items-center justify-center w-full h-10 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-colors shadow-sm">
+              Launch Hypersheet Demo →
             </a>
           </div>
         </div>
 
         <!-- Flagship 3: Kosmos Universe -->
-        <div class="rounded-2xl border border-border bg-card p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="rounded-2xl border border-border bg-card p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-3xl">🌌</span>
               <span class="text-xs font-mono px-2.5 py-1 rounded bg-purple-500/10 text-purple-500 border border-purple-500/20 font-semibold">120 FPS Loop</span>
             </div>
-            <h2 class="text-2xl font-bold tracking-tight">Kosmos Spatial Universe</h2>
-            <p class="text-sm text-muted-foreground leading-relaxed">
-              Interactive orbital astrophysics simulation powered by <code>HxBolt.ticker</code> (120 FPS game loop) and the <strong>Autonomous Spatial Bridge (<code>HxSpatial</code>)</strong> seamlessly coordinating 2D telemetry HUDs with 3D celestial rendering.
+            <h2 class="text-xl font-bold tracking-tight">Kosmos Spatial Universe</h2>
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              Interactive orbital astrophysics simulation powered by <code>HxBolt.ticker</code> (120 FPS game loop) and the <strong>Autonomous Spatial Bridge (<code>HxSpatial</code>)</strong> coordinating 2D HUDs with 3D celestial bodies.
             </p>
-            <div class="flex flex-wrap gap-2 pt-2">
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxSpatial</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">120 FPS Ticker</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Keplerian Math</span>
+            <div class="flex flex-wrap gap-1.5 pt-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">HxSpatial</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">120 FPS Loop</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Orbital Physics</span>
             </div>
           </div>
-          <div class="pt-8">
-            <a href="/demo/universe" class="inline-flex items-center justify-center w-full h-11 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-sm transition-colors shadow-sm">
-              Launch Kosmos Universe Demo →
+          <div class="pt-6">
+            <a href="/demo/universe" class="inline-flex items-center justify-center w-full h-10 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs transition-colors shadow-sm">
+              Launch Kosmos Demo →
             </a>
           </div>
         </div>
 
-        <!-- Flagship 4: 120+ UI Components -->
-        <div class="rounded-2xl border border-border bg-card p-8 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+        <!-- Flagship 4: Kinetic Physics & Sim -->
+        <div class="rounded-2xl border border-border bg-card p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group border-cyan-500/30">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-3xl">⚛️</span>
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold">New: HxSim</span>
+            </div>
+            <h2 class="text-xl font-bold tracking-tight">Kinetic Physics & Sim</h2>
+            <p class="text-xs text-muted-foreground leading-relaxed">
+              Decoupled 120Hz physics accumulator: <strong>Reynolds Boids flocking</strong>, softened <strong>N-Body gravitational attraction</strong>, elastic particle collisions, Conway Life, and Physarum slime mould.
+            </p>
+            <div class="flex flex-wrap gap-1.5 pt-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">hx-sim="boids"</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">N-Body Gravity</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">120Hz Acc</span>
+            </div>
+          </div>
+          <div class="pt-6">
+            <a href="/docs/components/simulation" class="inline-flex items-center justify-center w-full h-10 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs transition-colors shadow-sm">
+              Launch Sim Engine →
+            </a>
+          </div>
+        </div>
+
+        <!-- Flagship 5: 120+ UI Components -->
+        <div class="rounded-2xl border border-border bg-card p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <span class="text-3xl">🧩</span>
               <span class="text-xs font-mono px-2.5 py-1 rounded bg-amber-500/10 text-amber-500 border border-amber-500/20 font-semibold">120+ Components</span>
             </div>
-            <h2 class="text-2xl font-bold tracking-tight">Component Sandbox & ScaleUI</h2>
-            <p class="text-sm text-muted-foreground leading-relaxed">
+            <h2 class="text-xl font-bold tracking-tight">Component Sandbox & ScaleUI</h2>
+            <p class="text-xs text-muted-foreground leading-relaxed">
               100% copy-paste HTML components with dark mode theming, WAI-ARIA accessibility compliance, and interactive <strong>Fluid ScaleUI Resizing</strong> directly in the browser.
             </p>
-            <div class="flex flex-wrap gap-2 pt-2">
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Copy-Paste HTML</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">ScaleUI Resizer</span>
-              <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Zero Node/NPM</span>
+            <div class="flex flex-wrap gap-1.5 pt-2">
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Copy-Paste HTML</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">ScaleUI Resizer</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground">Zero Node/NPM</span>
             </div>
           </div>
-          <div class="pt-8">
-            <a href="/docs/components/button" class="inline-flex items-center justify-center w-full h-11 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-sm transition-colors shadow-sm">
-              Explore 120+ Component Catalog →
+          <div class="pt-6">
+            <a href="/docs/components/button" class="inline-flex items-center justify-center w-full h-10 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition-colors shadow-sm">
+              Explore 120+ Components →
             </a>
           </div>
         </div>
 
       </div>
 
-      <!-- Live Interactive Engine Health & Diagnostics Widget -->
+      <!-- Live Interactive Engine Health & Diagnostics Widget with Sim Preview -->
       <div class="rounded-2xl border border-border bg-muted/30 p-6 lg:p-8 space-y-6">
         <script type="application/json" hx-state>
         {
           "calcA1": 150,
           "calcB1": 350,
-          "searchQuery": "",
-          "statusMsg": "All 10 Engines Ready"
+          "simTheme": "cyan",
+          "currentRole": "admin"
         }
         </script>
         <div class="flex items-center justify-between border-b border-border pb-4">
           <div>
             <h3 class="font-bold text-lg">⚡ In-Browser Reactive Engine Live Test</h3>
-            <p class="text-xs text-muted-foreground">Test HxBolt signal reactivity and HxCalc topological formulas live right on this page.</p>
+            <p class="text-xs text-muted-foreground">Test HxBolt signal reactivity, HxCalc topological DAG formulas, and HxSim 120Hz physics live.</p>
           </div>
           <div class="text-xs font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-            ● 10 Engines Active
+            ● 11 Engines Active • Strict CSP Level 3
           </div>
         </div>
 
@@ -222,6 +246,30 @@
             </div>
           </div>
         </div>
+
+        <!-- Mini Live Kinetic Sim Canvas -->
+        <div class="pt-4 border-t border-border space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-cyan-400 text-sm font-bold">⚛️ Live Kinetic Boids Simulation (HxSim)</span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Decoupled 120Hz Loop</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button hx-action="$sim('#hub-sim-canvas', 'preset', 'boids')" class="px-2 py-1 rounded text-xs bg-slate-800 hover:bg-slate-700 text-slate-200">Boids</button>
+              <button hx-action="$sim('#hub-sim-canvas', 'preset', 'gravity')" class="px-2 py-1 rounded text-xs bg-slate-800 hover:bg-slate-700 text-slate-200">Gravity</button>
+              <button hx-action="$sim('#hub-sim-canvas', 'preset', 'slime')" class="px-2 py-1 rounded text-xs bg-slate-800 hover:bg-slate-700 text-slate-200">Slime</button>
+            </div>
+          </div>
+          <canvas id="hub-sim-canvas" 
+                  hx-sim="boids" 
+                  hx-sim-count="120" 
+                  hx-sim-speed="1.2" 
+                  hx-sim-interactive="attract" 
+                  hx-sim-trails="true" 
+                  hx-sim-theme="cyan" 
+                  class="w-full h-44 rounded-xl border border-border bg-slate-950 block">
+          </canvas>
+        </div>
       </div>
 
     </div>
@@ -229,7 +277,7 @@
 
   <!-- Footer -->
   <footer class="border-t border-border py-8 px-4 text-center text-xs text-muted-foreground">
-    <p>HTMXUI v0.1.0 • Built for Go, Rust, Python & .NET Engineers • Released under MIT License</p>
+    <p>HTMXUI v1.0.0 • Built for Go, Rust, Python, Bun & .NET Fullstack Teams • Released under MIT License</p>
   </footer>
 
 </body>

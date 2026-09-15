@@ -13,6 +13,8 @@
   <script src="/htmx-virtual.js"></script>
   <script src="/htmx-grid.js"></script>
   <script src="/htmx-offline.js"></script>
+  <script src="/htmx-sim.js"></script>
+  <script src="/htmx-calc.js"></script>
   <script src="/htmx-devtools.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
@@ -36,10 +38,11 @@
   <script type="application/json" hx-state>
   {
     "currentTab": "dashboard",
+    "activeRole": "admin",
     "sidebarOpen": true,
     "theme": "dark",
     "notifications": [
-      { "id": 1, "title": "System Online", "msg": "HTMXUI 9 Engines Initialized", "time": "Just now" }
+      { "id": 1, "title": "System Online", "msg": "HTMXUI 11 Engines Initialized", "time": "Just now" }
     ],
     "kpis": {
       "revenue": 1284500,
@@ -119,6 +122,24 @@
           <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
         </button>
 
+        <button hx-on:click="currentTab = 'fleet-sim'"
+                hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'fleet-sim', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'fleet-sim' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors">
+          <div class="flex items-center gap-2.5">
+            <span>🚚</span> Fleet Kinetic Sim
+          </div>
+          <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 font-bold">120Hz</span>
+        </button>
+
+        <button hx-on:click="currentTab = 'rbac'"
+                hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'rbac', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'rbac' }"
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors">
+          <div class="flex items-center gap-2.5">
+            <span>🛡️</span> RBAC &amp; Approvals
+          </div>
+          <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-bold">Bank</span>
+        </button>
+
         <button hx-on:click="currentTab = 'settings'"
                 hx-class="{ 'bg-primary/15 text-primary font-semibold': currentTab === 'settings', 'text-slate-400 hover:bg-slate-800 hover:text-slate-200': currentTab !== 'settings' }"
                 class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors">
@@ -130,7 +151,7 @@
       <div class="p-3 rounded-xl border border-slate-800 bg-slate-900/80 space-y-1">
         <div class="text-[10px] text-slate-400 font-semibold uppercase">Engine Status</div>
         <div class="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 9 Engines Active
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 11 Engines Active
         </div>
         <div class="text-[10px] text-slate-400 font-mono">0ms Local Reactivity</div>
       </div>
@@ -379,6 +400,144 @@
             <button onclick="alert('Settings saved into local Bolt state!')" class="px-4 py-2 bg-primary text-slate-950 font-bold text-xs rounded-md hover:bg-primary/90">
               Save Preferences
             </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 6: FLEET LOGISTICS KINETIC SIMULATION -->
+      <div hx-show="currentTab === 'fleet-sim'" class="space-y-6" style="display:none;">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <span>🚚</span> Logistics Fleet Kinetic Simulation
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">120Hz Decoupled Kinetic Engine • Multi-Agent Autonomous Fleet Routing</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2.5 py-1 rounded-md">Engine: htmx-sim.js</span>
+            <span class="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-md">Spatial Partitioning</span>
+          </div>
+        </div>
+
+        <!-- Simulation Toolbar -->
+        <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/60 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 font-semibold mr-1">Fleet Mode:</span>
+            <button onclick="$sim('#erp-fleet-canvas', 'preset', 'boids')" class="px-3 py-1.5 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 text-xs font-mono font-semibold transition-all">🦅 Convoy Flocking</button>
+            <button onclick="$sim('#erp-fleet-canvas', 'preset', 'collision')" class="px-3 py-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-500/30 text-xs font-mono font-semibold transition-all">📦 Warehouse Elastic Bounds</button>
+            <button onclick="$sim('#erp-fleet-canvas', 'preset', 'gravity')" class="px-3 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 text-xs font-mono font-semibold transition-all">🪐 Hub Gravity Wells</button>
+            <button onclick="$sim('#erp-fleet-canvas', 'preset', 'slime')" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-mono font-semibold transition-all">🛣️ Route Optimization (Physarum)</button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="$sim('#erp-fleet-canvas', 'reset')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">↺ Reset Fleet</button>
+            <button onclick="$sim('#erp-fleet-canvas', 'burst', 80)" class="px-3 py-1.5 rounded-lg bg-primary text-slate-950 font-bold text-xs shadow-sm">+ Deploy 80 Trucks</button>
+          </div>
+        </div>
+
+        <!-- Canvas Frame -->
+        <div class="rounded-xl border border-slate-800 bg-slate-950 p-2 shadow-2xl relative overflow-hidden">
+          <canvas id="erp-fleet-canvas"
+                  hx-sim="boids"
+                  hx-sim-particles="300"
+                  hx-sim-speed="1.2"
+                  hx-sim-responsive="true"
+                  class="w-full h-[450px] rounded-lg block bg-slate-950"></canvas>
+          <div class="absolute bottom-5 left-5 pointer-events-none bg-slate-900/80 backdrop-blur border border-slate-800 rounded-lg p-3 text-[11px] font-mono text-slate-400 space-y-1">
+            <div>💡 Click canvas to create fleet attraction points</div>
+            <div>⚡ Real-time collision avoidance accumulator running at 120Hz</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 7: BANK-GRADE RBAC & APPROVAL ENGINE -->
+      <div hx-show="currentTab === 'rbac'" class="space-y-6 max-w-4xl" style="display:none;">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <span>🛡️</span> Bank-Grade RBAC &amp; Invoice Authorization
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Reactive Access Control Matrix with Declarative Directives (<code class="text-emerald-400 font-mono">hx-role</code>, <code class="text-emerald-400 font-mono">hx-can</code>, <code class="text-emerald-400 font-mono">hx-role.redact</code>)</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-md">Zero-Eval CSP Level 3</span>
+          </div>
+        </div>
+
+        <!-- Role Simulator -->
+        <div class="p-6 rounded-xl border border-slate-800 bg-slate-900/60 space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">Current Simulation Identity:</div>
+            <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase" hx-text="activeRole">admin</span>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <button @click="activeRole = 'admin'; window.HTMXUI && window.HTMXUI.setRole('admin', ['invoice:approve', 'payroll:view', 'ledger:write'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'admin', 'bg-slate-950 text-slate-300 hover:bg-slate-800': activeRole !== 'admin' }"
+                    class="p-3 rounded-lg border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">👑 Finance Director (Admin)</div>
+              <div class="text-[10px] text-slate-400 mt-1">Full Payout &amp; Approval</div>
+            </button>
+
+            <button @click="activeRole = 'manager'; window.HTMXUI && window.HTMXUI.setRole('manager', ['invoice:approve'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'manager', 'bg-slate-950 text-slate-300 hover:bg-slate-800': activeRole !== 'manager' }"
+                    class="p-3 rounded-lg border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">👔 Logistics Manager</div>
+              <div class="text-[10px] text-slate-400 mt-1">Can Approve Invoices</div>
+            </button>
+
+            <button @click="activeRole = 'clerk'; window.HTMXUI && window.HTMXUI.setRole('clerk', ['invoice:create'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'clerk', 'bg-slate-950 text-slate-300 hover:bg-slate-800': activeRole !== 'clerk' }"
+                    class="p-3 rounded-lg border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">📝 Billing Clerk</div>
+              <div class="text-[10px] text-slate-400 mt-1">Create Only (No Approval)</div>
+            </button>
+
+            <button @click="activeRole = 'auditor'; window.HTMXUI && window.HTMXUI.setRole('auditor', ['ledger:read'])"
+                    hx-class="{ 'ring-2 ring-emerald-500 bg-emerald-600/20 text-emerald-300': activeRole === 'auditor', 'bg-slate-950 text-slate-300 hover:bg-slate-800': activeRole !== 'auditor' }"
+                    class="p-3 rounded-lg border border-slate-800 text-left transition-all">
+              <div class="font-bold text-xs">🔍 External Auditor</div>
+              <div class="text-[10px] text-slate-400 mt-1">Read Only (Redacted)</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- High Value Approvals Table -->
+        <div class="p-6 rounded-xl border border-slate-800 bg-slate-900/40 space-y-4">
+          <h3 class="text-sm font-semibold text-white">Pending High-Value Invoices ($100k+)</h3>
+
+          <div class="space-y-3">
+            <div class="p-4 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between gap-4">
+              <div>
+                <div class="text-xs font-semibold text-white">INV-89042 • Maersk Line Freight Shipping</div>
+                <div class="text-[11px] text-slate-400">Total: <strong class="text-white font-mono">$480,000.00</strong> • 1,200 TEU Intermodal</div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button hx-can.disable="invoice:approve" onclick="alert('Invoice approved!')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-xs rounded-md shadow transition-colors">
+                  Approve Payout
+                </button>
+                <div hx-role.redact="admin, manager" class="text-xs text-slate-500 italic">
+                  [Sign-off requires Manager or Admin role]
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-between gap-4">
+              <div>
+                <div class="text-xs font-semibold text-white">INV-89043 • Hapag-Lloyd Port Terminal Access</div>
+                <div class="text-[11px] text-slate-400">Total: <strong class="text-white font-mono">$125,000.00</strong> • Rotterdam Hub</div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                <button hx-can.disable="invoice:approve" onclick="alert('Invoice approved!')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-xs rounded-md shadow transition-colors">
+                  Approve Payout
+                </button>
+                <div hx-role.redact="admin, manager" class="text-xs text-slate-500 italic">
+                  [Sign-off requires Manager or Admin role]
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Timeline — HTMXUI</title>
+  <title>Simulation — HTMXUI</title>
   <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
   <script src="/htmx-bolt.js"></script>
   <script src="/htmx-flash.js"></script>
@@ -132,7 +132,7 @@
 <a href="/docs/components/tag/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tag</a>
 <a href="/docs/components/text/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Text</a>
 <a href="/docs/components/textarea/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Textarea</a>
-<a href="/docs/components/timeline/" class="block rounded-md px-3 py-1.5 text-sm bg-accent font-medium text-accent-foreground transition-colors">Timeline</a>
+<a href="/docs/components/timeline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Timeline</a>
 <a href="/docs/components/time-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Time Picker</a>
 <a href="/docs/components/toast/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toast</a>
 <a href="/docs/components/toggle/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle</a>
@@ -151,60 +151,396 @@
 <a href="/docs/components/hx-virtual/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Virtual</a>
 <a href="/docs/components/hx-offline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Offline</a>
 <a href="/docs/components/hollywood-webfx/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hollywood Webfx</a>
-<a href="/docs/components/simulation/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Simulation</a></div></div></div>
+<a href="/docs/components/simulation/" class="block rounded-md px-3 py-1.5 text-sm bg-accent font-medium text-accent-foreground transition-colors">Simulation</a></div></div></div>
     </aside>
     <main class="flex-1 flex flex-col min-w-0">
       <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-card sticky top-0 z-30">
         <div class="flex items-center gap-4">
-          <h1 class="font-semibold text-base">Timeline</h1>
+          <h1 class="font-semibold text-base">Simulation</h1>
           <a href="/demo/" class="text-xs bg-primary/10 text-primary font-medium px-2.5 py-1 rounded-full hover:bg-primary/20 transition-colors">Live Demos Hub</a>
         </div>
         <a href="https://github.com/hyperlibs/htmxUI" target="_blank" class="text-xs text-muted-foreground hover:text-foreground">GitHub ↗</a>
       </header>
       <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
         <div class="space-y-2">
-          <h1 class="text-3xl font-extrabold tracking-tight">Timeline</h1>
+          <h1 class="text-3xl font-extrabold tracking-tight">Simulation</h1>
           <p class="text-muted-foreground text-sm">Interactive Shadcn-quality hypermedia component for HTMXUI.</p>
         </div>
         <div class="space-y-4">
           <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>
           <div class="rounded-xl border border-border p-8 bg-card shadow-sm flex items-center justify-center min-h-[160px]">
-            <div class="w-full max-w-xl flex flex-col items-center gap-4"><!-- 
-  Component: timeline.html
-  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
-  Usage: Bind styles dynamically using hx-class="{ 'bg-primary': themeColor === 'primary' }" or hx-style="{ width: size === 'lg' ? '100%' : 'auto' }"
--->
-<ol hx-ext="reactive" hx-state="{ themeColor: \'primary\', size: \'md\', isOpen: false }"  class="relative border-l border-border ml-3 mt-3">
-  {items}
-  <!-- Example item:
-  <li class="mb-10 ml-4">
-    <div class="absolute w-3 h-3 bg-muted rounded-full mt-1.5 -left-1.5 border border-background"></div>
-    <time class="mb-1 text-sm font-normal leading-none text-muted-foreground">Date</time>
-    <h3 class="text-lg font-semibold text-foreground">Title</h3>
-    <p class="mb-4 text-base font-normal text-muted-foreground">Description</p>
-  </li>
-  -->
-</ol></div>
+            <div class="w-full max-w-xl flex flex-col items-center gap-4"><div class="space-y-12 max-w-5xl py-6 text-foreground" hx-state='{ "activeSim": "boids", "count": 140, "speed": 1.0, "trails": true }'>
+  <!-- Header Title -->
+  <div>
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3">
+      <span>🧬</span> High-Order Kinetic Simulations &amp; Particle Renderers
+    </div>
+    <h1 class="text-4xl font-extrabold tracking-tight">Kinetic Simulation Engine</h1>
+    <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+      Decoupled 120Hz physics calculations with GPU-accelerated canvas rendering. Declarative HTML attributes (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-sim="boids|gravity|collision|life|slime"</code>) bring complex emergence, flocking, and (n^2)$ astrophysics to life.
+    </p>
+  </div>
+
+  <!-- Interactive Live Simulation Showcase -->
+  <section class="space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-card border border-border shadow-sm">
+      <!-- Preset Selectors -->
+      <div class="flex flex-wrap gap-2">
+        <button 
+          hx-action="activeSim = 'boids'; ('#demo-sim-canvas', 'preset', 'boids')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'boids', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'boids'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🐦</span> Boids Swarm
+        </button>
+        <button 
+          hx-action="activeSim = 'gravity'; ('#demo-sim-canvas', 'preset', 'gravity')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'gravity', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'gravity'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🪐</span> N-Body Gravity
+        </button>
+        <button 
+          hx-action="activeSim = 'collision'; ('#demo-sim-canvas', 'preset', 'collision')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'collision', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'collision'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>💥</span> Elastic Collisions
+        </button>
+        <button 
+          hx-action="activeSim = 'life'; ('#demo-sim-canvas', 'preset', 'life')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'life', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'life'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🧬</span> Conway's Life
+        </button>
+        <button 
+          hx-action="activeSim = 'slime'; ('#demo-sim-canvas', 'preset', 'slime')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'slime', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'slime'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🧫</span> Slime Mould
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button 
+          hx-action="('#demo-sim-canvas', 'reset')"
+          class="px-3.5 py-1.5 rounded-lg bg-muted hover:bg-accent text-xs font-medium border border-border transition-colors">
+          🔄 Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Canvas Viewport -->
+    <div class="relative w-full h-[480px] rounded-3xl overflow-hidden border border-border bg-slate-950 shadow-2xl">
+      <canvas 
+        id="demo-sim-canvas" 
+        hx-sim="boids" 
+        hx-sim-count="140" 
+        hx-sim-speed="1.0" 
+        hx-sim-interactive="true" 
+        hx-sim-trails="true" 
+        class="w-full h-full block">
+      </canvas>
+
+      <!-- Overlay HUD -->
+      <div class="absolute top-4 left-4 pointer-events-none flex flex-col gap-1.5">
+        <div class="px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-emerald-400 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>120Hz Decoupled Physics Loop</span>
+        </div>
+        <div class="px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-slate-300">
+          <span>Simulation: </span>
+          <span class="font-bold text-sky-400" hx-text="activeSim">boids</span>
+        </div>
+      </div>
+
+      <div class="absolute bottom-4 left-4 right-4 pointer-events-none flex justify-between items-center text-[11px] text-slate-400 font-mono">
+        <span class="bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur">Left Click / Drag: Attract • Right Click: Repel</span>
+        <span class="bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur">HTMXUI SimEngine v1.0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Grid: 5 Algorithmic Paradigms -->
+  <section class="space-y-6">
+    <h2 class="text-2xl font-bold tracking-tight">Five Built-in Algorithmic Paradigms</h2>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 1. Boids -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-xl">
+          🐦
+        </div>
+        <h3 class="text-base font-bold">1. Reynolds Flocking (Boids)</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Vectorized steer forces computed across 3 rules: <strong>Separation</strong> (repel close neighbors), <strong>Alignment</strong> (match flock velocity vector), and <strong>Cohesion</strong> (steer toward flock centroid).
+        </p>
+      </div>
+
+      <!-- 2. N-Body Gravity -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+          🪐
+        </div>
+        <h3 class="text-base font-bold">2. N-Body Gravity</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          All-pairs gravitational potential with Plummer softening factor ($\epsilon^2 = 120$) to prevent division-by-zero singularities. Supports orbital disk configurations with central black hole attractors.
+        </p>
+      </div>
+
+      <!-- 3. Elastic Collisions -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
+          💥
+        </div>
+        <h3 class="text-base font-bold">3. Elastic Collision Kinematics</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Pairwise circle-circle overlap resolution and 1D projected normal impulse transfer preserving kinetic energy with coefficient of restitution $.
+        </p>
+      </div>
+
+      <!-- 4. Conway's Life -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+          🧬
+        </div>
+        <h3 class="text-base font-bold">4. Conway's Cellular Life</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Toroidal 2D bitmask matrix computing cell survival and births. Cells brighten and shift chromatic hue as generational age accumulates.
+        </p>
+      </div>
+
+      <!-- 5. Physarum Slime -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center text-xl">
+          🧫
+        </div>
+        <h3 class="text-base font-bold">5. Physarum Slime Mould</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Chemoattractant sensory agents sampling diffuse pheromone gradients with 3 forward sensor antennae. Creates self-organizing organic biological transport networks.
+        </p>
+      </div>
+
+      <!-- Declarative Architecture -->
+      <div class="p-6 rounded-2xl border border-primary/20 bg-primary/5 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-xl">
+          ⚡
+        </div>
+        <h3 class="text-base font-bold text-primary">Declarative HTML Directives</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Zero WebGL boilerplate. Simply place <code class="bg-muted px-1 rounded font-mono text-xs">hx-sim="preset"</code> on any standard <code class="bg-muted px-1 rounded font-mono text-xs">&lt;canvas&gt;</code> element to instantiate the high-performance physics runner.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code Snippet -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">Declarative Usage in HTMXUI</h2>
+    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-xs overflow-x-auto">
+      <pre><code>&lt;!-- 1. Declarative Canvas Mount --&gt;
+&lt;canvas 
+  hx-sim="boids" 
+  hx-sim-count="150" 
+  hx-sim-speed="1.0" 
+  hx-sim-interactive="true"
+  hx-sim-trails="true" 
+  class="w-full h-96 rounded-2xl border border-border bg-slate-950"&gt;
+&lt;/canvas&gt;
+
+&lt;!-- 2. Control Simulation via HyperFX Actions --&gt;
+&lt;button hx-action="('#my-canvas', 'preset', 'gravity')"&gt;Switch to Gravity&lt;/button&gt;
+&lt;button hx-action="('#my-canvas', 'reset')"&gt;Reset Particles&lt;/button&gt;</code></pre>
+    </div>
+  </section>
+</div>
+</div>
           </div>
         </div>
         <div class="space-y-4">
           <h2 class="text-xl font-bold tracking-tight">HTML Source</h2>
-          <div class="code-block"><pre><code>&lt;!-- 
-  Component: timeline.html
-  Configurable State: themeColor ('primary'|'secondary'|'destructive'), size ('sm'|'md'|'lg'), isOpen (boolean)
-  Usage: Bind styles dynamically using hx-class=&quot;{ 'bg-primary': themeColor === 'primary' }&quot; or hx-style=&quot;{ width: size === 'lg' ? '100%' : 'auto' }&quot;
---&gt;
-&lt;ol hx-ext=&quot;reactive&quot; hx-state=&quot;{ themeColor: \'primary\', size: \'md\', isOpen: false }&quot;  class=&quot;relative border-l border-border ml-3 mt-3&quot;&gt;
-  {items}
-  &lt;!-- Example item:
-  &lt;li class=&quot;mb-10 ml-4&quot;&gt;
-    &lt;div class=&quot;absolute w-3 h-3 bg-muted rounded-full mt-1.5 -left-1.5 border border-background&quot;&gt;&lt;/div&gt;
-    &lt;time class=&quot;mb-1 text-sm font-normal leading-none text-muted-foreground&quot;&gt;Date&lt;/time&gt;
-    &lt;h3 class=&quot;text-lg font-semibold text-foreground&quot;&gt;Title&lt;/h3&gt;
-    &lt;p class=&quot;mb-4 text-base font-normal text-muted-foreground&quot;&gt;Description&lt;/p&gt;
-  &lt;/li&gt;
-  --&gt;
-&lt;/ol&gt;</code></pre></div>
+          <div class="code-block"><pre><code>&lt;div class=&quot;space-y-12 max-w-5xl py-6 text-foreground&quot; hx-state='{ &quot;activeSim&quot;: &quot;boids&quot;, &quot;count&quot;: 140, &quot;speed&quot;: 1.0, &quot;trails&quot;: true }'&gt;
+  &lt;!-- Header Title --&gt;
+  &lt;div&gt;
+    &lt;div class=&quot;inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3&quot;&gt;
+      &lt;span&gt;🧬&lt;/span&gt; High-Order Kinetic Simulations &amp;amp; Particle Renderers
+    &lt;/div&gt;
+    &lt;h1 class=&quot;text-4xl font-extrabold tracking-tight&quot;&gt;Kinetic Simulation Engine&lt;/h1&gt;
+    &lt;p class=&quot;text-muted-foreground mt-2 text-sm leading-relaxed&quot;&gt;
+      Decoupled 120Hz physics calculations with GPU-accelerated canvas rendering. Declarative HTML attributes (&lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-sim=&quot;boids|gravity|collision|life|slime&quot;&lt;/code&gt;) bring complex emergence, flocking, and (n^2)$ astrophysics to life.
+    &lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Interactive Live Simulation Showcase --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;div class=&quot;flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-card border border-border shadow-sm&quot;&gt;
+      &lt;!-- Preset Selectors --&gt;
+      &lt;div class=&quot;flex flex-wrap gap-2&quot;&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'boids'; ('#demo-sim-canvas', 'preset', 'boids')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'boids', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'boids'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🐦&lt;/span&gt; Boids Swarm
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'gravity'; ('#demo-sim-canvas', 'preset', 'gravity')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'gravity', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'gravity'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🪐&lt;/span&gt; N-Body Gravity
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'collision'; ('#demo-sim-canvas', 'preset', 'collision')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'collision', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'collision'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;💥&lt;/span&gt; Elastic Collisions
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'life'; ('#demo-sim-canvas', 'preset', 'life')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'life', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'life'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🧬&lt;/span&gt; Conway's Life
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'slime'; ('#demo-sim-canvas', 'preset', 'slime')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'slime', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'slime'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🧫&lt;/span&gt; Slime Mould
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Action Buttons --&gt;
+      &lt;div class=&quot;flex items-center gap-2&quot;&gt;
+        &lt;button 
+          hx-action=&quot;('#demo-sim-canvas', 'reset')&quot;
+          class=&quot;px-3.5 py-1.5 rounded-lg bg-muted hover:bg-accent text-xs font-medium border border-border transition-colors&quot;&gt;
+          🔄 Reset
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Live Canvas Viewport --&gt;
+    &lt;div class=&quot;relative w-full h-[480px] rounded-3xl overflow-hidden border border-border bg-slate-950 shadow-2xl&quot;&gt;
+      &lt;canvas 
+        id=&quot;demo-sim-canvas&quot; 
+        hx-sim=&quot;boids&quot; 
+        hx-sim-count=&quot;140&quot; 
+        hx-sim-speed=&quot;1.0&quot; 
+        hx-sim-interactive=&quot;true&quot; 
+        hx-sim-trails=&quot;true&quot; 
+        class=&quot;w-full h-full block&quot;&gt;
+      &lt;/canvas&gt;
+
+      &lt;!-- Overlay HUD --&gt;
+      &lt;div class=&quot;absolute top-4 left-4 pointer-events-none flex flex-col gap-1.5&quot;&gt;
+        &lt;div class=&quot;px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-emerald-400 flex items-center gap-2&quot;&gt;
+          &lt;span class=&quot;w-2 h-2 rounded-full bg-emerald-500 animate-pulse&quot;&gt;&lt;/span&gt;
+          &lt;span&gt;120Hz Decoupled Physics Loop&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-slate-300&quot;&gt;
+          &lt;span&gt;Simulation: &lt;/span&gt;
+          &lt;span class=&quot;font-bold text-sky-400&quot; hx-text=&quot;activeSim&quot;&gt;boids&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;absolute bottom-4 left-4 right-4 pointer-events-none flex justify-between items-center text-[11px] text-slate-400 font-mono&quot;&gt;
+        &lt;span class=&quot;bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur&quot;&gt;Left Click / Drag: Attract • Right Click: Repel&lt;/span&gt;
+        &lt;span class=&quot;bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur&quot;&gt;HTMXUI SimEngine v1.0&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Feature Grid: 5 Algorithmic Paradigms --&gt;
+  &lt;section class=&quot;space-y-6&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-bold tracking-tight&quot;&gt;Five Built-in Algorithmic Paradigms&lt;/h2&gt;
+    
+    &lt;div class=&quot;grid md:grid-cols-2 lg:grid-cols-3 gap-6&quot;&gt;
+      &lt;!-- 1. Boids --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-xl&quot;&gt;
+          🐦
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;1. Reynolds Flocking (Boids)&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Vectorized steer forces computed across 3 rules: &lt;strong&gt;Separation&lt;/strong&gt; (repel close neighbors), &lt;strong&gt;Alignment&lt;/strong&gt; (match flock velocity vector), and &lt;strong&gt;Cohesion&lt;/strong&gt; (steer toward flock centroid).
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 2. N-Body Gravity --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl&quot;&gt;
+          🪐
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;2. N-Body Gravity&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          All-pairs gravitational potential with Plummer softening factor ($\epsilon^2 = 120$) to prevent division-by-zero singularities. Supports orbital disk configurations with central black hole attractors.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 3. Elastic Collisions --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xl&quot;&gt;
+          💥
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;3. Elastic Collision Kinematics&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Pairwise circle-circle overlap resolution and 1D projected normal impulse transfer preserving kinetic energy with coefficient of restitution $.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 4. Conway's Life --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl&quot;&gt;
+          🧬
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;4. Conway's Cellular Life&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Toroidal 2D bitmask matrix computing cell survival and births. Cells brighten and shift chromatic hue as generational age accumulates.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 5. Physarum Slime --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center text-xl&quot;&gt;
+          🧫
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;5. Physarum Slime Mould&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Chemoattractant sensory agents sampling diffuse pheromone gradients with 3 forward sensor antennae. Creates self-organizing organic biological transport networks.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Declarative Architecture --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-primary/20 bg-primary/5 space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-xl&quot;&gt;
+          ⚡
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold text-primary&quot;&gt;Declarative HTML Directives&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Zero WebGL boilerplate. Simply place &lt;code class=&quot;bg-muted px-1 rounded font-mono text-xs&quot;&gt;hx-sim=&quot;preset&quot;&lt;/code&gt; on any standard &lt;code class=&quot;bg-muted px-1 rounded font-mono text-xs&quot;&gt;&amp;lt;canvas&amp;gt;&lt;/code&gt; element to instantiate the high-performance physics runner.
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Code Snippet --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-xl font-bold tracking-tight&quot;&gt;Declarative Usage in HTMXUI&lt;/h2&gt;
+    &lt;div class=&quot;p-4 rounded-2xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-xs overflow-x-auto&quot;&gt;
+      &lt;pre&gt;&lt;code&gt;&amp;lt;!-- 1. Declarative Canvas Mount --&amp;gt;
+&amp;lt;canvas 
+  hx-sim=&quot;boids&quot; 
+  hx-sim-count=&quot;150&quot; 
+  hx-sim-speed=&quot;1.0&quot; 
+  hx-sim-interactive=&quot;true&quot;
+  hx-sim-trails=&quot;true&quot; 
+  class=&quot;w-full h-96 rounded-2xl border border-border bg-slate-950&quot;&amp;gt;
+&amp;lt;/canvas&amp;gt;
+
+&amp;lt;!-- 2. Control Simulation via HyperFX Actions --&amp;gt;
+&amp;lt;button hx-action=&quot;('#my-canvas', 'preset', 'gravity')&quot;&amp;gt;Switch to Gravity&amp;lt;/button&amp;gt;
+&amp;lt;button hx-action=&quot;('#my-canvas', 'reset')&quot;&amp;gt;Reset Particles&amp;lt;/button&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+</code></pre></div>
         </div>
       </div>
     </main>

@@ -6,7 +6,7 @@
  */
 
 export type * from './types.d';
-export { HxBolt, HyperFX, SignalTracker, SparseMatrix, streamBatch, parseMicroDelta, createReactiveObject, evaluateExpression, executeAction, safeEvaluate, safeExecuteAction, formatDiag, reportError, ERROR_CATALOG, config, runWithEffect, getDiagnostics, clearDiagnostics, diagnosticHistory } from './htmx-bolt';
+export { HxBolt, HyperFX, SignalTracker, SparseMatrix, streamBatch, parseMicroDelta, createReactiveObject, evaluateExpression, executeAction, safeEvaluate, safeExecuteAction, formatDiag, reportError, ERROR_CATALOG, config, runWithEffect, getDiagnostics, clearDiagnostics, diagnosticHistory, authState, matchRole, matchPermission, enforceElementAuth, bindAuthDirectives, discoverMetaAuth } from './htmx-bolt';
 export { HxFlash, FlashDatabase, ColumnStore } from './htmx-flash';
 export { HxForm, defaultValidators, defaultMessages, validateInput, initForm, cellTransaction, cellTransactions } from './htmx-form';
 export { HxVibe, FlipManager, initVibe } from './htmx-vibe';

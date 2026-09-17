@@ -14,6 +14,8 @@
   <script src="/htmx-grid.js"></script>
   <script src="/htmx-offline.js"></script>
   <script src="/htmx-devtools.js"></script>
+  <script src="/htmx-calc.js"></script>
+  <script src="/htmx-sim.js"></script>
   <script src="/htmx-canvas.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
@@ -148,7 +150,8 @@
 <a href="/docs/components/hx-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Grid</a>
 <a href="/docs/components/hx-virtual/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Virtual</a>
 <a href="/docs/components/hx-offline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Offline</a>
-<a href="/docs/components/hollywood-webfx/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hollywood Webfx</a></div></div></div>
+<a href="/docs/components/hollywood-webfx/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hollywood Webfx</a>
+<a href="/docs/components/simulation/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Simulation</a></div></div></div>
     </aside>
     <main class="flex-1 flex flex-col min-w-0">
       <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-card sticky top-0 z-30">
@@ -161,7 +164,7 @@
       <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
         <div class="space-y-2">
           <h1 class="text-3xl font-extrabold tracking-tight">Introduction</h1>
-          <p class="text-muted-foreground text-sm">Interactive Shadcn-quality hypermedia component for HTMXUI.</p>
+          <p class="text-muted-foreground text-sm">Interactive production-grade hypermedia component for HTMXUI.</p>
         </div>
         <div class="space-y-4">
           <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>
@@ -194,7 +197,7 @@
       Original htmx completed HTML as a hypermedia. HTMXUI completes it as a high-performance, signal-reactive, agent-friendly application platform — with zero Virtual DOM, zero NPM runtime bloat, and sub-millisecond local reactivity.
     </p>
     <div class="p-4 rounded-xl border border-border bg-muted/40 font-mono text-sm text-foreground leading-relaxed shadow-sm">
-      <span class="text-primary font-bold">HTMXUI</span> = HTMX (Hypermedia Core) + Bolt (Signal Reactivity) + Flash (Fuzzy Search) + Form (Validation Machine) + Vibe (FLIP Layout) + A11y (Accessible Navigation) + Virtual (100k Windowing) + Grid (Data Grid) + Offline (IndexedDB Sync) + Calc (Excel DAG) + DevTools (HUD) + 100+ Shadcn-quality Components
+      <span class="text-primary font-bold">HTMXUI</span> = HTMX (Hypermedia Core) + Bolt (Signal Reactivity) + Flash (Fuzzy Search) + Form (Validation Machine) + Vibe (FLIP Layout) + A11y (Accessible Navigation) + Virtual (100k Windowing) + Grid (Data Grid) + Offline (IndexedDB Sync) + Calc (Excel DAG) + DevTools (HUD) + 100+ Production-Grade Components
     </div>
   </div>
 
@@ -212,7 +215,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <a href="/demo/tailadmin" class="group p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-all shadow-sm space-y-2">
         <div class="flex items-center justify-between">
-          <span class="font-bold text-sm text-foreground group-hover:text-primary transition-colors">📊 TailAdmin Dashboard</span>
+          <span class="font-bold text-sm text-foreground group-hover:text-primary transition-colors">📊 HyperAdmin Dashboard</span>
           <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">100% Pure HTMXUI</span>
         </div>
         <p class="text-xs text-muted-foreground leading-relaxed">
@@ -394,7 +397,7 @@
       <li><strong class="text-foreground">Predictable signal grammar</strong> — <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-state</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-model</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-for</code>, <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-if</code> form an unambiguous grammar</li>
       <li><strong class="text-foreground">Server-driven atomic mutations</strong> — AI agents can update parts of the UI by simply returning standard HTML fragments</li>
       <li><strong class="text-foreground">Zero build configuration fragility</strong> — agents don't get stuck debugging tsconfig, Babel, or Vite plugin errors</li>
-      <li><strong class="text-foreground">Machine-readable component contracts</strong> — uniform attribute standards across 100+ Shadcn-style components</li>
+      <li><strong class="text-foreground">Machine-readable component contracts</strong> — uniform attribute standards across 100+ production-grade components</li>
       <li><strong class="text-foreground">Self-contained components</strong> — copy, paste, or mutate an HTML block without breaking distant client state graphs</li>
       <li><strong class="text-foreground">Declarative validation rules</strong> — form validation in pure HTML attributes (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-validate="required|email"</code>)</li>
       <li><strong class="text-foreground">Global store access</strong> — clean shared state manipulation via <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">$store.name</code></li>
@@ -488,7 +491,7 @@
       Original htmx completed HTML as a hypermedia. HTMXUI completes it as a high-performance, signal-reactive, agent-friendly application platform — with zero Virtual DOM, zero NPM runtime bloat, and sub-millisecond local reactivity.
     &lt;/p&gt;
     &lt;div class=&quot;p-4 rounded-xl border border-border bg-muted/40 font-mono text-sm text-foreground leading-relaxed shadow-sm&quot;&gt;
-      &lt;span class=&quot;text-primary font-bold&quot;&gt;HTMXUI&lt;/span&gt; = HTMX (Hypermedia Core) + Bolt (Signal Reactivity) + Flash (Fuzzy Search) + Form (Validation Machine) + Vibe (FLIP Layout) + A11y (Accessible Navigation) + Virtual (100k Windowing) + Grid (Data Grid) + Offline (IndexedDB Sync) + Calc (Excel DAG) + DevTools (HUD) + 100+ Shadcn-quality Components
+      &lt;span class=&quot;text-primary font-bold&quot;&gt;HTMXUI&lt;/span&gt; = HTMX (Hypermedia Core) + Bolt (Signal Reactivity) + Flash (Fuzzy Search) + Form (Validation Machine) + Vibe (FLIP Layout) + A11y (Accessible Navigation) + Virtual (100k Windowing) + Grid (Data Grid) + Offline (IndexedDB Sync) + Calc (Excel DAG) + DevTools (HUD) + 100+ Production-Grade Components
     &lt;/div&gt;
   &lt;/div&gt;
 
@@ -506,7 +509,7 @@
     &lt;div class=&quot;grid grid-cols-1 sm:grid-cols-2 gap-4&quot;&gt;
       &lt;a href=&quot;/demo/tailadmin&quot; class=&quot;group p-4 rounded-xl border border-border bg-card hover:border-primary/50 transition-all shadow-sm space-y-2&quot;&gt;
         &lt;div class=&quot;flex items-center justify-between&quot;&gt;
-          &lt;span class=&quot;font-bold text-sm text-foreground group-hover:text-primary transition-colors&quot;&gt;📊 TailAdmin Dashboard&lt;/span&gt;
+          &lt;span class=&quot;font-bold text-sm text-foreground group-hover:text-primary transition-colors&quot;&gt;📊 HyperAdmin Dashboard&lt;/span&gt;
           &lt;span class=&quot;text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20&quot;&gt;100% Pure HTMXUI&lt;/span&gt;
         &lt;/div&gt;
         &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
@@ -688,7 +691,7 @@
       &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Predictable signal grammar&lt;/strong&gt; — &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-state&lt;/code&gt;, &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-model&lt;/code&gt;, &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-for&lt;/code&gt;, &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-if&lt;/code&gt; form an unambiguous grammar&lt;/li&gt;
       &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Server-driven atomic mutations&lt;/strong&gt; — AI agents can update parts of the UI by simply returning standard HTML fragments&lt;/li&gt;
       &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Zero build configuration fragility&lt;/strong&gt; — agents don't get stuck debugging tsconfig, Babel, or Vite plugin errors&lt;/li&gt;
-      &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Machine-readable component contracts&lt;/strong&gt; — uniform attribute standards across 100+ Shadcn-style components&lt;/li&gt;
+      &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Machine-readable component contracts&lt;/strong&gt; — uniform attribute standards across 100+ production-grade components&lt;/li&gt;
       &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Self-contained components&lt;/strong&gt; — copy, paste, or mutate an HTML block without breaking distant client state graphs&lt;/li&gt;
       &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Declarative validation rules&lt;/strong&gt; — form validation in pure HTML attributes (&lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-validate=&quot;required|email&quot;&lt;/code&gt;)&lt;/li&gt;
       &lt;li&gt;&lt;strong class=&quot;text-foreground&quot;&gt;Global store access&lt;/strong&gt; — clean shared state manipulation via &lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;$store.name&lt;/code&gt;&lt;/li&gt;

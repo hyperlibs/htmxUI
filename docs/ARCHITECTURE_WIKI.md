@@ -18,7 +18,7 @@ github.com/hyperlibs/
 │   ├── HxFlash & HxGrid (Levenshtein search & 100k-row virtualized tables)
 │   ├── HxForm, HxVibe, HxA11y, HxOffline
 │   ├── HyperFX Core Utility Helpers ($copy, $toast, $sound, $toggle, $undo)
-│   └── 100+ Copy-Paste Shadcn-quality Tailwind Components
+│   └── 100+ Copy-Paste Production-Grade Tailwind Components
 │
 ├── 🪐 htmFX (Dedicated Spatial Repository) ─── "Declarative 3D & Physics Extension"
 │   ├── <hx-viewport>, <hx-mesh>, <hx-particle>, <hx-light>

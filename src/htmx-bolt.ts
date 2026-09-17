@@ -15,12 +15,12 @@ import type { HxBoltAPI, ReactiveProxy, TransitionPreset, ISparseMatrix } from '
 // Global Framework Configuration
 export const config = {
   strictMode: false,
-  strictCSP: false,
+  strictCSP: true, // Default to strict CSP Level 3 Zero-Eval out-of-the-box
   debug: false,
   version: '1.0.0'
 };
 
-// Numbered Error Taxonomy (Universal across all 10 HTMXUI Micro-Engines)
+// Numbered Error Taxonomy (Universal across all 11 HTMXUI Micro-Engines)
 export const ERROR_CATALOG: Record<string, { title: string; fix: string }> = {
   'HTMXUI-BOLT-001': {
     title: 'Invalid JSON syntax in <script type="application/json" hx-state> or hx-state attribute.',
@@ -45,6 +45,14 @@ export const ERROR_CATALOG: Record<string, { title: string; fix: string }> = {
   'HTMXUI-BOLT-006': {
     title: 'CSP EvalError blocked dynamic evaluation. Automatic fallback engaged.',
     fix: 'Set HTMXUI.config.strictCSP = true to bypass new Function completely, or ensure expression matches safe parser grammar.'
+  },
+  'HTMXUI-AUTH-001': {
+    title: 'Unauthorized role access attempt (RBAC enforcement blocked element).',
+    fix: 'Grant required user role via HxBolt.auth({ roles: [...] }) or server HX-Auth-Roles header.'
+  },
+  'HTMXUI-AUTH-002': {
+    title: 'Missing required security permission (RBAC enforcement blocked element).',
+    fix: 'Grant required permission via HxBolt.auth({ permissions: [...] }) or server HX-Auth-Permissions header.'
   },
   'HTMXUI-CALC-001': {
     title: 'Cycle or unbounded dependency detected in formula calculation graph.',
@@ -153,7 +161,9 @@ const KNOWN_ATTRIBUTES = new Set([
   // Bolt Reactivity & State
   'hx-state', 'hx-computed', 'hx-effect', 'hx-model', 'hx-text', 'hx-html',
   'hx-show', 'hx-if', 'hx-for', 'hx-class', 'hx-style', 'hx-ref', 'hx-action',
-  'hx-can', 'hx-role', 'hx-modal', 'hx-undoable', 'hx-undo', 'hx-redo',
+  'hx-can', 'hx-role', 'hx-auth', 'hx-modal', 'hx-undoable', 'hx-undo', 'hx-redo',
+  'hx-role.disable', 'hx-role.redact', 'hx-role.hide',
+  'hx-can.disable', 'hx-can.redact', 'hx-can.hide',
   // Sparse Matrix & Streaming
   'hx-cell', 'hx-matrix', 'hx-matrix-cell', 'hx-stream-batch', 'hx-virtual-2d',
   'hx-matrix-nav', 'hx-calc', 'hx-pinned-left', 'hx-pinned-right',
@@ -175,7 +185,9 @@ const KNOWN_ATTRIBUTES = new Set([
   // Accessibility
   'hx-trap-focus', 'hx-roving', 'scaleui',
   // Spatial 3D
-  'hx-3d', '3denv', '3datmos', '3dfx', 'hx-spatial', 'hx-spatial-focus', 'hx-spatial-explode'
+  'hx-3d', '3denv', '3datmos', '3dfx', 'hx-spatial', 'hx-spatial-focus', 'hx-spatial-explode',
+  // Simulations (Boids, Gravity, Collisions, Life, Slime)
+  'hx-sim', 'hx-sim-count', 'hx-sim-speed', 'hx-sim-interactive', 'hx-sim-trails', 'hx-sim-theme'
 ]);
 
 function levenshteinDistance(a: string, b: string): number {
@@ -215,7 +227,9 @@ function checkAttributeTypos(el: HTMLElement): void {
         !name.startsWith('hx-transition:') &&
         !name.startsWith('hx-validate:') &&
         !name.startsWith('hx-stream:') &&
-        !name.startsWith('hx-matrix:')) {
+        !name.startsWith('hx-matrix:') &&
+        !name.startsWith('hx-role.') &&
+        !name.startsWith('hx-can.')) {
       if (!KNOWN_ATTRIBUTES.has(name)) {
         // Find closest match
         let closest = '';
@@ -694,8 +708,285 @@ export const HyperFX = {
         gridEl._hxGrid.exportCSV(filename);
       }
     }
+  },
+  can(permission: string): boolean {
+    return matchPermission(permission, authState.permissions || []);
+  },
+  hasRole(role: string): boolean {
+    return matchRole(role, authState.roles || []);
+  },
+  auth(options?: Partial<AuthContext>): ReactiveProxy<AuthContext> {
+    if (options) {
+      if (options.roles) authState.roles = Array.from(options.roles);
+      if (options.permissions) authState.permissions = Array.from(options.permissions);
+      if (options.user) authState.user = options.user;
+    }
+    return authState;
+  },
+  sim(selector: string, action: 'preset' | 'reset' | 'speed', val?: any): any {
+    if (typeof window !== 'undefined' && (window as any).HxSim) {
+      const runner = (window as any).HxSim.getRunner(selector);
+      if (runner) {
+        if (action === 'preset') runner.setPreset(val);
+        else if (action === 'reset') runner.reset();
+        else if (action === 'speed') runner.config.speed = Number(val) || 1.0;
+        return runner.getStats();
+      }
+    }
+    return undefined;
   }
 };
+
+// -----------------------------------------------------------------------------
+// Bank-Grade Role-Based Access Control (RBAC) & Authorization Subsystem
+// -----------------------------------------------------------------------------
+
+export interface AuthContext {
+  roles: string[];
+  permissions: string[];
+  user?: Record<string, any>;
+}
+
+const rawAuth: AuthContext = {
+  roles: [],
+  permissions: [],
+  user: {}
+};
+
+export const authState = createReactiveObject(rawAuth);
+
+export function matchRole(required: string, userRoles: string[]): boolean {
+  if (!required || !required.trim()) return true;
+  const rolesSet = new Set((userRoles || []).map(r => r.trim().toLowerCase()));
+  if (rolesSet.has('*') || rolesSet.has('superadmin') || rolesSet.has('root')) return true;
+
+  // Split by comma or pipe (OR)
+  const orClauses = required.split(/[,|]/).map(s => s.trim()).filter(Boolean);
+  for (const clause of orClauses) {
+    // Check AND clauses inside
+    const andParts = clause.split('&').map(s => s.trim()).filter(Boolean);
+    const andMatch = andParts.every(part => {
+      let isNegation = false;
+      let target = part.toLowerCase();
+      if (target.startsWith('!')) {
+        isNegation = true;
+        target = target.slice(1).trim();
+      }
+      
+      let matched = rolesSet.has(target) || Array.from(rolesSet).some(r => {
+        if (r.endsWith('*')) {
+          return target.startsWith(r.slice(0, -1));
+        }
+        if (target.endsWith('*')) {
+          return r.startsWith(target.slice(0, -1));
+        }
+        return false;
+      });
+
+      return isNegation ? !matched : matched;
+    });
+
+    if (andMatch) return true;
+  }
+  return false;
+}
+
+export function matchPermission(required: string, userPermissions: string[]): boolean {
+  if (!required || !required.trim()) return true;
+  const permsSet = new Set((userPermissions || []).map(p => p.trim().toLowerCase()));
+  if (permsSet.has('*') || permsSet.has('all')) return true;
+
+  const orClauses = required.split(/[,|]/).map(s => s.trim()).filter(Boolean);
+  for (const clause of orClauses) {
+    const andParts = clause.split('&').map(s => s.trim()).filter(Boolean);
+    const andMatch = andParts.every(part => {
+      let isNegation = false;
+      let target = part.toLowerCase();
+      if (target.startsWith('!')) {
+        isNegation = true;
+        target = target.slice(1).trim();
+      }
+
+      let matched = permsSet.has(target) || Array.from(permsSet).some(p => {
+        if (p.endsWith('*')) {
+          return target.startsWith(p.slice(0, -1));
+        }
+        if (target.endsWith('*')) {
+          return p.startsWith(target.slice(0, -1));
+        }
+        return false;
+      });
+
+      return isNegation ? !matched : matched;
+    });
+
+    if (andMatch) return true;
+  }
+  return false;
+}
+
+export function enforceElementAuth(el: HTMLElement): boolean {
+  let roleAttr: string | null = null;
+  let roleModifier = 'hide'; // 'hide' | 'disable' | 'redact'
+  let permAttr: string | null = null;
+  let permModifier = 'hide'; // 'hide' | 'disable' | 'redact'
+
+  // Check direct getAttribute
+  if (typeof el.getAttribute === 'function') {
+    if (el.getAttribute('hx-role')) roleAttr = el.getAttribute('hx-role');
+    if (el.getAttribute('hx-role.disable')) { roleAttr = el.getAttribute('hx-role.disable'); roleModifier = 'disable'; }
+    if (el.getAttribute('hx-role.redact')) { roleAttr = el.getAttribute('hx-role.redact'); roleModifier = 'redact'; }
+    if (el.getAttribute('hx-role.hide')) { roleAttr = el.getAttribute('hx-role.hide'); roleModifier = 'hide'; }
+
+    if (el.getAttribute('hx-can')) permAttr = el.getAttribute('hx-can');
+    if (el.getAttribute('hx-can.disable')) { permAttr = el.getAttribute('hx-can.disable'); permModifier = 'disable'; }
+    if (el.getAttribute('hx-can.redact')) { permAttr = el.getAttribute('hx-can.redact'); permModifier = 'redact'; }
+    if (el.getAttribute('hx-can.hide')) { permAttr = el.getAttribute('hx-can.hide'); permModifier = 'hide'; }
+  }
+
+  // Fallback to iterating attributes
+  if (!roleAttr && !permAttr && el.attributes) {
+    const rawAttrs = (typeof (el.attributes as any)[Symbol.iterator] === 'function') ? 
+      Array.from(el.attributes) : 
+      Object.entries(el.attributes).map(([name, value]) => ({ name, value: value as string }));
+    for (const attr of rawAttrs) {
+      if (attr.name === 'hx-role' || attr.name.startsWith('hx-role.')) {
+        roleAttr = attr.value;
+        const parts = attr.name.split('.');
+        if (parts[1]) roleModifier = parts[1];
+      }
+      if (attr.name === 'hx-can' || attr.name.startsWith('hx-can.')) {
+        permAttr = attr.value;
+        const parts = attr.name.split('.');
+        if (parts[1]) permModifier = parts[1];
+      }
+    }
+  }
+
+  if (!roleAttr && !permAttr) return true;
+
+  const userRoles = authState.roles || [];
+  const userPerms = authState.permissions || [];
+
+  const roleAllowed = roleAttr ? matchRole(roleAttr, userRoles) : true;
+  const permAllowed = permAttr ? matchPermission(permAttr, userPerms) : true;
+  const isAuthorized = roleAllowed && permAllowed;
+
+  if (!isAuthorized) {
+    const reasonType = !roleAllowed ? 'role' : 'permission';
+    const reasonReq = !roleAllowed ? roleAttr : permAttr;
+    const diagCode = !roleAllowed ? 'HTMXUI-AUTH-001' : 'HTMXUI-AUTH-002';
+    reportError(diagCode, `RBAC authorization blocked access to element requiring ${reasonType} "${reasonReq}".`, el);
+
+    const eventDetail = {
+      el,
+      type: reasonType,
+      required: reasonReq,
+      userRoles,
+      userPermissions: userPerms
+    };
+
+    if (typeof el.dispatchEvent === 'function') {
+      try {
+        let evt: any;
+        if (typeof CustomEvent !== 'undefined') {
+          evt = new CustomEvent('htmx:auth-denied', { bubbles: true, cancelable: true, detail: eventDetail });
+        } else {
+          evt = { type: 'htmx:auth-denied', detail: eventDetail, target: el };
+        }
+        el.dispatchEvent(evt);
+      } catch {}
+    }
+  }
+
+  const modifier = roleAttr ? roleModifier : permModifier;
+
+  if (modifier === 'disable') {
+    if (isAuthorized) {
+      el.removeAttribute('disabled');
+      el.removeAttribute('aria-disabled');
+      el.classList.remove('pointer-events-none', 'opacity-50', 'cursor-not-allowed', 'hx-auth-disabled');
+    } else {
+      el.setAttribute('disabled', 'true');
+      el.setAttribute('aria-disabled', 'true');
+      el.classList.add('pointer-events-none', 'opacity-50', 'cursor-not-allowed', 'hx-auth-disabled');
+    }
+  } else if (modifier === 'redact') {
+    if (isAuthorized) {
+      if ((el as any)._hxOrigContent !== undefined) {
+        el.innerHTML = (el as any)._hxOrigContent;
+        delete (el as any)._hxOrigContent;
+      }
+      el.removeAttribute('aria-hidden');
+      el.classList.remove('hx-auth-redacted', 'select-none');
+    } else {
+      if ((el as any)._hxOrigContent === undefined) {
+        (el as any)._hxOrigContent = el.innerHTML;
+      }
+      el.setAttribute('aria-hidden', 'true');
+      el.classList.add('hx-auth-redacted', 'select-none');
+      el.innerHTML = '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-destructive/10 text-destructive border border-destructive/20 select-none">[REDACTED — RESTRICTED ACCESS]</span>';
+    }
+  } else {
+    // Default: hide
+    if (isAuthorized) {
+      el.style.display = (el as any)._hxOrigDisplay || '';
+      el.removeAttribute('aria-hidden');
+      el.removeAttribute('hidden');
+      el.classList.remove('hx-auth-hidden');
+    } else {
+      if ((el as any)._hxOrigDisplay === undefined) {
+        (el as any)._hxOrigDisplay = el.style.display;
+      }
+      el.style.display = 'none';
+      el.setAttribute('aria-hidden', 'true');
+      el.setAttribute('hidden', '');
+      el.classList.add('hx-auth-hidden');
+    }
+  }
+
+  return isAuthorized;
+}
+
+export function bindAuthDirectives(rootEl: HTMLElement): void {
+  const authEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll('[hx-role], [hx-can], [hx-role\\.disable], [hx-role\\.redact], [hx-role\\.hide], [hx-can\\.disable], [hx-can\\.redact], [hx-can\\.hide]') : []) as HTMLElement[];
+  if (rootEl.hasAttribute && (rootEl.hasAttribute('hx-role') || rootEl.hasAttribute('hx-can'))) {
+    authEls.unshift(rootEl);
+  }
+
+  authEls.forEach(el => {
+    if ((el as any)._hxAuthBound) return;
+    (el as any)._hxAuthBound = true;
+    checkAttributeTypos(el);
+    runWithEffect(() => {
+      const _ = [authState.roles, authState.permissions];
+      enforceElementAuth(el);
+    });
+  });
+}
+
+export function discoverMetaAuth(): void {
+  if (typeof document === 'undefined') return;
+  const rolesMeta = document.querySelector('meta[name="hx-auth-roles"]');
+  if (rolesMeta && rolesMeta.getAttribute('content')) {
+    const roles = rolesMeta.getAttribute('content')!.split(',').map(s => s.trim()).filter(Boolean);
+    authState.roles = roles;
+  }
+  const permsMeta = document.querySelector('meta[name="hx-auth-permissions"]');
+  if (permsMeta && permsMeta.getAttribute('content')) {
+    const perms = permsMeta.getAttribute('content')!.split(',').map(s => s.trim()).filter(Boolean);
+    authState.permissions = perms;
+  }
+  const authScript = document.querySelector('script[type="application/json"][hx-auth], script[hx-auth]');
+  if (authScript && authScript.textContent) {
+    try {
+      const parsed = JSON.parse(authScript.textContent.trim());
+      if (parsed.roles) authState.roles = parsed.roles;
+      if (parsed.permissions) authState.permissions = parsed.permissions;
+      if (parsed.user) authState.user = parsed.user;
+    } catch (e) {}
+  }
+}
 
 // -----------------------------------------------------------------------------
 // CSP-Safe Zero-Eval Expression Evaluator & Action Executor
@@ -1311,6 +1602,9 @@ export function evaluateExpression(expr: string, context: any, extraScope: Recor
     $event: extraScope.$event || null,
     $eventValue: extraScope.$eventValue,
     $form: ctx.$form || {},
+    $auth: authState,
+    $can: (perm: string) => matchPermission(perm, authState.permissions || []),
+    $hasRole: (role: string) => matchRole(role, authState.roles || []),
     $copy: HyperFX.copy,
     $toast: HyperFX.toast,
     $sound: HyperFX.sound,
@@ -1319,6 +1613,7 @@ export function evaluateExpression(expr: string, context: any, extraScope: Recor
     $undo: HyperFX.undo,
     $redo: HyperFX.redo,
     $exportCSV: HyperFX.exportCSV,
+    $sim: HyperFX.sim,
     $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
     ...HyperFX.registry,
     ...extraScope
@@ -1373,6 +1668,9 @@ export function executeAction(expr: string, context: any, extraScope: Record<str
     $event: extraScope.$event || null,
     $eventValue: extraScope.$eventValue,
     $form: ctx.$form || {},
+    $auth: authState,
+    $can: (perm: string) => matchPermission(perm, authState.permissions || []),
+    $hasRole: (role: string) => matchRole(role, authState.roles || []),
     $copy: HyperFX.copy,
     $toast: HyperFX.toast,
     $sound: HyperFX.sound,
@@ -1381,6 +1679,7 @@ export function executeAction(expr: string, context: any, extraScope: Record<str
     $undo: HyperFX.undo,
     $redo: HyperFX.redo,
     $exportCSV: HyperFX.exportCSV,
+    $sim: HyperFX.sim,
     $toggle: (key: string) => { if (ctx) (ctx as any)[key] = !(ctx as any)[key]; },
     ...HyperFX.registry,
     ...extraScope
@@ -1527,7 +1826,7 @@ export function initComponent(rootEl: HTMLElement): ReactiveProxy {
       initialData = JSON.parse(stateScript.textContent.trim());
     } catch (e: any) {
       try {
-        initialData = new Function(`return (${stateScript.textContent.trim()})`)();
+        initialData = safeEvaluate(stateScript.textContent.trim(), {}) || {};
       } catch (err: any) {
         reportError('HTMXUI-BOLT-001', `Failed to parse <script hx-state> content: ${err.message}`, rootEl);
       }
@@ -1537,9 +1836,13 @@ export function initComponent(rootEl: HTMLElement): ReactiveProxy {
     const stateAttr = rootEl.getAttribute('hx-state');
     if (stateAttr) {
       try {
-        initialData = new Function(`return (${stateAttr})`)();
-      } catch (e: any) {
-        reportError('HTMXUI-BOLT-001', `Invalid hx-state attribute expression: ${stateAttr}`, rootEl);
+        initialData = JSON.parse(stateAttr);
+      } catch {
+        try {
+          initialData = safeEvaluate(stateAttr, {}) || {};
+        } catch (e: any) {
+          reportError('HTMXUI-BOLT-001', `Invalid hx-state attribute expression: ${stateAttr}`, rootEl);
+        }
       }
     }
   }
@@ -1559,7 +1862,7 @@ export function initComponent(rootEl: HTMLElement): ReactiveProxy {
   const computedAttr = rootEl.getAttribute('hx-computed');
   if (computedAttr) {
     try {
-      const computedDef = new Function(`return (${computedAttr})`)();
+      const computedDef = safeEvaluate(computedAttr, {}) || {};
       for (const [key, expr] of Object.entries(computedDef)) {
         runWithEffect(() => {
           const val = evaluateExpression(expr as string, reactiveState, { $el: rootEl });
@@ -1712,6 +2015,9 @@ function processStructuralDirectives(rootEl: HTMLElement, state: any): void {
 }
 
 function bindDirectives(rootEl: HTMLElement, state: any): void {
+  // Bind RBAC auth directives (hx-role, hx-can)
+  bindAuthDirectives(rootEl);
+
   // hx-text
   const textEls = Array.from(rootEl.querySelectorAll ? rootEl.querySelectorAll('[hx-text]') : []) as HTMLElement[];
   if (rootEl.hasAttribute && rootEl.hasAttribute('hx-text')) textEls.unshift(rootEl);
@@ -2327,6 +2633,26 @@ export const HxBolt: HxBoltAPI = {
     }
     return undefined;
   },
+  auth(options?: Partial<AuthContext>): ReactiveProxy<AuthContext> {
+    if (options) {
+      if (options.roles) authState.roles = Array.from(options.roles);
+      if (options.permissions) authState.permissions = Array.from(options.permissions);
+      if (options.user) authState.user = options.user;
+    }
+    return authState;
+  },
+  setRoles(roles: string[]): void {
+    authState.roles = Array.from(roles);
+  },
+  setPermissions(perms: string[]): void {
+    authState.permissions = Array.from(perms);
+  },
+  can(permission: string): boolean {
+    return matchPermission(permission, authState.permissions || []);
+  },
+  hasRole(role: string): boolean {
+    return matchRole(role, authState.roles || []);
+  },
   matrix<T = any>(rows = 1000000, cols = 16384, initialData?: Record<string, T> | Array<[number, number, T]>): ISparseMatrix<T> {
     const mat = new SparseMatrix<T>(rows, cols, initialData);
     if (!matrices['default']) matrices['default'] = mat;
@@ -2347,6 +2673,10 @@ export const HxBolt: HxBoltAPI = {
   getDiagnostics,
   clearDiagnostics,
   init(root: HTMLElement | Document) {
+    discoverMetaAuth();
+    if (typeof document !== 'undefined' && root) {
+      bindAuthDirectives(root as HTMLElement);
+    }
     const scopeRoots = (root.querySelectorAll ? root.querySelectorAll('[hx-state], [hx-ext="reactive"]') : []) as NodeListOf<HTMLElement>;
     scopeRoots.forEach(initComponent);
     if ((root as HTMLElement).hasAttribute && ((root as HTMLElement).hasAttribute('hx-state') || (root as HTMLElement).getAttribute('hx-ext') === 'reactive')) {
@@ -2430,12 +2760,28 @@ if (typeof window !== 'undefined') {
     }
   });
 
+  // Server-driven RBAC synchronization via headers
+  document.addEventListener('htmx:afterOnLoad', function (evt: any) {
+    const xhr = evt.detail?.xhr;
+    if (xhr && typeof xhr.getResponseHeader === 'function') {
+      const rolesHeader = xhr.getResponseHeader('HX-Auth-Roles');
+      if (rolesHeader) {
+        authState.roles = rolesHeader.split(',').map((s: string) => s.trim()).filter(Boolean);
+      }
+      const permsHeader = xhr.getResponseHeader('HX-Auth-Permissions');
+      if (permsHeader) {
+        authState.permissions = permsHeader.split(',').map((s: string) => s.trim()).filter(Boolean);
+      }
+    }
+  });
+
   if (typeof (window as any).htmx !== 'undefined') {
     (window as any).htmx.defineExtension('reactive', {
       onEvent: function (name: string, evt: any) {
         if (name === 'htmx:beforeProcessNode' || name === 'htmx:afterProcessNode') {
           const elt = evt.detail.elt;
           if (elt && elt.nodeType === 1) {
+            bindAuthDirectives(elt);
             if (elt.hasAttribute('hx-state') || elt.querySelector('script[hx-state]') || elt.getAttribute('hx-ext') === 'reactive') {
               initComponent(elt);
             }
@@ -2515,6 +2861,7 @@ if (typeof window !== 'undefined') {
           m.addedNodes.forEach(node => {
             if (node.nodeType === 1) {
               const el = node as HTMLElement;
+              bindAuthDirectives(el);
               if (el.hasAttribute('scaleui')) handleScaleUI(el);
               el.querySelectorAll('[scaleui]').forEach(child => handleScaleUI(child as HTMLElement));
               if (el.hasAttribute('hx-state') || el.querySelector('script[hx-state]')) initComponent(el);
@@ -2529,6 +2876,10 @@ if (typeof window !== 'undefined') {
   }
 
   function autoInit(): void {
+    discoverMetaAuth();
+    if (typeof document !== 'undefined' && document.body) {
+      bindAuthDirectives(document.body);
+    }
     document.querySelectorAll('[hx-state], script[hx-state]').forEach(el => {
       const root = el.tagName === 'SCRIPT' ? el.parentElement : el;
       if (root) initComponent(root as HTMLElement);

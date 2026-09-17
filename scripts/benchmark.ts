@@ -27,7 +27,8 @@ const engines = [
   'htmx-virtual.js',
   'htmx-offline.js',
   'htmx-a11y.js',
-  'htmx-devtools.js'
+  'htmx-devtools.js',
+  'htmx-sim.js'
 ];
 
 let totalRaw = 0;
@@ -44,7 +45,7 @@ engines.forEach(file => {
   }
 });
 console.log('---------------------------------------------------------------');
-console.log('  TOTAL 10-ENGINE SUITE : ' + (totalRaw / 1024).toFixed(2).padStart(6) + ' KB raw | ' + (totalGzip / 1024).toFixed(2).padStart(6) + ' KB gzip');
+console.log('  TOTAL 11-ENGINE SUITE: ' + (totalRaw / 1024).toFixed(2).padStart(6) + ' KB raw | ' + (totalGzip / 1024).toFixed(2).padStart(6) + ' KB gzip');
 console.log('  (Comparison: react-dom alone is ~130KB raw / ~42KB gzip)\n');
 
 // 2. Zero-Eval Safe Parser Throughput

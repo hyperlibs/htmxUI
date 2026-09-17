@@ -24,7 +24,7 @@ const COMPONENTS = [
   "select","separator","sheet","sidebar","skeleton","slider","slider-range","snackbar","splitter",
   "stat-card","stepper","submenu","switch","table","tabs","tag","text","textarea","timeline",
   "time-picker","toast","toggle","toggle-group","toggle-switch","toolbar","tooltip","tree-view","user-card",
-  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual","hx-offline","hollywood-webfx"
+  "video-player","watermark","wizard","hx-wizard","date-range-picker","hx-grid","hx-virtual","hx-offline","hollywood-webfx","simulation"
 ];
 
 function formatName(slug: string): string {
@@ -72,6 +72,8 @@ function buildComponentPage(slug: string): string {
   <script src="/htmx-grid.js"></script>
   <script src="/htmx-offline.js"></script>
   <script src="/htmx-devtools.js"></script>
+  <script src="/htmx-calc.js"></script>
+  <script src="/htmx-sim.js"></script>
   <script src="/htmx-canvas.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
@@ -101,7 +103,7 @@ function buildComponentPage(slug: string): string {
       <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
         <div class="space-y-2">
           <h1 class="text-3xl font-extrabold tracking-tight">${name}</h1>
-          <p class="text-muted-foreground text-sm">Interactive Shadcn-quality hypermedia component for HTMXUI.</p>
+          <p class="text-muted-foreground text-sm">Interactive production-grade hypermedia component for HTMXUI.</p>
         </div>
         <div class="space-y-4">
           <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>

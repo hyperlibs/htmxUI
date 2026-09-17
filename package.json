@@ -1,14 +1,45 @@
 {
-  "name": "htmxui",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@hyperlibs/htmxui",
+  "version": "0.10.30",
+  "description": "Hyperreactive lean framework suite for HTMX: zero-eval signals, in-memory columnar search, bank-grade RBAC, kinetic physics & 2D sparse matrix",
+  "main": "public/htmx-bolt.js",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./public/htmx-bolt.js",
+      "types": "./src/index.ts"
+    },
+    "./bolt": "./public/htmx-bolt.js",
+    "./flash": "./public/htmx-flash.js",
+    "./form": "./public/htmx-form.js",
+    "./vibe": "./public/htmx-vibe.js",
+    "./a11y": "./public/htmx-a11y.js",
+    "./virtual": "./public/htmx-virtual.js",
+    "./grid": "./public/htmx-grid.js",
+    "./offline": "./public/htmx-offline.js",
+    "./devtools": "./public/htmx-devtools.js",
+    "./calc": "./public/htmx-calc.js",
+    "./sim": "./public/htmx-sim.js"
+  },
+  "files": [
+    "dist",
+    "src",
+    "public",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
     "dev:bun": "bun run server.ts",
-    "test": "bun test tests/csp_eval.test.ts tests/hypersheet.test.ts tests/bolt.test.ts tests/extensibility.test.ts tests/flash.test.ts tests/form.test.ts tests/hyperfx.test.ts tests/universe.test.ts tests/vibe.test.ts",
-    "build:engines": "bun build src/htmx-bolt.ts --format iife --outfile public/htmx-bolt.js && bun build src/htmx-flash.ts --format iife --outfile public/htmx-flash.js && bun build src/htmx-form.ts --format iife --outfile public/htmx-form.js && bun build src/htmx-vibe.ts --format iife --outfile public/htmx-vibe.js && bun build src/htmx-a11y.ts --format iife --outfile public/htmx-a11y.js && bun build src/htmx-virtual.ts --format iife --outfile public/htmx-virtual.js && bun build src/htmx-grid.ts --format iife --outfile public/htmx-grid.js && bun build src/htmx-offline.ts --format iife --outfile public/htmx-offline.js && bun build src/htmx-devtools.ts --format iife --outfile public/htmx-devtools.js && bun build src/htmx-calc.ts --format iife --outfile public/htmx-calc.js",
+    "test": "bun test tests/",
+    "build:engines": "bun build src/htmx-bolt.ts --format iife --outfile public/htmx-bolt.js && bun build src/htmx-flash.ts --format iife --outfile public/htmx-flash.js && bun build src/htmx-form.ts --format iife --outfile public/htmx-form.js && bun build src/htmx-vibe.ts --format iife --outfile public/htmx-vibe.js && bun build src/htmx-a11y.ts --format iife --outfile public/htmx-a11y.js && bun build src/htmx-virtual.ts --format iife --outfile public/htmx-virtual.js && bun build src/htmx-grid.ts --format iife --outfile public/htmx-grid.js && bun build src/htmx-offline.ts --format iife --outfile public/htmx-offline.js && bun build src/htmx-devtools.ts --format iife --outfile public/htmx-devtools.js && bun build src/htmx-calc.ts --format iife --outfile public/htmx-calc.js && bun build src/htmx-sim.ts --format iife --outfile public/htmx-sim.js",
     "build:css": "bunx tailwindcss -i public/styles/input.css -o public/styles/output.css",
     "build": "bun run build:engines && bun run build:css && bun run scripts/build-static.ts",
     "build:pages": "bun run build",
@@ -17,9 +48,24 @@
     "benchmark": "bun run scripts/benchmark.ts",
     "test:ui": "bunx playwright test"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "htmx",
+    "signals",
+    "reactive",
+    "rbac",
+    "zero-eval",
+    "csp",
+    "data-grid",
+    "hypermedia",
+    "simulation",
+    "fine-grained-reactivity"
+  ],
+  "author": "Hyperlibs Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperlibs/htmxUI.git"
+  },
   "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1"

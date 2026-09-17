@@ -58,7 +58,7 @@ HTMXUI = HTMX (Hypermedia Core)
        + Vibe (60fps Spring Physics & FLIP Layout Animations)
        + A11y (WAI-ARIA Focus Trapping & 2D Matrix Nav)
        + Offline (IndexedDB Mutation Queues & Auto-Sync)
-       + 120+ Shadcn-Quality Copy-Paste Components
+       + 120+ Production-Grade Copy-Paste Components
 ```
 
 ---
@@ -133,7 +133,7 @@ Experience complete, production-grade applications built with zero React/Node ru
 | Flagship Demo | Live Cloudflare URL | Source View | Capabilities Demonstrated | Stack / Engines |
 | :--- | :--- | :--- | :--- | :--- |
 | **🎯 Verifiable Demos Hub** | [**/demo/**](https://htmxui.cgb.workers.dev/demo/) | [`views/demos-hub.html`](views/demos-hub.html) | Master index of live interactive previews, stress tests, and showcases. | All 10 Engines |
-| **📊 TailAdmin Dashboard** | [**/demo/tailadmin/**](https://htmxui.cgb.workers.dev/demo/tailadmin/) | [`views/app-tailadmin.html`](views/app-tailadmin.html) | 100% pure HTMXUI recreation of TailAdmin admin panel with zero React/Node runtime. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
+| **📊 HyperAdmin Dashboard** | [**/demo/tailadmin/**](https://htmxui.cgb.workers.dev/demo/tailadmin/) | [`views/app-tailadmin.html`](views/app-tailadmin.html) | 100% pure HTMXUI enterprise admin panel with zero React/Node runtime. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
 | **🏢 Enterprise HyperERP** | [**/demo/erp/**](https://htmxui.cgb.workers.dev/demo/erp/) | [`views/app-erp.html`](views/app-erp.html) | 10,000+ virtualized rows, zero-latency in-memory fuzzy search, and multi-tier analytics. | `HxVirtual`, `HxFlash`, `HxGrid` |
 | **📈 HyperSheet Spreadsheet** | [**/demo/hypersheet/**](https://htmxui.cgb.workers.dev/demo/hypersheet/) | [`views/app-hypersheet.html`](views/app-hypersheet.html) | 2D reactive spreadsheet with topological formula DAGs, coordinate resolution (`SUM(A1:B5)`), cycle detection, and roving 2D tabindex navigation. | `HxCalc`, `HxA11y`, `HxBolt.matrix` |
 | **🌌 Cosmic 3D Universe** | [**/demo/universe/**](https://htmxui.cgb.workers.dev/demo/universe/) | [`views/app-universe.html`](views/app-universe.html) | Autonomous 3D spatial viewport with Keplerian orbital kinematics and WebGPU/WebGL2 particle advection. | `HxSpatial`, `htmFX`, `HxVibe` |

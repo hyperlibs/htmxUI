@@ -11,6 +11,7 @@
   <script src="/htmx-form.js"></script>
   <script src="/htmx-virtual.js"></script>
   <script src="/htmx-flash.js"></script>
+  <script src="/htmx-sim.js"></script>
   <script src="/htmx-devtools.js"></script>
   <link rel="stylesheet" href="/styles.css">
   <style>
@@ -20,6 +21,7 @@
 <body class="h-full bg-slate-950 text-slate-100 flex flex-col font-sans antialiased selection:bg-primary/30">
   <script type="application/json" hx-state>
   {
+    "activeRole": "admin",
     "activeCell": "A1",
     "activeVal": "100",
     "formulaBar": "100",
@@ -40,18 +42,35 @@
           <span class="text-blue-400">📑</span>
           <span>Hypersheet Matrix</span>
           <span class="text-[10px] font-mono uppercase bg-blue-500/20 text-blue-400 border border-blue-500/30 px-1.5 py-0.5 rounded">1,000,000 Cells</span>
+          <span class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono border border-emerald-500/30 font-bold">v0.10.30</span>
         </div>
       </div>
 
       <div class="flex items-center gap-3 text-xs">
+        <!-- RBAC Role Dropdown Switcher -->
+        <div class="flex items-center gap-1.5 bg-slate-950 border border-slate-800 rounded px-2 py-1">
+          <span class="text-[10px] text-slate-400">Role:</span>
+          <select onchange="window.HTMXUI && window.HTMXUI.setRole(this.value, this.value === 'admin' ? ['payroll:execute', 'sheet:edit'] : (this.value === 'payroll' ? ['payroll:execute'] : []))"
+                  class="bg-transparent text-emerald-400 font-mono text-xs focus:outline-none cursor-pointer">
+            <option value="admin" class="bg-slate-900 text-white">Admin (Full Access)</option>
+            <option value="payroll" class="bg-slate-900 text-white">Payroll Officer</option>
+            <option value="auditor" class="bg-slate-900 text-white">Auditor (Redacted)</option>
+            <option value="guest" class="bg-slate-900 text-white">Guest (Locked)</option>
+          </select>
+        </div>
+
+        <button hx-can.disable="payroll:execute" onclick="alert('Batch Dividend Recalc Executed via Bank-Grade RBAC!')" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium transition-colors shadow-sm">
+          💰 Commit Payout
+        </button>
+
         <button onclick="simulateServerStream()" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors shadow-sm">
-          ⚡ Simulate 60fps SSE Delta Stream
+          ⚡ 60fps SSE Stream
         </button>
         <button onclick="window.HxBolt.history.undo()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300">
-          Undo (Ctrl+Z)
+          Undo
         </button>
         <button onclick="window.HxBolt.history.redo()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300">
-          Redo (Ctrl+Y)
+          Redo
         </button>
       </div>
     </div>

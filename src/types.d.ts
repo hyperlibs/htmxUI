@@ -73,10 +73,21 @@ export interface ISparseMatrix<T = any> {
   size(): number;
 }
 
+export interface AuthContext {
+  roles: string[];
+  permissions: string[];
+  user?: Record<string, any>;
+}
+
 export interface HxBoltAPI {
   store<T extends object = Record<string, any>>(name: string, initialValue?: T): ReactiveProxy<T>;
   getStore<T extends object = Record<string, any>>(name: string): ReactiveProxy<T> | undefined;
   getState<T extends object = Record<string, any>>(el: HTMLElement): ReactiveProxy<T> | undefined;
+  auth(options?: Partial<AuthContext>): ReactiveProxy<AuthContext>;
+  setRoles(roles: string[]): void;
+  setPermissions(permissions: string[]): void;
+  can(permission: string): boolean;
+  hasRole(role: string): boolean;
   matrix<T = any>(rows?: number, cols?: number, initialData?: Record<string, T> | Array<[number, number, T]>): ISparseMatrix<T>;
   streamBatch(callback: () => void, fps?: number): void;
   parseMicroDelta(deltaText: string, targetMatrix?: ISparseMatrix): Array<{ row: number; col: number; val: any; flashClass?: string }>;

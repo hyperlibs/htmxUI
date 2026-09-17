@@ -1,8 +1,27 @@
-.idea
-*.iml
-/node_modules
-_site
-test/scratch/scratch.html
+# Dependencies
+node_modules/
+package-lock.json
+
+# Test Artifacts & Coverage
+tests/screenshots/
+test-results/
+playwright-report/
+blob-report/
+
+# Archives & Temporary Data
+scratch/
+.gemini/
+*.zip
+*.tar.gz
+*.log
+*.tmp
+*.bak
+
+# Environment & OS
 .DS_Store
-.vscode
-/coverage
+Thumbs.db
+.env
+.env.local
+.env.*.local
+
+

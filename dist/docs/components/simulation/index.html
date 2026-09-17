@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulation — HTMXUI</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4" crossorigin="anonymous"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/htmx-flash.js"></script>
+  <script src="/htmx-form.js"></script>
+  <script src="/htmx-vibe.js"></script>
+  <script src="/htmx-a11y.js"></script>
+  <script src="/htmx-virtual.js"></script>
+  <script src="/htmx-grid.js"></script>
+  <script src="/htmx-offline.js"></script>
+  <script src="/htmx-devtools.js"></script>
+  <script src="/htmx-calc.js"></script>
+  <script src="/htmx-sim.js"></script>
+  <script src="/htmx-canvas.js"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .code-block { background: #1e293b; color: #e2e8f0; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; font-size: 0.8rem; line-height: 1.6; }
+    .code-block code { font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-background text-foreground antialiased min-h-screen">
+  <div class="flex min-h-screen">
+    <aside id="doc-sidebar" class="hidden lg:flex w-60 flex-col border-r border-border bg-card overflow-y-auto sticky top-0 h-screen">
+      <div class="flex h-14 items-center border-b border-border px-4">
+        <a href="/" class="flex items-center gap-2">
+          <svg class="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+          <span class="font-bold text-lg tracking-tight">HTMXUI</span>
+        </a>
+      </div>
+      <div class="flex-1 p-3 overflow-y-auto"><div class="mb-6"><h4 class="mb-2 px-3 text-sm font-semibold tracking-tight">Getting Started</h4><div class="space-y-1"><a href="/docs/components/introduction/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Introduction</a>
+<a href="/docs/components/installation/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Installation</a>
+<a href="/docs/components/rosetta-stone/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Rosetta Stone</a>
+<a href="/docs/components/common-ai-hallucinations/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Common Ai Hallucinations</a>
+<a href="/docs/components/directives-guide/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Directives Guide</a></div></div><div><h4 class="mb-2 px-3 text-sm font-semibold tracking-tight">Components</h4><div class="space-y-1"><a href="/docs/components/accordion/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Accordion</a>
+<a href="/docs/components/alert/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Alert</a>
+<a href="/docs/components/alert-dialog/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Alert Dialog</a>
+<a href="/docs/components/aspect-ratio/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Aspect Ratio</a>
+<a href="/docs/components/avatar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Avatar</a>
+<a href="/docs/components/avatar-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Avatar Group</a>
+<a href="/docs/components/badge/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Badge</a>
+<a href="/docs/components/banner/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Banner</a>
+<a href="/docs/components/breadcrumb/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Breadcrumb</a>
+<a href="/docs/components/button/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Button</a>
+<a href="/docs/components/button-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Button Group</a>
+<a href="/docs/components/calendar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Calendar</a>
+<a href="/docs/components/card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Card</a>
+<a href="/docs/components/carousel/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Carousel</a>
+<a href="/docs/components/checkbox/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Checkbox</a>
+<a href="/docs/components/checkbox-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Checkbox Group</a>
+<a href="/docs/components/chip/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Chip</a>
+<a href="/docs/components/collapsible/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Collapsible</a>
+<a href="/docs/components/color-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Color Picker</a>
+<a href="/docs/components/combobox/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Combobox</a>
+<a href="/docs/components/command/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Command</a>
+<a href="/docs/components/container/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Container</a>
+<a href="/docs/components/context-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Context Menu</a>
+<a href="/docs/components/data-table/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Data Table</a>
+<a href="/docs/components/date-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Date Picker</a>
+<a href="/docs/components/dialog/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Dialog</a>
+<a href="/docs/components/divider/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Divider</a>
+<a href="/docs/components/drawer/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Drawer</a>
+<a href="/docs/components/dropdown-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Dropdown Menu</a>
+<a href="/docs/components/empty-state/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Empty State</a>
+<a href="/docs/components/error-message/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Error Message</a>
+<a href="/docs/components/file-upload/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">File Upload</a>
+<a href="/docs/components/flash-search/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Flash Search</a>
+<a href="/docs/components/form/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Form</a>
+<a href="/docs/components/hover-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hover Card</a>
+<a href="/docs/components/icon/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Icon</a>
+<a href="/docs/components/image/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Image</a>
+<a href="/docs/components/indicator/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Indicator</a>
+<a href="/docs/components/input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Input</a>
+<a href="/docs/components/input-otp/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Input Otp</a>
+<a href="/docs/components/kbd/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Kbd</a>
+<a href="/docs/components/label/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Label</a>
+<a href="/docs/components/layout-block/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Block</a>
+<a href="/docs/components/layout-canvas/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Canvas</a>
+<a href="/docs/components/layout-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Grid</a>
+<a href="/docs/components/layout-page/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Page</a>
+<a href="/docs/components/layout-print/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Print</a>
+<a href="/docs/components/layout-scaffold/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Scaffold</a>
+<a href="/docs/components/layout-web/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Web</a>
+<a href="/docs/components/layout-mweb/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Mweb</a>
+<a href="/docs/components/layout-mapp/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Layout Mapp</a>
+<a href="/docs/components/link/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Link</a>
+<a href="/docs/components/list/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">List</a>
+<a href="/docs/components/list-item/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">List Item</a>
+<a href="/docs/components/loading-spinner/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Loading Spinner</a>
+<a href="/docs/components/masonry-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Masonry Grid</a>
+<a href="/docs/components/menubar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Menubar</a>
+<a href="/docs/components/message-bubble/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Message Bubble</a>
+<a href="/docs/components/navigation-menu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Navigation Menu</a>
+<a href="/docs/components/notification/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Notification</a>
+<a href="/docs/components/number-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Number Input</a>
+<a href="/docs/components/page-header/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Page Header</a>
+<a href="/docs/components/pagination/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pagination</a>
+<a href="/docs/components/panel/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Panel</a>
+<a href="/docs/components/password-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Password Input</a>
+<a href="/docs/components/pin-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pin Input</a>
+<a href="/docs/components/popover/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Popover</a>
+<a href="/docs/components/profile-badge/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Profile Badge</a>
+<a href="/docs/components/progress/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Progress</a>
+<a href="/docs/components/progress-bar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Progress Bar</a>
+<a href="/docs/components/pulse/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Pulse</a>
+<a href="/docs/components/radio-button/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Radio Button</a>
+<a href="/docs/components/radio-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Radio Group</a>
+<a href="/docs/components/rating/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Rating</a>
+<a href="/docs/components/resizable/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Resizable</a>
+<a href="/docs/components/ribbon/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Ribbon</a>
+<a href="/docs/components/scroll-area/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Scroll Area</a>
+<a href="/docs/components/search-input/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Search Input</a>
+<a href="/docs/components/select/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Select</a>
+<a href="/docs/components/separator/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Separator</a>
+<a href="/docs/components/sheet/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Sheet</a>
+<a href="/docs/components/sidebar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Sidebar</a>
+<a href="/docs/components/skeleton/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Skeleton</a>
+<a href="/docs/components/slider/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Slider</a>
+<a href="/docs/components/slider-range/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Slider Range</a>
+<a href="/docs/components/snackbar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Snackbar</a>
+<a href="/docs/components/splitter/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Splitter</a>
+<a href="/docs/components/stat-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Stat Card</a>
+<a href="/docs/components/stepper/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Stepper</a>
+<a href="/docs/components/submenu/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Submenu</a>
+<a href="/docs/components/switch/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Switch</a>
+<a href="/docs/components/table/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Table</a>
+<a href="/docs/components/tabs/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tabs</a>
+<a href="/docs/components/tag/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tag</a>
+<a href="/docs/components/text/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Text</a>
+<a href="/docs/components/textarea/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Textarea</a>
+<a href="/docs/components/timeline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Timeline</a>
+<a href="/docs/components/time-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Time Picker</a>
+<a href="/docs/components/toast/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toast</a>
+<a href="/docs/components/toggle/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle</a>
+<a href="/docs/components/toggle-group/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle Group</a>
+<a href="/docs/components/toggle-switch/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toggle Switch</a>
+<a href="/docs/components/toolbar/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Toolbar</a>
+<a href="/docs/components/tooltip/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tooltip</a>
+<a href="/docs/components/tree-view/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Tree View</a>
+<a href="/docs/components/user-card/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">User Card</a>
+<a href="/docs/components/video-player/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Video Player</a>
+<a href="/docs/components/watermark/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Watermark</a>
+<a href="/docs/components/wizard/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Wizard</a>
+<a href="/docs/components/hx-wizard/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Wizard</a>
+<a href="/docs/components/date-range-picker/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Date Range Picker</a>
+<a href="/docs/components/hx-grid/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Grid</a>
+<a href="/docs/components/hx-virtual/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Virtual</a>
+<a href="/docs/components/hx-offline/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hx Offline</a>
+<a href="/docs/components/hollywood-webfx/" class="block rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors">Hollywood Webfx</a>
+<a href="/docs/components/simulation/" class="block rounded-md px-3 py-1.5 text-sm bg-accent font-medium text-accent-foreground transition-colors">Simulation</a></div></div></div>
+    </aside>
+    <main class="flex-1 flex flex-col min-w-0">
+      <header class="h-14 border-b border-border flex items-center justify-between px-6 bg-card sticky top-0 z-30">
+        <div class="flex items-center gap-4">
+          <h1 class="font-semibold text-base">Simulation</h1>
+          <a href="/demo/" class="text-xs bg-primary/10 text-primary font-medium px-2.5 py-1 rounded-full hover:bg-primary/20 transition-colors">Live Demos Hub</a>
+        </div>
+        <a href="https://github.com/hyperlibs/htmxUI" target="_blank" class="text-xs text-muted-foreground hover:text-foreground">GitHub ↗</a>
+      </header>
+      <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
+        <div class="space-y-2">
+          <h1 class="text-3xl font-extrabold tracking-tight">Simulation</h1>
+          <p class="text-muted-foreground text-sm">Interactive production-grade hypermedia component for HTMXUI.</p>
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>
+          <div class="rounded-xl border border-border p-8 bg-card shadow-sm flex items-center justify-center min-h-[160px]">
+            <div class="w-full max-w-xl flex flex-col items-center gap-4"><div class="space-y-12 max-w-5xl py-6 text-foreground" hx-state='{ "activeSim": "boids", "count": 140, "speed": 1.0, "trails": true }'>
+  <!-- Header Title -->
+  <div>
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3">
+      <span>🧬</span> High-Order Kinetic Simulations &amp; Particle Renderers
+    </div>
+    <h1 class="text-4xl font-extrabold tracking-tight">Kinetic Simulation Engine</h1>
+    <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
+      Decoupled 120Hz physics calculations with GPU-accelerated canvas rendering. Declarative HTML attributes (<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">hx-sim="boids|gravity|collision|life|slime"</code>) bring complex emergence, flocking, and (n^2)$ astrophysics to life.
+    </p>
+  </div>
+
+  <!-- Interactive Live Simulation Showcase -->
+  <section class="space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-card border border-border shadow-sm">
+      <!-- Preset Selectors -->
+      <div class="flex flex-wrap gap-2">
+        <button 
+          hx-action="activeSim = 'boids'; ('#demo-sim-canvas', 'preset', 'boids')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'boids', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'boids'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🐦</span> Boids Swarm
+        </button>
+        <button 
+          hx-action="activeSim = 'gravity'; ('#demo-sim-canvas', 'preset', 'gravity')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'gravity', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'gravity'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🪐</span> N-Body Gravity
+        </button>
+        <button 
+          hx-action="activeSim = 'collision'; ('#demo-sim-canvas', 'preset', 'collision')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'collision', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'collision'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>💥</span> Elastic Collisions
+        </button>
+        <button 
+          hx-action="activeSim = 'life'; ('#demo-sim-canvas', 'preset', 'life')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'life', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'life'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🧬</span> Conway's Life
+        </button>
+        <button 
+          hx-action="activeSim = 'slime'; ('#demo-sim-canvas', 'preset', 'slime')"
+          hx-class="{'bg-primary text-primary-foreground font-semibold': activeSim === 'slime', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'slime'}"
+          class="px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5">
+          <span>🧫</span> Slime Mould
+        </button>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button 
+          hx-action="('#demo-sim-canvas', 'reset')"
+          class="px-3.5 py-1.5 rounded-lg bg-muted hover:bg-accent text-xs font-medium border border-border transition-colors">
+          🔄 Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Canvas Viewport -->
+    <div class="relative w-full h-[480px] rounded-3xl overflow-hidden border border-border bg-slate-950 shadow-2xl">
+      <canvas 
+        id="demo-sim-canvas" 
+        hx-sim="boids" 
+        hx-sim-count="140" 
+        hx-sim-speed="1.0" 
+        hx-sim-interactive="true" 
+        hx-sim-trails="true" 
+        class="w-full h-full block">
+      </canvas>
+
+      <!-- Overlay HUD -->
+      <div class="absolute top-4 left-4 pointer-events-none flex flex-col gap-1.5">
+        <div class="px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-emerald-400 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>120Hz Decoupled Physics Loop</span>
+        </div>
+        <div class="px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-slate-300">
+          <span>Simulation: </span>
+          <span class="font-bold text-sky-400" hx-text="activeSim">boids</span>
+        </div>
+      </div>
+
+      <div class="absolute bottom-4 left-4 right-4 pointer-events-none flex justify-between items-center text-[11px] text-slate-400 font-mono">
+        <span class="bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur">Left Click / Drag: Attract • Right Click: Repel</span>
+        <span class="bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur">HTMXUI SimEngine v1.0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Grid: 5 Algorithmic Paradigms -->
+  <section class="space-y-6">
+    <h2 class="text-2xl font-bold tracking-tight">Five Built-in Algorithmic Paradigms</h2>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 1. Boids -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-xl">
+          🐦
+        </div>
+        <h3 class="text-base font-bold">1. Reynolds Flocking (Boids)</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Vectorized steer forces computed across 3 rules: <strong>Separation</strong> (repel close neighbors), <strong>Alignment</strong> (match flock velocity vector), and <strong>Cohesion</strong> (steer toward flock centroid).
+        </p>
+      </div>
+
+      <!-- 2. N-Body Gravity -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+          🪐
+        </div>
+        <h3 class="text-base font-bold">2. N-Body Gravity</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          All-pairs gravitational potential with Plummer softening factor ($\epsilon^2 = 120$) to prevent division-by-zero singularities. Supports orbital disk configurations with central black hole attractors.
+        </p>
+      </div>
+
+      <!-- 3. Elastic Collisions -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xl">
+          💥
+        </div>
+        <h3 class="text-base font-bold">3. Elastic Collision Kinematics</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Pairwise circle-circle overlap resolution and 1D projected normal impulse transfer preserving kinetic energy with coefficient of restitution $.
+        </p>
+      </div>
+
+      <!-- 4. Conway's Life -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+          🧬
+        </div>
+        <h3 class="text-base font-bold">4. Conway's Cellular Life</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Toroidal 2D bitmask matrix computing cell survival and births. Cells brighten and shift chromatic hue as generational age accumulates.
+        </p>
+      </div>
+
+      <!-- 5. Physarum Slime -->
+      <div class="p-6 rounded-2xl border border-border bg-card space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center text-xl">
+          🧫
+        </div>
+        <h3 class="text-base font-bold">5. Physarum Slime Mould</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Chemoattractant sensory agents sampling diffuse pheromone gradients with 3 forward sensor antennae. Creates self-organizing organic biological transport networks.
+        </p>
+      </div>
+
+      <!-- Declarative Architecture -->
+      <div class="p-6 rounded-2xl border border-primary/20 bg-primary/5 space-y-3">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-xl">
+          ⚡
+        </div>
+        <h3 class="text-base font-bold text-primary">Declarative HTML Directives</h3>
+        <p class="text-xs text-muted-foreground leading-relaxed">
+          Zero WebGL boilerplate. Simply place <code class="bg-muted px-1 rounded font-mono text-xs">hx-sim="preset"</code> on any standard <code class="bg-muted px-1 rounded font-mono text-xs">&lt;canvas&gt;</code> element to instantiate the high-performance physics runner.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Code Snippet -->
+  <section class="space-y-4">
+    <h2 class="text-xl font-bold tracking-tight">Declarative Usage in HTMXUI</h2>
+    <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-xs overflow-x-auto">
+      <pre><code>&lt;!-- 1. Declarative Canvas Mount --&gt;
+&lt;canvas 
+  hx-sim="boids" 
+  hx-sim-count="150" 
+  hx-sim-speed="1.0" 
+  hx-sim-interactive="true"
+  hx-sim-trails="true" 
+  class="w-full h-96 rounded-2xl border border-border bg-slate-950"&gt;
+&lt;/canvas&gt;
+
+&lt;!-- 2. Control Simulation via HyperFX Actions --&gt;
+&lt;button hx-action="('#my-canvas', 'preset', 'gravity')"&gt;Switch to Gravity&lt;/button&gt;
+&lt;button hx-action="('#my-canvas', 'reset')"&gt;Reset Particles&lt;/button&gt;</code></pre>
+    </div>
+  </section>
+</div>
+</div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold tracking-tight">HTML Source</h2>
+          <div class="code-block"><pre><code>&lt;div class=&quot;space-y-12 max-w-5xl py-6 text-foreground&quot; hx-state='{ &quot;activeSim&quot;: &quot;boids&quot;, &quot;count&quot;: 140, &quot;speed&quot;: 1.0, &quot;trails&quot;: true }'&gt;
+  &lt;!-- Header Title --&gt;
+  &lt;div&gt;
+    &lt;div class=&quot;inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-3&quot;&gt;
+      &lt;span&gt;🧬&lt;/span&gt; High-Order Kinetic Simulations &amp;amp; Particle Renderers
+    &lt;/div&gt;
+    &lt;h1 class=&quot;text-4xl font-extrabold tracking-tight&quot;&gt;Kinetic Simulation Engine&lt;/h1&gt;
+    &lt;p class=&quot;text-muted-foreground mt-2 text-sm leading-relaxed&quot;&gt;
+      Decoupled 120Hz physics calculations with GPU-accelerated canvas rendering. Declarative HTML attributes (&lt;code class=&quot;bg-muted px-1.5 py-0.5 rounded text-xs font-mono&quot;&gt;hx-sim=&quot;boids|gravity|collision|life|slime&quot;&lt;/code&gt;) bring complex emergence, flocking, and (n^2)$ astrophysics to life.
+    &lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Interactive Live Simulation Showcase --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;div class=&quot;flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-card border border-border shadow-sm&quot;&gt;
+      &lt;!-- Preset Selectors --&gt;
+      &lt;div class=&quot;flex flex-wrap gap-2&quot;&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'boids'; ('#demo-sim-canvas', 'preset', 'boids')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'boids', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'boids'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🐦&lt;/span&gt; Boids Swarm
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'gravity'; ('#demo-sim-canvas', 'preset', 'gravity')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'gravity', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'gravity'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🪐&lt;/span&gt; N-Body Gravity
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'collision'; ('#demo-sim-canvas', 'preset', 'collision')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'collision', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'collision'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;💥&lt;/span&gt; Elastic Collisions
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'life'; ('#demo-sim-canvas', 'preset', 'life')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'life', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'life'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🧬&lt;/span&gt; Conway's Life
+        &lt;/button&gt;
+        &lt;button 
+          hx-action=&quot;activeSim = 'slime'; ('#demo-sim-canvas', 'preset', 'slime')&quot;
+          hx-class=&quot;{'bg-primary text-primary-foreground font-semibold': activeSim === 'slime', 'bg-muted text-muted-foreground hover:bg-accent': activeSim !== 'slime'}&quot;
+          class=&quot;px-4 py-2 rounded-xl text-xs transition-all flex items-center gap-1.5&quot;&gt;
+          &lt;span&gt;🧫&lt;/span&gt; Slime Mould
+        &lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Action Buttons --&gt;
+      &lt;div class=&quot;flex items-center gap-2&quot;&gt;
+        &lt;button 
+          hx-action=&quot;('#demo-sim-canvas', 'reset')&quot;
+          class=&quot;px-3.5 py-1.5 rounded-lg bg-muted hover:bg-accent text-xs font-medium border border-border transition-colors&quot;&gt;
+          🔄 Reset
+        &lt;/button&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Live Canvas Viewport --&gt;
+    &lt;div class=&quot;relative w-full h-[480px] rounded-3xl overflow-hidden border border-border bg-slate-950 shadow-2xl&quot;&gt;
+      &lt;canvas 
+        id=&quot;demo-sim-canvas&quot; 
+        hx-sim=&quot;boids&quot; 
+        hx-sim-count=&quot;140&quot; 
+        hx-sim-speed=&quot;1.0&quot; 
+        hx-sim-interactive=&quot;true&quot; 
+        hx-sim-trails=&quot;true&quot; 
+        class=&quot;w-full h-full block&quot;&gt;
+      &lt;/canvas&gt;
+
+      &lt;!-- Overlay HUD --&gt;
+      &lt;div class=&quot;absolute top-4 left-4 pointer-events-none flex flex-col gap-1.5&quot;&gt;
+        &lt;div class=&quot;px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-emerald-400 flex items-center gap-2&quot;&gt;
+          &lt;span class=&quot;w-2 h-2 rounded-full bg-emerald-500 animate-pulse&quot;&gt;&lt;/span&gt;
+          &lt;span&gt;120Hz Decoupled Physics Loop&lt;/span&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;px-3 py-1 rounded-full bg-black/60 backdrop-blur border border-white/10 text-[11px] font-mono text-slate-300&quot;&gt;
+          &lt;span&gt;Simulation: &lt;/span&gt;
+          &lt;span class=&quot;font-bold text-sky-400&quot; hx-text=&quot;activeSim&quot;&gt;boids&lt;/span&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;absolute bottom-4 left-4 right-4 pointer-events-none flex justify-between items-center text-[11px] text-slate-400 font-mono&quot;&gt;
+        &lt;span class=&quot;bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur&quot;&gt;Left Click / Drag: Attract • Right Click: Repel&lt;/span&gt;
+        &lt;span class=&quot;bg-black/50 px-2.5 py-1 rounded-lg backdrop-blur&quot;&gt;HTMXUI SimEngine v1.0&lt;/span&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Feature Grid: 5 Algorithmic Paradigms --&gt;
+  &lt;section class=&quot;space-y-6&quot;&gt;
+    &lt;h2 class=&quot;text-2xl font-bold tracking-tight&quot;&gt;Five Built-in Algorithmic Paradigms&lt;/h2&gt;
+    
+    &lt;div class=&quot;grid md:grid-cols-2 lg:grid-cols-3 gap-6&quot;&gt;
+      &lt;!-- 1. Boids --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-xl&quot;&gt;
+          🐦
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;1. Reynolds Flocking (Boids)&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Vectorized steer forces computed across 3 rules: &lt;strong&gt;Separation&lt;/strong&gt; (repel close neighbors), &lt;strong&gt;Alignment&lt;/strong&gt; (match flock velocity vector), and &lt;strong&gt;Cohesion&lt;/strong&gt; (steer toward flock centroid).
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 2. N-Body Gravity --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl&quot;&gt;
+          🪐
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;2. N-Body Gravity&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          All-pairs gravitational potential with Plummer softening factor ($\epsilon^2 = 120$) to prevent division-by-zero singularities. Supports orbital disk configurations with central black hole attractors.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 3. Elastic Collisions --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-xl&quot;&gt;
+          💥
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;3. Elastic Collision Kinematics&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Pairwise circle-circle overlap resolution and 1D projected normal impulse transfer preserving kinetic energy with coefficient of restitution $.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 4. Conway's Life --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl&quot;&gt;
+          🧬
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;4. Conway's Cellular Life&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Toroidal 2D bitmask matrix computing cell survival and births. Cells brighten and shift chromatic hue as generational age accumulates.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- 5. Physarum Slime --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-border bg-card space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center text-xl&quot;&gt;
+          🧫
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold&quot;&gt;5. Physarum Slime Mould&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Chemoattractant sensory agents sampling diffuse pheromone gradients with 3 forward sensor antennae. Creates self-organizing organic biological transport networks.
+        &lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;!-- Declarative Architecture --&gt;
+      &lt;div class=&quot;p-6 rounded-2xl border border-primary/20 bg-primary/5 space-y-3&quot;&gt;
+        &lt;div class=&quot;w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center text-xl&quot;&gt;
+          ⚡
+        &lt;/div&gt;
+        &lt;h3 class=&quot;text-base font-bold text-primary&quot;&gt;Declarative HTML Directives&lt;/h3&gt;
+        &lt;p class=&quot;text-xs text-muted-foreground leading-relaxed&quot;&gt;
+          Zero WebGL boilerplate. Simply place &lt;code class=&quot;bg-muted px-1 rounded font-mono text-xs&quot;&gt;hx-sim=&quot;preset&quot;&lt;/code&gt; on any standard &lt;code class=&quot;bg-muted px-1 rounded font-mono text-xs&quot;&gt;&amp;lt;canvas&amp;gt;&lt;/code&gt; element to instantiate the high-performance physics runner.
+        &lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;!-- Code Snippet --&gt;
+  &lt;section class=&quot;space-y-4&quot;&gt;
+    &lt;h2 class=&quot;text-xl font-bold tracking-tight&quot;&gt;Declarative Usage in HTMXUI&lt;/h2&gt;
+    &lt;div class=&quot;p-4 rounded-2xl bg-slate-950 border border-slate-800 text-slate-200 font-mono text-xs overflow-x-auto&quot;&gt;
+      &lt;pre&gt;&lt;code&gt;&amp;lt;!-- 1. Declarative Canvas Mount --&amp;gt;
+&amp;lt;canvas 
+  hx-sim=&quot;boids&quot; 
+  hx-sim-count=&quot;150&quot; 
+  hx-sim-speed=&quot;1.0&quot; 
+  hx-sim-interactive=&quot;true&quot;
+  hx-sim-trails=&quot;true&quot; 
+  class=&quot;w-full h-96 rounded-2xl border border-border bg-slate-950&quot;&amp;gt;
+&amp;lt;/canvas&amp;gt;
+
+&amp;lt;!-- 2. Control Simulation via HyperFX Actions --&amp;gt;
+&amp;lt;button hx-action=&quot;('#my-canvas', 'preset', 'gravity')&quot;&amp;gt;Switch to Gravity&amp;lt;/button&amp;gt;
+&amp;lt;button hx-action=&quot;('#my-canvas', 'reset')&quot;&amp;gt;Reset Particles&amp;lt;/button&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+</code></pre></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

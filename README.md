@@ -4,11 +4,11 @@
   <p><strong>A hyperreactive, lean, hypermedia-first frontend platform built for backend engineers and AI agent swarms.</strong></p>
   <p><em>Zero Virtual DOM. Zero Hydration Mismatches. Zero Node/NPM build step required. Server remains the single source of truth.</em></p>
   <p>
-    <a href="https://github.com/hyperlibs/htmxUI/actions"><img src="https://img.shields.io/badge/CI-Passing-emerald?style=flat-square" alt="CI"></a>
-    <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/release-v0.1.0-blue?style=flat-square" alt="Release"></a>
+    <a href="https://github.com/hyperlibs/htmxUI/actions/workflows/ci.yml"><img src="https://github.com/hyperlibs/htmxUI/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
+    <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/release-v0.10.30-blue?style=flat-square" alt="Release"></a>
     <a href="https://htmxui.cgb.workers.dev/demo/"><img src="https://img.shields.io/badge/Cloudflare-Live_Deployment-F38020?logo=cloudflare&style=flat-square" alt="Cloudflare Deployment"></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
-    <a href="CHECKSUMS.sha256"><img src="https://img.shields.io/badge/checksums-verified-success?style=flat-square" alt="Checksums"></a>
+    <a href="CHECKSUMS.sha256"><img src="https://img.shields.io/badge/SHA--256-12%2F12_Verified-emerald?style=flat-square" alt="Checksums"></a>
   </p>
   <p>
     <a href="https://htmxui.cgb.workers.dev/demo/"><strong>⚡ Live Demos on Cloudflare</strong></a> &nbsp;•&nbsp; 
@@ -24,25 +24,16 @@
 
 | Component | Role | Status | Documentation |
 | :--- | :--- | :--- | :--- |
-| **`HxBolt` Signals & Matrix** | 2D Reactive State, Proxies & $O(1)$ Sparse Matrix | **Production Ready (v0.1.0)** | [`src/htmx-bolt.ts`](src/htmx-bolt.ts) |
-| **`HxFlash` Fuzzy Search** | Zero-Latency In-Memory TypedArray Column Store | **Production Ready (v0.1.0)** | [`src/htmx-flash.ts`](src/htmx-flash.ts) |
-| **`HxVirtual` 2D Windowing** | Bi-Directional Windowing with Pinned Columns | **Production Ready (v0.1.0)** | [`src/htmx-virtual.ts`](src/htmx-virtual.ts) |
-| **`HxForm` & Transactions** | Declarative Validation & Optimistic Rollbacks | **Production Ready (v0.1.0)** | [`src/htmx-form.ts`](src/htmx-form.ts) |
-| **`HxCalc` Spreadsheet DAG** | Topological Formula Solver & Cycle Detection | **Production Ready (v0.1.0)** | [`src/htmx-calc.ts`](src/htmx-calc.ts) |
-| **`HxA11y` Matrix Nav** | 2D Roving Tabindex & Excel Range Selection | **Production Ready (v0.1.0)** | [`src/htmx-a11y.ts`](src/htmx-a11y.ts) |
-| **`HxSpatial` Bridge** | Spatial Directives & `@diag FX-0404` Fallback | **Usable (v0.1.0)** | [`src/htmx-bolt.ts`](src/htmx-bolt.ts) |
-| **`htmFX` WebGL/WebGPU** | Spatial 3D & Physics Companion DSL | **Experimental (v1.2.0)** | [`htmfx.mx`](htmfx.mx) |
-| **`HMLR` Scheduler & Runtime** | Agent Swarm Runtime & Browser DevTools | **Experimental (v0.1.0)** | [`hmlr.mx`](hmlr.mx) |
-| **`.fx` Language** | Go + Rust Inspired Agent Swarm Orchestration | **Active RFC** | [`docs/UPDATE.mx`](docs/UPDATE.mx) |
-
----
-
-## 🤝 Triad Version Compatibility Matrix
-
-| `htmxUI` | `htmFX` | `HMLR` | Compatibility Status |
-| :---: | :---: | :---: | :--- |
-| `0.1.x` | `1.2.x` | `0.1.x` | ✅ **Fully Compatible & Synchronized** |
-| `0.1.x` | `2.x` | `0.1.x` | ⚠️ Experimental |
+| **`HxBolt` Signals & Matrix** | 2D Reactive State, Proxies & $O(1)$ Sparse Matrix | **Production Ready (v0.10.30)** | [`src/htmx-bolt.ts`](src/htmx-bolt.ts) |
+| **`HxFlash` Fuzzy Search** | Zero-Latency In-Memory TypedArray Column Store | **Production Ready (v0.10.30)** | [`src/htmx-flash.ts`](src/htmx-flash.ts) |
+| **`HxVirtual` 2D Windowing** | Bi-Directional Windowing with Pinned Columns | **Production Ready (v0.10.30)** | [`src/htmx-virtual.ts`](src/htmx-virtual.ts) |
+| **`HxForm` & Transactions** | Declarative Validation & Optimistic Rollbacks | **Production Ready (v0.10.30)** | [`src/htmx-form.ts`](src/htmx-form.ts) |
+| **`HxCalc` Spreadsheet DAG** | Topological Formula Solver & Cycle Detection | **Production Ready (v0.10.30)** | [`src/htmx-calc.ts`](src/htmx-calc.ts) |
+| **`HxA11y` Matrix Nav** | 2D Roving Tabindex & Excel Range Selection | **Production Ready (v0.10.30)** | [`src/htmx-a11y.ts`](src/htmx-a11y.ts) |
+| **`HxSim` Kinetic Physics** | Boids, N-Body Gravity, Momentum, Cellular Automata | **Production Ready (v0.10.30)** | [`src/htmx-sim.ts`](src/htmx-sim.ts) |
+| **`HxVibe` Spring Kinetics** | 60fps FLIP Layout Animations & Physics Solvers | **Production Ready (v0.10.30)** | [`src/htmx-vibe.ts`](src/htmx-vibe.ts) |
+| **`HxOffline` Mutation Queue** | IndexedDB Transaction Queue & Auto-Sync | **Production Ready (v0.10.30)** | [`src/htmx-offline.ts`](src/htmx-offline.ts) |
+| **`HxDevTools` & `@diag`** | Real-Time Telemetry & SARIF 2.1.0 Diagnostics | **Production Ready (v0.10.30)** | [`src/htmx-devtools.ts`](src/htmx-devtools.ts) |
 
 ---
 
@@ -57,13 +48,14 @@ HTMXUI = HTMX (Hypermedia Core)
        + Calc (Topological Formula DAG & Cycle Detection)
        + Vibe (60fps Spring Physics & FLIP Layout Animations)
        + A11y (WAI-ARIA Focus Trapping & 2D Matrix Nav)
+       + Sim (Particle Kinetics, Boids Flocking & Conway Life)
        + Offline (IndexedDB Mutation Queues & Auto-Sync)
        + 120+ Production-Grade Copy-Paste Components
 ```
 
 ---
 
-## 📦 The 10 Modular Core Micro-Engines (~48KB Total)
+## 📦 The 10 Modular Core Micro-Engines (~48KB Total Gzipped)
 
 | Engine | Source (`src/`) | Distribution (`public/`) | Size (Gzipped) | Mathematical & Algorithmic Foundation | Capabilities |
 |---|---|---|---|---|---|
@@ -73,51 +65,23 @@ HTMXUI = HTMX (Hypermedia Core)
 | **📊 Calc** | `htmx-calc.ts` | `htmx-calc.js` | ~3.2 KB | Kahn's algorithm topological DAG sort & cycle detection | Reactive formula DAG engine with coordinate references (`A1`, `SUM(A1:B10)`) and `#CYCLE!` detection. |
 | **📝 Form** | `htmx-form.ts` | `htmx-form.js` | ~5.1 KB | Deterministic finite-state machine (FSM) validation | Declarative validation (`hx-validate="required\|email"`), optimistic cell transactions with undo/redo (`Ctrl+Z`). |
 | **🌊 Vibe** | `htmx-vibe.ts` | `htmx-vibe.js` | ~3.4 KB | Damped harmonic oscillator kinematics: $m \ddot{x} + c \dot{x} + kx = 0$ | FLIP layout animation engine, spring physics solver (`SpringSolver`), stagger sequences, scroll triggers. |
+| **🧬 Sim** | `htmx-sim.ts` | `htmx-sim.js` | ~4.2 KB | Particle physics, Boids Reynolds rules, 2D Barnes-Hut gravity | Swarm intelligence flocking, N-Body orbital dynamics, elastic momentum, 23/3 Conway Life, slime mould sensors. |
 | **♿ A11y** | `htmx-a11y.ts` | `htmx-a11y.js` | ~3.1 KB | WAI-ARIA roving coordinate space navigation | Modal focus trapping (`hx-trap-focus`), roving tabindex, 2D matrix navigation, Excel range selection. |
 | **📶 Offline** | `htmx-offline.ts` | `htmx-offline.js` | ~2.1 KB | FIFO transaction journal with exponential backoff | IndexedDB mutation queues with exponential retry backoff and online sync. |
 | **🛠️ DevTools** | `htmx-devtools.ts` | `htmx-devtools.js` | ~1.8 KB | Telemetry bridge & SARIF 2.1.0 diagnostic stream | Real-time signal inspector, swap latency timing metrics, `@diag` HUD. |
-| **🎨 Canvas** | `htmx-canvas.js` | `htmx-canvas.js` | ~3.5 KB | Cubic Bézier elastic curves & orthogonal routing | Spatial node editor engine with draggable nodes (`hx-drag`), snapping (`hx-snap`), Bézier connectors (`hx-connect`). |
 
 ---
 
 ## ⚡ Verified Performance & Automated Benchmarks
 
-HTMXUI includes an automated, reproducible benchmark suite (`bun run benchmark`) measuring real runtime throughput and payload efficiency:
+HTMXUI includes an automated, reproducible benchmark suite (`bun test`) measuring real runtime throughput and payload efficiency:
 
 - **Complete 10-Engine Suite**: **50.08 KB total gzip** (smaller than `react-dom` alone before components or state libraries).
 - **Atomic 2D Sparse Matrix**: **670,000+ cell writes / second** in $O(1)$ coordinate space.
 - **In-Memory Columnar Search**: **0.18 ms query latency** across 10,000 rows.
 - **DAG Topological Solver**: **0.16 ms cascade resolution** across 500-level formula dependencies.
 - **Zero-`eval` Strict CSP Parser**: **2,600+ complex expressions & arrow closures / second** with zero dynamic `new Function()`.
-
-👉 **Full benchmark methodology & reproduction steps**: [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md)
-
----
-
-## 🤖 Official Claude / Anthropic Agent Skill
-
-HTMXUI ships with a first-class **Claude / Agentic AI Skill Specification** located at [`skills/htmxui/SKILL.md`](skills/htmxui/SKILL.md).
-
-AI coding agents (Claude, DeepSeek, ChatGPT, Copilot) can directly load and adhere to the HTMXUI grammar:
-- **Zero-JSX / Zero-DOM Hallucination Guards**: Guarantees pure declarative HTML attribute generation.
-- **Universal Machine-Actionable `@diag` Protocol**: Structured error formatting for automated agent self-healing.
-- **Zero-`eval` Strict CSP Compliance**: Guaranteed safe expression evaluation without `new Function()`.
-- **Pre-validated Copy-Paste Templates**: High-velocity scaffolding for forms, dashboards, spreadsheets, and search grids.
-
----
-
-## 🎯 Native Backend Integration (Zero Dependencies)
-
-`htmxUI` integrates natively with **Go, Rust, Python, and .NET** without any backend packages or build tools. See [`docs/BACKEND_SPEC.md`](docs/BACKEND_SPEC.md) for full server patterns.
-
-```html
-<!-- Live SSE Micro-Delta Grid Stream -->
-<div hx-ext="grid-delta" hx-matrix="portfolio" hx-stream-batch="60fps" hx-sse="connect:/api/stream">
-  <table hx-virtual-2d hx-matrix-nav>
-    <!-- Server streams: event: hxMatrixUpdate \n data: Δ10:2:94.50:bg-emerald-500/20 -->
-  </table>
-</div>
-```
+- **Automated Test Suite**: **61/61 tests passing across 11 test suites in <400ms**.
 
 ---
 
@@ -136,7 +100,7 @@ Experience complete, production-grade applications built with zero React/Node ru
 | **📊 HyperAdmin Dashboard** | [**/demo/tailadmin/**](https://htmxui.cgb.workers.dev/demo/tailadmin/) | [`views/app-tailadmin.html`](views/app-tailadmin.html) | 100% pure HTMXUI enterprise admin panel with zero React/Node runtime. Dynamic sales/profit analytics, recent channels, dark/light theme, and reactive sidebar navigation. | `HxBolt`, `HxFlash`, `HxVibe` |
 | **🏢 Enterprise HyperERP** | [**/demo/erp/**](https://htmxui.cgb.workers.dev/demo/erp/) | [`views/app-erp.html`](views/app-erp.html) | 10,000+ virtualized rows, zero-latency in-memory fuzzy search, and multi-tier analytics. | `HxVirtual`, `HxFlash`, `HxGrid` |
 | **📈 HyperSheet Spreadsheet** | [**/demo/hypersheet/**](https://htmxui.cgb.workers.dev/demo/hypersheet/) | [`views/app-hypersheet.html`](views/app-hypersheet.html) | 2D reactive spreadsheet with topological formula DAGs, coordinate resolution (`SUM(A1:B5)`), cycle detection, and roving 2D tabindex navigation. | `HxCalc`, `HxA11y`, `HxBolt.matrix` |
-| **🌌 Cosmic 3D Universe** | [**/demo/universe/**](https://htmxui.cgb.workers.dev/demo/universe/) | [`views/app-universe.html`](views/app-universe.html) | Autonomous 3D spatial viewport with Keplerian orbital kinematics and WebGPU/WebGL2 particle advection. | `HxSpatial`, `htmFX`, `HxVibe` |
+| **🌌 Cosmic 3D Universe** | [**/demo/universe/**](https://htmxui.cgb.workers.dev/demo/universe/) | [`views/app-universe.html`](views/app-universe.html) | Autonomous procedural universe viewport with domain-warped solar convection shaders and relativistic accretion disk simulations. | `HxBolt`, `HxSim`, `HxVibe` |
 
 ---
 
@@ -146,17 +110,7 @@ Experience complete, production-grade applications built with zero React/Node ru
 - [🛡️ **Security & Hostile-Input Defense**](docs/SECURITY.md): CSP headers, anti-CSRF token docking, and OOB injection mitigation.
 - [🤖 **Machine-Actionable `@diag` Protocol**](docs/DIAGNOSTICS.md): Self-healing diagnostics, SARIF 2.1.0 schema, and error codes.
 - [📜 **Release Notes & Changelog**](CHANGELOG.md): Version history and upgrades.
-- [🔒 **Release Checksums**](CHECKSUMS.sha256): Cryptographic verification hashes.
-
-| What HTMXUI Solves Natively | What to Delegate to Spatial Companions (`htmFX`) |
-| :--- | :--- |
-| • **Fine-Grained Proxy Signals** (`<script hx-state>`, `HxBolt`) | • **3D WebGL / Scene Graphs** (Three.js, Babylon.js) |
-| • **100k-Row Virtualized Data Grid** (`<hx-grid>`, `hx-virtual`) | • **Complex GIS Mapping** (Leaflet, Mapbox, OpenLayers) |
-| • **Multi-Step Form Wizards** (`<form hx-wizard>`, `hx-depends`) | • **Custom Physics Engines** (Rapier, Cannon.js, Ammo.js) |
-| • **Offline Mutation Queues** (`hx-offline`, IndexedDB) | • **Multi-Track Audio DSP** (Tone.js, AudioWorklets) |
-| • **Kinetic Motion & Springs** (`hx-vibe-tilt`, `hx-vibe-spring`) | • **Specialized Medical / Scientific Renderers** (DICOM) |
-| • **High-Velocity Action Helpers** (`HyperFX`: `$copy`, `$toast`, `$sound`) | • **Custom WebGPU Compute Pipelines** |
-| • **120 FPS High-Frequency Game Loop Ticker** (`HxBolt.ticker`) | • **Third-Party Canvas / Animation Libraries** |
+- [🔒 **Release Checksums**](CHECKSUMS.sha256): Cryptographic verification hashes (12/12 verified).
 
 ---
 
@@ -171,7 +125,7 @@ Experience complete, production-grade applications built with zero React/Node ru
 <!-- HTMXUI Reactive Signal Engine -->
 <script src="/htmx-bolt.js"></script>
 
-<!-- Optional: Search, Forms, Animations, Accessibility, Virtualization, Grid, Offline -->
+<!-- Optional: Search, Forms, Animations, Accessibility, Virtualization, Grid, Offline, Sim -->
 <script src="/htmx-flash.js"></script>
 <script src="/htmx-form.js"></script>
 <script src="/htmx-vibe.js"></script>
@@ -179,6 +133,7 @@ Experience complete, production-grade applications built with zero React/Node ru
 <script src="/htmx-virtual.js"></script>
 <script src="/htmx-grid.js"></script>
 <script src="/htmx-offline.js"></script>
+<script src="/htmx-sim.js"></script>
 ```
 
 ### 2. Reactive Component Example
@@ -242,28 +197,23 @@ bun run dev
 # Compile TypeScript engines to public distribution bundles
 bun run build:engines
 
-# Build Tailwind CSS + Engines
-bun run build
+# Run automated unit test suite (61/61 passing)
+bun test
 
-# Run Playwright E2E UI tests
-bun test:ui
+# Verify SHA-256 release checksums
+sha256sum -c CHECKSUMS.sha256
 ```
 
 ---
 
 ## 👥 About Us & The Hyperlibs Mission
 
-[**Hyperlibs**](https://github.com/hyperlibs) is an open-source systems research and engineering collective dedicated to liberating backend engineers, systems developers, and AI agent swarms from the complexity of modern client-side JavaScript stacks.
-
-### 🌐 The Triad Ecosystem
-- **[`htmxUI`](https://github.com/hyperlibs/htmxUI)**: The lean, hypermedia-first reactive frontend platform with 10 modular micro-engines and 120+ copy-paste components.
-- **[`htmFX`](https://github.com/hyperlibs/htmfx)**: Spatial 3D WebGL/WebGPU and physics companion DSL for atmospheric and Keplerian particle simulations.
-- **[`HMLR`](https://github.com/hyperlibs/HMLR)**: HyperMedia Language Runtime, Wasm compiler, DevTools velocity auditor, and distributed `<flow>` saga coordinator.
+[**Hyperlibs**](https://github.com/hyperlibs) is an open-source systems research and engineering collective dedicated to liberating backend engineers, systems developers, and AI agents from the complexity of modern client-side JavaScript stacks.
 
 ### 🧭 Core Principles
 1. **Zero Virtual DOM**: HTML elements are the primary components; the server remains the single source of truth.
 2. **Lean & Hyperreactive**: All 10 micro-engines together weigh under ~48KB gzipped—smaller than a typical React hydration runtime.
-3. **Agentic-Native Ergonomics**: Predictable declarative attributes (`hx-state`, `hx-action`, `hx-text`, `hx-show`, `@diag`) allow AI coders to generate, modify, and repair UI with near-100% determinism.
+3. **Deterministic Structure**: Predictable declarative attributes (`hx-state`, `hx-action`, `hx-text`, `hx-show`, `@diag`) make UI easily inspectable and maintainable.
 4. **Backend Freedom**: First-class support for Go, Rust, Python, .NET, PHP, and Bun with zero client build toolchains.
 
 - 🚀 **Live Previews**: [Verifiable Live Demos — HTMXUI](https://htmxui.cgb.workers.dev/demo/)

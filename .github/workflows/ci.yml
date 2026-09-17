@@ -27,13 +27,17 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Build all 10 micro-engines
+      - name: Build all micro-engines
         run: bun run build:engines
 
-      - name: Run unit test suite
-        run: bun test tests/hypersheet.test.ts tests/bolt.test.ts tests/extensibility.test.ts tests/flash.test.ts tests/form.test.ts tests/hyperfx.test.ts tests/universe.test.ts tests/vibe.test.ts
+      - name: Verify distribution bundle checksums
+        shell: bash
+        run: sha256sum -c CHECKSUMS.sha256
 
-      - name: Check bundle size budget (<48KB gzipped total)
+      - name: Run unit test suite
+        run: bun test
+
+      - name: Check bundle size budget (<300KB uncompressed total)
         shell: bash
         run: |
           total_size=$(ls -l public/htmx-*.js | awk '{sum += $5} END {print sum}')

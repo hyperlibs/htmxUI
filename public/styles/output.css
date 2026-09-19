@@ -791,6 +791,9 @@
   .max-h-56 {
     max-height: calc(var(--spacing) * 56);
   }
+  .max-h-72 {
+    max-height: calc(var(--spacing) * 72);
+  }
   .max-h-\[300px\] {
     max-height: 300px;
   }
@@ -1197,6 +1200,9 @@
   }
   .flex-wrap {
     flex-wrap: wrap;
+  }
+  .items-baseline {
+    align-items: baseline;
   }
   .items-center {
     align-items: center;
@@ -1630,6 +1636,12 @@
   .border-indigo-500 {
     border-color: var(--color-indigo-500);
   }
+  .border-indigo-500\/20 {
+    border-color: color-mix(in srgb, oklch(58.5% 0.233 277.117) 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-indigo-500) 20%, transparent);
+    }
+  }
   .border-indigo-500\/30 {
     border-color: color-mix(in srgb, oklch(58.5% 0.233 277.117) 30%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -2032,6 +2044,12 @@
   .bg-indigo-600 {
     background-color: var(--color-indigo-600);
   }
+  .bg-indigo-600\/10 {
+    background-color: color-mix(in srgb, oklch(51.1% 0.262 276.966) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-indigo-600) 10%, transparent);
+    }
+  }
   .bg-indigo-950\/80 {
     background-color: color-mix(in srgb, oklch(25.7% 0.09 281.288) 80%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -2270,6 +2288,12 @@
     background-color: color-mix(in srgb, oklch(12.9% 0.042 264.695) 40%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-slate-950) 40%, transparent);
+    }
+  }
+  .bg-slate-950\/60 {
+    background-color: color-mix(in srgb, oklch(12.9% 0.042 264.695) 60%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-slate-950) 60%, transparent);
     }
   }
   .bg-slate-950\/80 {
@@ -3176,6 +3200,9 @@
   .\[htmx-bolt\:ticker\] {
     htmx-bolt: ticker;
   }
+  .\[telemetry\:nodes\] {
+    telemetry: nodes;
+  }
   .ring-inset {
     --tw-ring-inset: inset;
   }
@@ -3755,6 +3782,9 @@
   .focus\:ring-2:focus {
     --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .focus\:ring-indigo-500:focus {
+    --tw-ring-color: var(--color-indigo-500);
   }
   .focus\:ring-primary:focus {
     --tw-ring-color: var(--color-primary);

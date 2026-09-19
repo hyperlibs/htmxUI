@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "HMLR — Hypermedia DevTools & Velocity Inspector",
+  "version": "1.0.0",
+  "description": "Developer tools inspector, reactive signal profiler, channel tracer, and velocity auditor for HTMXUI and htmFX.",
+  "devtools_page": "devtools/devtools.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content_script.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

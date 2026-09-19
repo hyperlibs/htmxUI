@@ -103,7 +103,7 @@ function buildComponentPage(slug: string): string {
       <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
         <div class="space-y-2">
           <h1 class="text-3xl font-extrabold tracking-tight">${name}</h1>
-          <p class="text-muted-foreground text-sm">Interactive production-grade hypermedia component for HTMXUI.</p>
+          <p class="text-muted-foreground text-sm">Interactive Shadcn-quality hypermedia component for HTMXUI.</p>
         </div>
         <div class="space-y-4">
           <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>

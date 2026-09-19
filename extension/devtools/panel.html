@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 font-sans">
+<head>
+  <meta charset="utf-8">
+  <title>HMLR Inspector</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  </style>
+</head>
+<body class="h-full flex flex-col antialiased text-xs select-none">
+  <!-- Header / Navigation Tabs -->
+  <header class="h-10 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-3 shrink-0">
+    <div class="flex items-center gap-1">
+      <span class="font-black text-indigo-400 mr-2 flex items-center gap-1">
+        <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">H</span>
+        HMLR
+      </span>
+      <button class="nav-tab px-2.5 py-1 rounded font-medium bg-slate-800 text-white" data-tab="signals">⚡ Signals</button>
+      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="channels">📡 Channels</button>
+      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="velocity">🚀 Velocity Audit</button>
+      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="spatial">🪐 3D Spatial</button>
+      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="diag">🤖 AI @diag</button>
+    </div>
+    <div class="flex items-center gap-2">
+      <span id="status-badge" class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">Active</span>
+      <button id="btn-refresh" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">↻ Refresh</button>
+    </div>
+  </header>
+
+  <!-- Main Content Areas -->
+  <main class="flex-1 overflow-hidden flex flex-col p-4">
+    <!-- Panel 1: Signals -->
+    <div id="tab-signals" class="tab-content flex-1 flex gap-4 overflow-hidden">
+      <div class="w-1/3 bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col">
+        <div class="font-semibold text-slate-300 mb-2">Active Reactive Scopes</div>
+        <div id="signal-scopes" class="flex-1 overflow-y-auto space-y-1 font-mono text-[11px]">
+          <div class="p-2 rounded bg-indigo-600/10 text-indigo-300 border border-indigo-500/20 cursor-pointer">#cockpit (User: Ada Lovelace)</div>
+          <div class="p-2 rounded hover:bg-slate-800 text-slate-400 cursor-pointer">#telemetry (Nodes: 4)</div>
+        </div>
+      </div>
+      <div class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col justify-between">
+        <div>
+          <div class="font-semibold text-slate-300 mb-2">State Proxy Inspector</div>
+          <pre id="state-json" class="p-3 bg-slate-950 rounded border border-slate-800/80 font-mono text-[11px] text-emerald-400 overflow-auto max-h-72">{
+  "user": "Ada Lovelace",
+  "active": true,
+  "nodes": 4,
+  "latencyMs": 0.8
+}</pre>
+        </div>
+        <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
+          <button id="btn-undo" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">⏪ Step Undo</button>
+          <button id="btn-redo" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">⏩ Step Redo</button>
+          <button id="btn-copy-mx" class="px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white ml-auto">📋 Copy State as .mx</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Channels -->
+    <div id="tab-channels" class="tab-content hidden flex-1 flex flex-col gap-3 overflow-hidden">
+      <div class="flex items-center justify-between">
+        <div class="font-semibold text-slate-300">Live DOM Message Channels (`hx-chan`)</div>
+        <div class="flex gap-2">
+          <input id="input-chan-name" placeholder="channel-name" class="bg-slate-900 border border-slate-800 px-2 py-1 rounded text-white text-xs w-32">
+          <input id="input-chan-data" placeholder="data payload" class="bg-slate-900 border border-slate-800 px-2 py-1 rounded text-white text-xs w-48">
+          <button id="btn-chan-send" class="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium">⚡ Send</button>
+        </div>
+      </div>
+      <div id="channel-feed" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3 font-mono text-[11px] overflow-y-auto space-y-1">
+        <div class="text-slate-500">// Channel message bus initialized. Listening for hx-chan-send events...</div>
+        <div class="p-1.5 rounded bg-slate-950/60 border border-slate-800 flex justify-between">
+          <span class="text-indigo-400 font-semibold">[telemetry:nodes]</span>
+          <span class="text-slate-300">{"status": "Healthy", "load": 0.14}</span>
+          <span class="text-slate-500">0ms</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3: Velocity Audit -->
+    <div id="tab-velocity" class="tab-content hidden flex-1 flex flex-col gap-4 overflow-y-auto">
+      <div class="grid grid-cols-4 gap-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+          <div class="text-slate-400 text-[10px] uppercase">Hypermedia Velocity Score</div>
+          <div class="text-2xl font-black text-emerald-400 mt-1">100 / 100</div>
+          <div class="text-[10px] text-slate-500 mt-1">Zero JavaScript Hydration Tax</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+          <div class="text-slate-400 text-[10px] uppercase">Avg DOM Swap Latency</div>
+          <div class="text-2xl font-black text-white mt-1">0.4 ms</div>
+          <div class="text-[10px] text-emerald-400 mt-1">⚡ Microtask Batched</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+          <div class="text-slate-400 text-[10px] uppercase">Wire Payload Weight</div>
+          <div class="text-2xl font-black text-white mt-1">0.6 KB</div>
+          <div class="text-[10px] text-slate-500 mt-1">vs 450 KB React Bundle</div>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
+          <div class="text-slate-400 text-[10px] uppercase">LLM Generation Token Cost</div>
+          <div class="text-2xl font-black text-indigo-400 mt-1">~180 tokens</div>
+          <div class="text-[10px] text-emerald-400 mt-1">82% Token Savings</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 4: Spatial -->
+    <div id="tab-spatial" class="tab-content hidden flex-1 flex flex-col gap-3">
+      <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-2">
+        <div class="font-bold text-white">htmFX Spatial HUD & WebGPU Core</div>
+        <p class="text-slate-400">Tracks active 3D viewports, camera positions, and FlatBuffer entities.</p>
+        <div class="grid grid-cols-3 gap-3 pt-2">
+          <div class="p-2 rounded bg-slate-950 border border-slate-800 font-mono">Camera: Orbit [0, 10, -50]</div>
+          <div class="p-2 rounded bg-slate-950 border border-slate-800 font-mono">Backend: WebGPU (Active)</div>
+          <div class="p-2 rounded bg-slate-950 border border-slate-800 font-mono">Framerate: 120 FPS</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 5: AI @diag -->
+    <div id="tab-diag" class="tab-content hidden flex-1 flex flex-col gap-3 overflow-hidden">
+      <div class="flex items-center justify-between">
+        <div class="font-semibold text-slate-300">Live Agentic Telemetry Stream</div>
+        <button id="btn-export-diag" class="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium">📋 Export AI Telemetry</button>
+      </div>
+      <div id="diag-log" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3 font-mono text-[11px] text-emerald-300 overflow-y-auto space-y-2">
+@diag OK-0000: System nominal.
+  runtime: HTMXUI v1.0.0
+  concurrency: Channels active (0 drop rate)
+  contracts: 100% struct schemas valid
+      </div>
+    </div>
+  </main>
+
+  <script src="panel.js"></script>
+</body>
+</html>

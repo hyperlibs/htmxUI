@@ -93,6 +93,14 @@ export const ERROR_CATALOG: Record<string, { title: string; fix: string }> = {
   'HTMXUI-SPATIAL-001': {
     title: 'Depth layer overflow or missing 3D transform-style context.',
     fix: 'Verify container has perspective and transform-style: preserve-3d configured.'
+  },
+  'HTMXUI-CHAN-001': {
+    title: 'Channel message transmission error or unregistered receiver.',
+    fix: 'Ensure channel exists via HxBolt.chan(name) or hx-chan-recv is mounted in the DOM.'
+  },
+  'HTMXUI-STRUCT-001': {
+    title: 'State struct schema contract violation.',
+    fix: 'Ensure properties in hx-state match types declared in hx-struct schema.'
   }
 };
 
@@ -2581,6 +2589,177 @@ export const HxSpatial = {
   }
 };
 
+// -----------------------------------------------------------------------------
+// Concurrent Channel & Struct Subsystem (hx-chan, hx-struct, hx-select)
+// -----------------------------------------------------------------------------
+export interface Channel<T = any> {
+  name: string;
+  send(data: T): void;
+  recv(callback: (data: T) => void): () => void;
+  close(): void;
+  subscriberCount(): number;
+}
+
+const channels = new Map<string, Set<(data: any) => void>>();
+const structSchemas = new Map<string, Record<string, string>>();
+
+export function getOrCreateChannel<T = any>(name: string): Channel<T> {
+  if (!channels.has(name)) {
+    channels.set(name, new Set());
+  }
+  const subs = channels.get(name)!;
+  return {
+    name,
+    send(data: T): void {
+      subs.forEach(cb => {
+        try { cb(data); } catch (e) { console.error(`[HxBolt:channel:${name}]`, e); }
+      });
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent(`htmxui:channel:${name}`, { detail: data }));
+        window.dispatchEvent(new CustomEvent('htmxui:channel', { detail: { channel: name, data } }));
+      }
+    },
+    recv(callback: (data: T) => void): () => void {
+      subs.add(callback);
+      return () => subs.delete(callback);
+    },
+    close(): void {
+      subs.clear();
+      channels.delete(name);
+    },
+    subscriberCount(): number {
+      return subs.size;
+    }
+  };
+}
+
+export function defineStructSchema(nameOrSignature: string, fields?: Record<string, string>): Record<string, string> {
+  let structName = nameOrSignature.trim();
+  let schema: Record<string, string> = fields || {};
+
+  if (nameOrSignature.includes('{')) {
+    const match = nameOrSignature.match(/^([A-Za-z0-9_]+)?\s*\{\s*(.*?)\s*\}$/);
+    if (match) {
+      structName = (match[1] || 'AnonymousStruct').trim();
+      const body = match[2];
+      const fieldPairs = body.split(',').map(s => s.trim()).filter(Boolean);
+      schema = {};
+      for (const pair of fieldPairs) {
+        const [fName, fType] = pair.split(':').map(s => s.trim());
+        if (fName && fType) {
+          schema[fName] = fType.toLowerCase();
+        }
+      }
+    }
+  }
+
+  structSchemas.set(structName, schema);
+  return schema;
+}
+
+export function validateStruct(data: any, schemaOrName: string | Record<string, string>): { valid: boolean; errors: string[] } {
+  if (!data || typeof data !== 'object') {
+    return { valid: false, errors: ['Expected object payload for struct validation.'] };
+  }
+  let schema: Record<string, string>;
+  if (typeof schemaOrName === 'string') {
+    if (schemaOrName.includes('{')) {
+      schema = defineStructSchema(schemaOrName);
+    } else {
+      schema = structSchemas.get(schemaOrName) || {};
+    }
+  } else {
+    schema = schemaOrName;
+  }
+
+  const errors: string[] = [];
+  for (const [field, expectedType] of Object.entries(schema)) {
+    const val = data[field];
+    if (val === undefined || val === null) continue;
+
+    switch (expectedType) {
+      case 'string':
+      case 'str':
+      case 'text':
+        if (typeof val !== 'string') errors.push(`Field '${field}' expected string, got ${typeof val}`);
+        break;
+      case 'bool':
+      case 'boolean':
+        if (typeof val !== 'boolean') errors.push(`Field '${field}' expected bool, got ${typeof val}`);
+        break;
+      case 'int':
+      case 'integer':
+        if (typeof val !== 'number' || !Number.isInteger(val)) errors.push(`Field '${field}' expected integer, got ${val}`);
+        break;
+      case 'float':
+      case 'number':
+        if (typeof val !== 'number') errors.push(`Field '${field}' expected float/number, got ${typeof val}`);
+        break;
+      case 'array':
+      case 'list':
+        if (!Array.isArray(val)) errors.push(`Field '${field}' expected array, got ${typeof val}`);
+        break;
+      case 'object':
+      case 'map':
+      case 'dict':
+        if (typeof val !== 'object' || Array.isArray(val)) errors.push(`Field '${field}' expected object, got ${typeof val}`);
+        break;
+    }
+  }
+
+  if (errors.length > 0) {
+    reportError('HTMXUI-STRUCT-001', `Struct schema validation failure: ${errors.join('; ')}`);
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+// Directives for hx-chan and hx-struct
+customDirectives.set('hx-chan-send', (el, value, { state, execute, onCleanup }) => {
+  const channelName = value.trim();
+  const eventName = el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA' ? 'input' : (el.tagName === 'FORM' ? 'submit' : 'click');
+  const handler = (e: Event) => {
+    if (el.tagName === 'FORM') e.preventDefault();
+    const ch = getOrCreateChannel(channelName);
+    let payload: any = state;
+    if (el.tagName === 'INPUT' || el.tagName === 'SELECT' || el.tagName === 'TEXTAREA') {
+      payload = (el as HTMLInputElement).value;
+    }
+    ch.send(payload);
+  };
+  el.addEventListener(eventName, handler);
+  onCleanup(() => el.removeEventListener(eventName, handler));
+});
+
+customDirectives.set('hx-chan-recv', (el, value, { state, execute, onCleanup }) => {
+  const channelName = value.trim();
+  const ch = getOrCreateChannel(channelName);
+  const unsub = ch.recv((data) => {
+    if (el.hasAttribute('hx-text')) {
+      const prop = el.getAttribute('hx-text')!;
+      if (typeof data === 'object' && data !== null && prop in data) {
+        el.textContent = String(data[prop]);
+      } else if (typeof data !== 'object') {
+        el.textContent = String(data);
+      }
+    }
+    if (state && typeof data === 'object' && data !== null) {
+      Object.assign(state, data);
+    }
+    if (el.hasAttribute('hx-action')) {
+      const act = el.getAttribute('hx-action')!;
+      execute(act, { $event: { data } });
+    }
+  });
+  onCleanup(unsub);
+});
+
+customDirectives.set('hx-struct', (el, value, { state }) => {
+  if (state && value) {
+    validateStruct(state, value);
+  }
+});
+
 // Default spatial directives for htmFX delegation
 customDirectives.set('hx-3d', (el) => HxSpatial.mount(el));
 customDirectives.set('3denv', (el) => HxSpatial.mount(el));
@@ -2672,6 +2851,15 @@ export const HxBolt: HxBoltAPI = {
   executeAction,
   getDiagnostics,
   clearDiagnostics,
+  chan: getOrCreateChannel,
+  send(channelName: string, data: any): void {
+    getOrCreateChannel(channelName).send(data);
+  },
+  recv(channelName: string, callback: (data: any) => void): () => void {
+    return getOrCreateChannel(channelName).recv(callback);
+  },
+  struct: defineStructSchema,
+  validateStruct,
   init(root: HTMLElement | Document) {
     discoverMetaAuth();
     if (typeof document !== 'undefined' && root) {

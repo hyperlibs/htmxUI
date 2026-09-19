@@ -26,26 +26,27 @@
 
 ---
 
-## 🗺️ Upcoming Strategic Milestones & Ecosystem Roadmap
+## 🗺️ Upcoming Strategic Milestones & Platform Roadmap
 
-1. **🐹 Optimized UI Framework for Go (Golang)**:
-   - First-class template adapters for `a-h/templ`, standard `html/template`, `Echo`, `Gin`, and `Chi`.
-   - Zero-allocation Go SSE publishers for streaming atomic cell mutations into `HxBolt.matrix`.
+1. **⚡ Concurrent Hypermedia Primitives (`hx-chan`, `hx-struct`, `hx-select`)**:
+   - Go-inspired concurrency directly in declarative HTML attributes.
+   - `hx-struct`: Typed state schemas and contract validation in the DOM.
+   - `hx-chan`: Zero-JS element-to-element and SSE/WebSocket event channel pipelines.
+   - `hx-select`: Multiplexed event matching and concurrent message routing.
 
-2. **🦀 Optimized UI Framework for Rust**:
-   - Compile-time checked hypermedia macros for `askama` and `maud`.
-   - Native `Axum` and `Actix-Web` SSE broadcast channels powering real-time HTMXUI micro-deltas.
+2. **📦 Universal Single-Binary & Zero-Build Backend Packs**:
+   - First-class typed component catalogs (120+ widgets) and embedded runtimes (`//go:embed` for Go, async streaming for Python, typed tag-helpers for .NET).
+   - Zero-dependency, single-executable deployment for full-stack hypermedia apps.
 
-3. **🐍 Optimized UI Framework for Python**:
-   - Native integration with `FastAPI`, `Django`, and `Flask`.
-   - Reusable Jinja2 macro package for all 120+ pre-built HTMXUI components.
+3. **📱 `hx-zap` — Mobile-First, Touch & Offline Micro-Engine**:
+   - Sub-4KB touch gesture, swipe, and offline-first client cache micro-runtime for mobile WebViews, POS terminals, medical displays, and IoT dashboards.
 
-4. **⚡ `hx-zap` — Mobile-First & Embedded UI Framework**:
-   - Sub-4KB touch gesture, swipe, and offline-first micro-engine for mobile WebViews, POS terminals, medical displays, and IoT dashboards.
+4. **🖥️ Native Desktop & Embedded via Tauri 2.0 (Rust & Tokio)**:
+   - Cross-platform native application packaging (macOS, Windows, Linux, iOS, Android).
+   - Ultra-compact **< 5MB native binaries** with zero Node/Electron memory overhead and instant local SQLite bindings.
 
-5. **🖥️ Native Desktop via Tauri 2.0 (Rust & Tokio)**:
-   - Cross-platform desktop & mobile packaging (macOS, Windows, Linux, iOS, Android).
-   - Produces ultra-compact **< 5MB native binaries** with zero Node/Electron memory overhead.
+5. **🛡️ Universal `@diag` & Agentic Self-Healing Protocol**:
+   - Deepened CSP-safe zero-eval reflection taxonomy allowing AI coding agents to introspect, debug, and autonomously heal UI state without brittle build loops.
 
 ---
 

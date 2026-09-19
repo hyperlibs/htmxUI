@@ -1,134 +1,416 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950 text-slate-100 font-sans">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>HMLR Inspector</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #0f172a;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 12px;
+      line-height: 1.4;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    /* Header & Tabs */
+    header {
+      background-color: #1e293b;
+      border-bottom: 1px solid #334155;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      user-select: none;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 800;
+      color: #818cf8;
+      font-size: 13px;
+      margin-right: 12px;
+    }
+    .brand-badge {
+      background: #4f46e5;
+      color: #ffffff;
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-weight: 900;
+    }
+    .tabs {
+      display: flex;
+      gap: 4px;
+    }
+    .nav-tab {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .nav-tab:hover {
+      background: #334155;
+      color: #f8fafc;
+    }
+    .nav-tab.active {
+      background: #334155;
+      color: #ffffff;
+      border-bottom: 2px solid #6366f1;
+    }
+    .status-badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* Main Viewport */
+    main {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+    }
+    .tab-content {
+      flex: 1;
+      display: flex;
+      gap: 12px;
+      overflow: hidden;
+    }
+    .hidden { display: none !important; }
+
+    /* Card Panels */
+    .panel-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .card-title {
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Signal Scopes List */
+    .scope-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .scope-item {
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.15s;
+    }
+    .scope-item:hover {
+      background: #1e293b;
+      color: #f1f5f9;
+    }
+    .scope-item.selected {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: #6366f1;
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    /* Code & JSON Display */
+    pre {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      color: #34d399;
+      overflow: auto;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    /* Action Buttons */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #334155;
+      align-items: center;
+    }
+    .btn {
+      background: #334155;
+      color: #f1f5f9;
+      border: 1px solid #475569;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s;
+    }
+    .btn:hover {
+      background: #475569;
+    }
+    .btn-primary {
+      background: #4f46e5;
+      border-color: #6366f1;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #4338ca;
+    }
+    .btn-right { margin-left: auto; }
+
+    /* Inputs */
+    .input-box {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      outline: none;
+    }
+    .input-box:focus {
+      border-color: #6366f1;
+    }
+
+    /* Metric Grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+    .metric-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .metric-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #94a3b8;
+      font-weight: 700;
+    }
+    .metric-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      margin: 4px 0;
+    }
+    .metric-sub {
+      font-size: 10px;
+      color: #34d399;
+    }
+
+    /* Feed Items */
+    .feed {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 8px;
+      overflow-y: auto;
+      font-family: ui-monospace, monospace;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .feed-item {
+      padding: 6px 10px;
+      border-radius: 4px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .feed-tag {
+      color: #818cf8;
+      font-weight: 700;
+    }
+    .feed-time {
+      color: #64748b;
+      font-size: 10px;
+    }
   </style>
 </head>
-<body class="h-full flex flex-col antialiased text-xs select-none">
-  <!-- Header / Navigation Tabs -->
-  <header class="h-10 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-3 shrink-0">
-    <div class="flex items-center gap-1">
-      <span class="font-black text-indigo-400 mr-2 flex items-center gap-1">
-        <span class="w-4 h-4 rounded bg-indigo-600 text-white flex items-center justify-center text-[10px]">H</span>
+<body>
+  <header>
+    <div style="display:flex; align-items:center;">
+      <div class="brand">
+        <span class="brand-badge">H</span>
         HMLR
-      </span>
-      <button class="nav-tab px-2.5 py-1 rounded font-medium bg-slate-800 text-white" data-tab="signals">⚡ Signals</button>
-      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="channels">📡 Channels</button>
-      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="velocity">🚀 Velocity Audit</button>
-      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="spatial">🪐 3D Spatial</button>
-      <button class="nav-tab px-2.5 py-1 rounded font-medium text-slate-400 hover:text-white" data-tab="diag">🤖 AI @diag</button>
+      </div>
+      <div class="tabs">
+        <button class="nav-tab active" data-tab="signals">⚡ Signals</button>
+        <button class="nav-tab" data-tab="channels">📡 Channels</button>
+        <button class="nav-tab" data-tab="velocity">🚀 Velocity Audit</button>
+        <button class="nav-tab" data-tab="spatial">🪐 3D Spatial</button>
+        <button class="nav-tab" data-tab="diag">🤖 AI @diag</button>
+      </div>
     </div>
-    <div class="flex items-center gap-2">
-      <span id="status-badge" class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">Active</span>
-      <button id="btn-refresh" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">↻ Refresh</button>
+    <div style="display:flex; align-items:center; gap:8px;">
+      <span class="status-badge">● Active Bridge</span>
+      <button id="btn-refresh" class="btn" style="padding:4px 8px;">↻ Refresh</button>
     </div>
   </header>
 
-  <!-- Main Content Areas -->
-  <main class="flex-1 overflow-hidden flex flex-col p-4">
-    <!-- Panel 1: Signals -->
-    <div id="tab-signals" class="tab-content flex-1 flex gap-4 overflow-hidden">
-      <div class="w-1/3 bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col">
-        <div class="font-semibold text-slate-300 mb-2">Active Reactive Scopes</div>
-        <div id="signal-scopes" class="flex-1 overflow-y-auto space-y-1 font-mono text-[11px]">
-          <div class="p-2 rounded bg-indigo-600/10 text-indigo-300 border border-indigo-500/20 cursor-pointer">#cockpit (User: Ada Lovelace)</div>
-          <div class="p-2 rounded hover:bg-slate-800 text-slate-400 cursor-pointer">#telemetry (Nodes: 4)</div>
+  <main>
+    <!-- 1. SIGNALS TAB -->
+    <div id="tab-signals" class="tab-content">
+      <div class="panel-card" style="width: 32%;">
+        <div class="card-title">Reactive Scopes (HxBolt)</div>
+        <div class="scope-list">
+          <div class="scope-item selected" onclick="selectScope('cockpit')">#cockpit (Scope: Active)</div>
+          <div class="scope-item" onclick="selectScope('telemetry')">#telemetry (Nodes: 4)</div>
+          <div class="scope-item" onclick="selectScope('datatable')">#datatable (Virtual: 10k rows)</div>
         </div>
       </div>
-      <div class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3 flex flex-col justify-between">
-        <div>
-          <div class="font-semibold text-slate-300 mb-2">State Proxy Inspector</div>
-          <pre id="state-json" class="p-3 bg-slate-950 rounded border border-slate-800/80 font-mono text-[11px] text-emerald-400 overflow-auto max-h-72">{
+      <div class="panel-card" style="flex: 1;">
+        <div class="card-title">State Proxy Inspector</div>
+        <pre id="state-json">{
   "user": "Ada Lovelace",
   "active": true,
   "nodes": 4,
-  "latencyMs": 0.8
+  "latencyMs": 0.8,
+  "mode": "Concurrent-Hypermedia"
 }</pre>
-        </div>
-        <div class="flex items-center gap-2 pt-3 border-t border-slate-800">
-          <button id="btn-undo" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">⏪ Step Undo</button>
-          <button id="btn-redo" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">⏩ Step Redo</button>
-          <button id="btn-copy-mx" class="px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white ml-auto">📋 Copy State as .mx</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 2: Channels -->
-    <div id="tab-channels" class="tab-content hidden flex-1 flex flex-col gap-3 overflow-hidden">
-      <div class="flex items-center justify-between">
-        <div class="font-semibold text-slate-300">Live DOM Message Channels (`hx-chan`)</div>
-        <div class="flex gap-2">
-          <input id="input-chan-name" placeholder="channel-name" class="bg-slate-900 border border-slate-800 px-2 py-1 rounded text-white text-xs w-32">
-          <input id="input-chan-data" placeholder="data payload" class="bg-slate-900 border border-slate-800 px-2 py-1 rounded text-white text-xs w-48">
-          <button id="btn-chan-send" class="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium">⚡ Send</button>
-        </div>
-      </div>
-      <div id="channel-feed" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3 font-mono text-[11px] overflow-y-auto space-y-1">
-        <div class="text-slate-500">// Channel message bus initialized. Listening for hx-chan-send events...</div>
-        <div class="p-1.5 rounded bg-slate-950/60 border border-slate-800 flex justify-between">
-          <span class="text-indigo-400 font-semibold">[telemetry:nodes]</span>
-          <span class="text-slate-300">{"status": "Healthy", "load": 0.14}</span>
-          <span class="text-slate-500">0ms</span>
+        <div class="btn-row">
+          <button id="btn-undo" class="btn">⏪ Step Undo</button>
+          <button id="btn-redo" class="btn">⏩ Step Redo</button>
+          <button id="btn-copy-mx" class="btn btn-primary btn-right">📋 Copy State as .mx</button>
         </div>
       </div>
     </div>
 
-    <!-- Panel 3: Velocity Audit -->
-    <div id="tab-velocity" class="tab-content hidden flex-1 flex flex-col gap-4 overflow-y-auto">
-      <div class="grid grid-cols-4 gap-3">
-        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
-          <div class="text-slate-400 text-[10px] uppercase">Hypermedia Velocity Score</div>
-          <div class="text-2xl font-black text-emerald-400 mt-1">100 / 100</div>
-          <div class="text-[10px] text-slate-500 mt-1">Zero JavaScript Hydration Tax</div>
+    <!-- 2. CHANNELS TAB -->
+    <div id="tab-channels" class="tab-content hidden" style="flex-direction:column;">
+      <div class="panel-card" style="flex:1;">
+        <div class="card-title">
+          <span>Live DOM Message Channels (`hx-chan`)</span>
+          <div style="display:flex; gap:6px;">
+            <input id="input-chan-name" class="input-box" placeholder="channel-name" value="telemetry:nodes" style="width:140px;">
+            <input id="input-chan-data" class="input-box" placeholder="payload" value='{"status": "Healthy", "load": 0.14}' style="width:240px;">
+            <button id="btn-chan-send" class="btn btn-primary">⚡ Send Event</button>
+          </div>
         </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
-          <div class="text-slate-400 text-[10px] uppercase">Avg DOM Swap Latency</div>
-          <div class="text-2xl font-black text-white mt-1">0.4 ms</div>
-          <div class="text-[10px] text-emerald-400 mt-1">⚡ Microtask Batched</div>
-        </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
-          <div class="text-slate-400 text-[10px] uppercase">Wire Payload Weight</div>
-          <div class="text-2xl font-black text-white mt-1">0.6 KB</div>
-          <div class="text-[10px] text-slate-500 mt-1">vs 450 KB React Bundle</div>
-        </div>
-        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3">
-          <div class="text-slate-400 text-[10px] uppercase">LLM Generation Token Cost</div>
-          <div class="text-2xl font-black text-indigo-400 mt-1">~180 tokens</div>
-          <div class="text-[10px] text-emerald-400 mt-1">82% Token Savings</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 4: Spatial -->
-    <div id="tab-spatial" class="tab-content hidden flex-1 flex flex-col gap-3">
-      <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-2">
-        <div class="font-bold text-white">htmFX Spatial HUD & WebGPU Core</div>
-        <p class="text-slate-400">Tracks active 3D viewports, camera positions, and FlatBuffer entities.</p>
-        <div class="grid grid-cols-3 gap-3 pt-2">
-          <div class="p-2 rounded bg-slate-950 border border-slate-800 font-mono">Camera: Orbit [0, 10, -50]</div>
-          <div class="p-2 rounded bg-slate-950 border border-slate-800 font-mono">Backend: WebGPU (Active)</div>
-          <div class="p-2 rounded bg-slate-950 border border-slate-800 font-mono">Framerate: 120 FPS</div>
+        <div id="channel-feed" class="feed">
+          <div style="color:#64748b; padding:4px;">// Message channel pipeline active. Listening for hx-chan-send events...</div>
+          <div class="feed-item">
+            <span class="feed-tag">[telemetry:nodes]</span>
+            <span style="color:#cbd5e1;">{"status": "Healthy", "load": 0.14}</span>
+            <span class="feed-time">0.2ms ago</span>
+          </div>
+          <div class="feed-item">
+            <span class="feed-tag">[orders:stream]</span>
+            <span style="color:#cbd5e1;">{"id": "ORD-991", "total": 49.99}</span>
+            <span class="feed-time">1.1ms ago</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Panel 5: AI @diag -->
-    <div id="tab-diag" class="tab-content hidden flex-1 flex flex-col gap-3 overflow-hidden">
-      <div class="flex items-center justify-between">
-        <div class="font-semibold text-slate-300">Live Agentic Telemetry Stream</div>
-        <button id="btn-export-diag" class="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium">📋 Export AI Telemetry</button>
+    <!-- 3. VELOCITY TAB -->
+    <div id="tab-velocity" class="tab-content hidden" style="flex-direction:column;">
+      <div class="metric-grid">
+        <div class="metric-box">
+          <div class="metric-label">Velocity Score</div>
+          <div class="metric-val" style="color:#34d399;">100 / 100</div>
+          <div class="metric-sub">Zero Hydration Overhead</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">DOM Swap Latency</div>
+          <div class="metric-val">0.4 ms</div>
+          <div class="metric-sub">⚡ RAF Microtask Batch</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Wire Payload</div>
+          <div class="metric-val">0.6 KB</div>
+          <div class="metric-sub">vs 450 KB React Tax</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">LLM Token Savings</div>
+          <div class="metric-val" style="color:#818cf8;">82%</div>
+          <div class="metric-sub">~200 vs ~1,200 tokens</div>
+        </div>
       </div>
-      <div id="diag-log" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg p-3 font-mono text-[11px] text-emerald-300 overflow-y-auto space-y-2">
-@diag OK-0000: System nominal.
+    </div>
+
+    <!-- 4. SPATIAL TAB -->
+    <div id="tab-spatial" class="tab-content hidden" style="flex-direction:column;">
+      <div class="panel-card" style="flex:1;">
+        <div class="card-title">htmFX Spatial HUD & WebGPU Core</div>
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:8px;">
+          <div class="metric-box">
+            <div class="metric-label">Camera Mode</div>
+            <div class="metric-val" style="font-size:15px;">Orbit [0, 10, -50]</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Hardware Backend</div>
+            <div class="metric-val" style="font-size:15px; color:#818cf8;">WebGPU (Active)</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-label">Framerate</div>
+            <div class="metric-val" style="font-size:15px; color:#34d399;">120 FPS Synchronized</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. DIAG TAB -->
+    <div id="tab-diag" class="tab-content hidden" style="flex-direction:column;">
+      <div class="panel-card" style="flex:1;">
+        <div class="card-title">
+          <span>Autonomous AI @diag Telemetry Stream</span>
+          <button id="btn-export-diag" class="btn btn-primary">📋 Copy Telemetry (.mx)</button>
+        </div>
+        <pre style="color:#86efac;">@diag OK-0000: System nominal.
   runtime: HTMXUI v1.0.0
   concurrency: Channels active (0 drop rate)
   contracts: 100% struct schemas valid
+  micro-engines: [Bolt, Flash, Matrix, Canvas, Vibe, Sim, A11y, Form, Calc, Spatial]</pre>
       </div>
     </div>
   </main>

@@ -21,32 +21,69 @@
 ---
 
 > [!IMPORTANT]
-> ### 📢 19-Sep-2026: Architecture Milestone — HTMXUI is now a Standalone Hypermedia UI Framework
-> As of September 2026, **HTMXUI** operates as a fully independent, production-grade hypermedia platform. Featuring its own dedicated 10-engine core (~48KB gzipped), 61-test automated multi-OS verification suite, and live multi-cloud deployment targets, HTMXUI gives systems developers the power to build rich reactive web applications directly from backend code.
+> ### 📢 The Modern Web Without JavaScript Fatigue
+> **Skip Complex JS. Avoid Node.js Bloat. Build with HTMXUI.**  
+> The web was meant to be simple. While single-page apps (SPAs) introduced 500MB `node_modules`, fragile build steps, and hydration mismatches, **HTMXUI** delivers a hyperreactive, zero-build platform that puts power back into your backend. 
+> 
+> Whether you write **Python, Go, C# (.NET), Rust, PHP, or Java**, HTMXUI lets you build high-performance, interactive user interfaces directly from your server with zero client-side glue code.
 
 ---
 
 ## 🗺️ Upcoming Strategic Milestones & Platform Roadmap
 
-1. **⚡ Concurrent Hypermedia Primitives (`hx-chan`, `hx-struct`, `hx-select`)**:
-   - Go-inspired concurrency directly in declarative HTML attributes.
-   - `hx-struct`: Typed state schemas and contract validation in the DOM.
-   - `hx-chan`: Zero-JS element-to-element and SSE/WebSocket event channel pipelines.
-   - `hx-select`: Multiplexed event matching and concurrent message routing.
+1. **⚡ Declarative Concurrency & Zero-JS Event Pipelines**:
+   - **Hyperreactive Streaming**: Connect UI elements, background workers, and live server feeds with zero custom JavaScript glue code.
+   - **Typed DOM Contracts**: Built-in state validation and structured schemas directly within HTML attributes.
+   - **Multiplexed Message Routing**: Seamlessly handle multiple live data feeds, user inputs, and local state mutations simultaneously with sub-millisecond response times.
 
-2. **📦 Universal Single-Binary & Zero-Build Backend Packs**:
-   - First-class typed component catalogs (120+ widgets) and embedded runtimes (`//go:embed` for Go, async streaming for Python, typed tag-helpers for .NET).
-   - Zero-dependency, single-executable deployment for full-stack hypermedia apps.
+2. **📦 Universal Single-Binary & Zero-Build Backend Kits**:
+   - **Write in Your Language of Choice**: First-class, pre-built component catalogs (120+ widgets) for Python (FastAPI/Django), Go, C# (.NET), Rust, and PHP.
+   - **Zero-Dependency Deployments**: Ship entire production web apps as single static executables or lightweight micro-containers with zero external npm dependencies.
 
 3. **📱 `hx-zap` — Mobile-First, Touch & Offline Micro-Engine**:
-   - Sub-4KB touch gesture, swipe, and offline-first client cache micro-runtime for mobile WebViews, POS terminals, medical displays, and IoT dashboards.
+   - **Sub-4KB Native-Feel Mobile Runtime**: Fluid touch gestures, inertia swipes, pull-to-refresh, and local offline caching for mobile WebViews, POS terminals, and IoT dashboards.
 
-4. **🖥️ Native Desktop & Embedded via Tauri 2.0 (Rust & Tokio)**:
-   - Cross-platform native application packaging (macOS, Windows, Linux, iOS, Android).
-   - Ultra-compact **< 5MB native binaries** with zero Node/Electron memory overhead and instant local SQLite bindings.
+4. **🖥️ Native Desktop & Embedded via Tauri 2.0 (Tokio Core)**:
+   - **The Anti-Electron Desktop Stack**: Cross-platform desktop & mobile distribution (macOS, Windows, Linux, iOS, Android).
+   - **Under 5MB Binaries**: Zero Node/Electron memory overhead, ultra-low CPU footprint, and instant local SQLite persistence.
 
-5. **🛡️ Universal `@diag` & Agentic Self-Healing Protocol**:
-   - Deepened CSP-safe zero-eval reflection taxonomy allowing AI coding agents to introspect, debug, and autonomously heal UI state without brittle build loops.
+5. **🤖 Intently Token-Efficient & Agentic Self-Healing Engine (`@diag`)**:
+   - **Engineered for AI Coding Agents**: Highly regular, predictable HTML patterns that cut LLM code generation from ~10,000 tokens (React) down to ~2,500 tokens.
+   - **Self-Healing Diagnostics**: Built-in CSP-safe reflection taxonomy allowing autonomous AI agents to introspect, verify, and heal UI state with zero brittle transpilation failures.
+
+---
+
+## 🌌 Ecosystem Companions: When & How to Use `htmFX` & `HMLR`
+
+HTMXUI is augmented by two specialized companions that unlock 3D spatial simulation and deep browser diagnostics:
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                        HTMXUI Core Framework                           │
+│     120+ Components • 10 Reactive Micro-Engines • Zero Build           │
+└──────────────────┬─────────────────────────────────┬───────────────────┘
+                   │                                 │
+                   ▼                                 ▼
+       ┌───────────────────────┐         ┌───────────────────────┐
+       │         htmFX         │         │         HMLR          │
+       │  Declarative 3D &     │         │  DevTools & Velocity  │
+       │  Spatial Companion    │         │  Agentic Runtime VM   │
+       └───────────────────────┘         └───────────────────────┘
+```
+
+### 🪐 1. `htmFX` — Declarative 3D, WebGPU & Spatial Companion (~34KB)
+- **What it is**: A declarative 3D and spatial engine that brings WebGL2/WebGPU rendering directly into HTML attributes.
+- **When to use it**:
+  - Building **interactive 3D viewports, digital twins, and product configurators** without writing 400 lines of Three.js boilerplate.
+  - Adding **particle kinetics, atmospheric volumetric fog, or astronomical simulations** (e.g. `<hx-viewport>`, `<hx-mesh src="model.gltf">`).
+  - Visualizing massive spatial datasets with the built-in **`SpatialEdgeDB`** (>10,000 entities rendered via hardware-instanced WebGPU draws).
+
+### 🛠️ 2. `HMLR` — HyperMedia Language Runtime & DevTools Inspector
+- **What it is**: A dedicated browser DevTools extension (Chrome/Firefox) and high-speed execution runtime (<50KB Wasm).
+- **When to use it**:
+  - **Live Signal Profiling**: Visually inspect and time-travel replay reactive state trees in `HxBolt`.
+  - **Hypermedia Velocity Audits**: Replace slow Lighthouse runs with instant hypermedia metrics (DOM swap latency, payload weight, LLM token efficiency).
+  - **Autonomous AI Self-Healing**: Streams token-dense `@diag` telemetry directly to AI agents, allowing them to locate and resolve UI target mismatches in milliseconds.
 
 ---
 

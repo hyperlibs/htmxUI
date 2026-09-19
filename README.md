@@ -84,6 +84,10 @@ HTMXUI is augmented by two specialized companions that unlock 3D spatial simulat
   - **Live Signal Profiling**: Visually inspect and time-travel replay reactive state trees in `HxBolt`.
   - **Hypermedia Velocity Audits**: Replace slow Lighthouse runs with instant hypermedia metrics (DOM swap latency, payload weight, LLM token efficiency).
   - **Autonomous AI Self-Healing**: Streams token-dense `@diag` telemetry directly to AI agents, allowing them to locate and resolve UI target mismatches in milliseconds.
+- **📥 Download Extension Releases**:
+  - **Chrome / Chromium**: [`releases/hmlr-v1.0.0.crx`](releases/hmlr-v1.0.0.crx)
+  - **Firefox & Edge**: [`releases/hmlr-devtools-v1.0.0.zip`](releases/hmlr-devtools-v1.0.0.zip)
+  - **Guide**: [Extension Installation Instructions](releases/README.md)
 
 ---
 

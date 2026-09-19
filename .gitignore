@@ -16,6 +16,8 @@ scratch/
 *.log
 *.tmp
 *.bak
+!releases/*.zip
+!releases/*.crx
 
 # Environment & OS
 .DS_Store

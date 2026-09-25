@@ -18,4 +18,6 @@ export { HxOffline } from './htmx-offline';
 export { HxDevTools } from './htmx-devtools';
 export { HxCalc, CalcEngine, cellToCoords, coordsToCell, expandRange } from './htmx-calc';
 export { HxSim, SimCanvasRunner, Vec2, Boid, GravitySimulation, CollisionSimulation, LifeSimulation, SlimeSimulation } from './htmx-sim';
+export { Appz, AppzChan, AppzNavigator, HardwareBridge, applySegmentLayerStyles, getAppzChannel } from './appz';
+
 

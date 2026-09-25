@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 antialiased font-sans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appz — Mobile & Spatial Game UI Simulator</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script src="/htmx-bolt.js"></script>
+  <script src="/appz.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Phone simulator frame */
+    .phone-mockup {
+      width: 390px;
+      height: 800px;
+      border: 12px solid #1e293b;
+      border-radius: 48px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      background: #020617;
+    }
+    .dynamic-island {
+      width: 110px;
+      height: 28px;
+      background: #000;
+      border-radius: 20px;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+    }
+  </style>
+</head>
+<body class="min-h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-slate-950 via-indigo-950/20 to-slate-950">
+
+  <!-- Desktop Header Bar -->
+  <header class="w-full max-w-4xl flex items-center justify-between pb-6 border-b border-slate-800/80 mb-8">
+    <div class="flex items-center gap-3">
+      <a href="/" class="flex items-center gap-2">
+        <span class="w-7 h-7 rounded-lg bg-indigo-600 font-bold text-white flex items-center justify-center text-sm">A</span>
+        <span class="font-extrabold text-lg text-white">Appz <span class="text-xs font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">Mobile & Gaming Engine</span></span>
+      </a>
+    </div>
+    <div class="flex items-center gap-4 text-xs font-medium">
+      <span class="text-slate-400">50% HTMXUI • 20% Go • 15% Flutter • 15% Kotlin</span>
+      <a href="/" class="text-indigo-400 hover:text-indigo-300">← Back to Hub</a>
+    </div>
+  </header>
+
+  <!-- Interactive Smartphone Viewport Simulator -->
+  <div class="phone-mockup flex flex-col">
+    <!-- Dynamic Island / Notch -->
+    <div class="dynamic-island">
+      <div class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-800"></div>
+      <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></div>
+    </div>
+
+    <!-- Appz Native ShellUI -->
+    <app-shellui class="flex-1 flex flex-col pt-10 select-none overflow-hidden relative" hx-state='{ "activeTab": "vitals", "gridPower": 4820, "alertCount": 2 }'>
+      
+      <!-- Top AppBar -->
+      <app-bar class="h-12 bg-slate-950/90 backdrop-blur border-b border-slate-800/60 px-4 flex items-center justify-between shrink-0 z-40">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black text-indigo-400">⚡ APPZ</span>
+          <span class="text-xs font-bold text-white">Telemetry Hub</span>
+        </div>
+        <button class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-xs text-slate-300"
+                hx-action="$appz.sheet('#sheet-menu')">⋮</button>
+      </app-bar>
+
+      <!-- Scrollable Multi-Layer Segments -->
+      <main class="flex-1 overflow-y-auto flex flex-col relative" hx-pull-refresh="/noop">
+        
+        <!-- SEGMENT 1: Hero Telemetry Area -->
+        <app-seg id="hero" class="relative p-4 pb-2 bg-gradient-to-b from-indigo-950/40 to-transparent">
+          
+          <!-- Layer 0: Ambient Gradient Glow -->
+          <app-layer level="0" class="absolute inset-0 bg-indigo-500/5 blur-2xl pointer-events-none"></app-layer>
+
+          <!-- Layer 2: Main Hero Typography -->
+          <app-layer level="2" class="relative">
+            <p class="text-[10px] uppercase font-bold tracking-widest text-indigo-400">Power Generation</p>
+            <div class="flex items-baseline gap-2 mt-0.5">
+              <span class="text-3xl font-black text-white" hx-text="gridPower">4,820</span>
+              <span class="text-xs text-slate-400 font-bold">kW/h</span>
+            </div>
+          </app-layer>
+
+          <!-- Layer 5: Floating Status Badge -->
+          <app-layer level="5" class="absolute top-4 right-4">
+            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">● Active 120 FPS</span>
+          </app-layer>
+        </app-seg>
+
+        <!-- SEGMENT 2: Overlapping Quick Action Cards (Layer 6) -->
+        <app-seg id="actions" class="px-4 py-2">
+          <app-layer level="6">
+            <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 shadow-xl backdrop-blur flex justify-between items-center">
+              <div>
+                <p class="text-xs font-bold text-white">Substation Alpha</p>
+                <p class="text-[10px] text-slate-400">99.4% Grid Efficiency</p>
+              </div>
+              <button class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold"
+                      hx-action="$appz.haptic('medium'); gridPower += 150">
+                ⚡ Boost
+              </button>
+            </div>
+          </app-layer>
+        </app-seg>
+
+        <!-- SEGMENT 3: Scrollable Metric Feed (Layer 1) -->
+        <app-seg id="feed" class="px-4 py-2 space-y-2 flex-1">
+          <app-layer level="1" class="space-y-2">
+            
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between active:scale-[0.98] transition-transform"
+                 hx-action="$appz.haptic('light')">
+              <div class="flex items-center gap-3">
+                <span class="text-lg">🔋</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-200">Storage Reserves</p>
+                  <p class="text-[10px] text-slate-400">Tesla Megapack (94%)</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-emerald-400">Normal</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between active:scale-[0.98] transition-transform"
+                 hx-action="$appz.haptic('light')">
+              <div class="flex items-center gap-3">
+                <span class="text-lg">🌡️</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-200">Inverter Temp</p>
+                  <p class="text-[10px] text-slate-400">Core 01: 48.2°C</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-slate-300">Optimal</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between active:scale-[0.98] transition-transform"
+                 hx-action="$appz.haptic('light')">
+              <div class="flex items-center gap-3">
+                <span class="text-lg">📡</span>
+                <div>
+                  <p class="text-xs font-bold text-slate-200">Telemetry Stream</p>
+                  <p class="text-[10px] text-slate-400">P99 Latency: 0.4ms</p>
+                </div>
+              </div>
+              <span class="text-xs font-bold text-indigo-400">SSE Active</span>
+            </div>
+
+          </app-layer>
+        </app-seg>
+
+        <!-- SEGMENT 10: Pinned Action Tray (Layer 9) -->
+        <app-seg id="footer-actions" class="p-4 bg-slate-950/90 border-t border-slate-800/60 shrink-0">
+          <app-layer level="9">
+            <button class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-500 font-bold text-xs text-white shadow-lg active:opacity-90"
+                    hx-action="$appz.haptic('success'); $appz.sheet('#sheet-deploy')">
+              🚀 Deploy Load Balancing
+            </button>
+          </app-layer>
+        </app-seg>
+
+      </main>
+
+      <!-- Bottom Navigation Bar (mode="float" with safe-area padding) -->
+      <app-navbar mode="float" class="mx-3 mb-3 h-14 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 px-6 flex items-center justify-between shrink-0 shadow-2xl z-40">
+        <button class="flex flex-col items-center gap-0.5 text-indigo-400 font-bold text-[9px]"
+                hx-action="$appz.haptic('selection'); activeTab = 'vitals'">
+          <span class="text-sm">⚡</span>
+          <span>Grid</span>
+        </button>
+        <button class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[9px]"
+                hx-action="$appz.haptic('selection'); activeTab = 'nodes'">
+          <span class="text-sm">🖥️</span>
+          <span>Nodes</span>
+        </button>
+        <button class="flex flex-col items-center gap-0.5 text-slate-400 hover:text-slate-200 text-[9px]"
+                hx-action="$appz.haptic('selection'); activeTab = 'alerts'">
+          <span class="text-sm">🔔</span>
+          <span>Alerts</span>
+        </button>
+      </app-navbar>
+
+      <!-- Native Bottom Sheet with Drag Handle (Spring Physics) -->
+      <app-bottom-sheet id="sheet-menu" class="hidden absolute inset-x-0 bottom-0 bg-slate-900 border-t border-slate-700 rounded-t-3xl p-4 shadow-2xl z-50 transform translate-y-full transition-transform">
+        <div class="drag-handle w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-4 cursor-grab"></div>
+        <h3 class="font-bold text-sm text-white mb-2">Control Options</h3>
+        <div class="space-y-2">
+          <button class="w-full p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-left text-xs font-medium text-slate-200"
+                  hx-action="$appz.haptic('light'); $appz.sheetClose('#sheet-menu')">📥 Export Incident Log</button>
+          <button class="w-full p-2.5 rounded-xl bg-rose-600/20 border border-rose-500/30 text-left text-xs font-bold text-rose-400"
+                  hx-action="$appz.haptic('heavy'); $appz.sheetClose('#sheet-menu')">🛑 Emergency Shutdown</button>
+        </div>
+      </app-bottom-sheet>
+
+      <app-bottom-sheet id="sheet-deploy" class="hidden absolute inset-x-0 bottom-0 bg-slate-900 border-t border-slate-700 rounded-t-3xl p-4 shadow-2xl z-50 transform translate-y-full transition-transform">
+        <div class="drag-handle w-12 h-1.5 bg-slate-700 rounded-full mx-auto mb-4 cursor-grab"></div>
+        <h3 class="font-bold text-sm text-white mb-1">Load Balancing Initialized</h3>
+        <p class="text-xs text-slate-400 mb-4">Shifting 1,200 kW load from Substation A to Substation B.</p>
+        <button class="w-full py-2.5 rounded-xl bg-emerald-600 font-bold text-xs text-white"
+                hx-action="$appz.haptic('success'); $appz.sheetClose('#sheet-deploy')">Confirm & Sync</button>
+      </app-bottom-sheet>
+
+    </app-shellui>
+  </div>
+
+</body>
+</html>

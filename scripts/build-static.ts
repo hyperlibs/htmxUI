@@ -157,6 +157,11 @@ writePage("demo/universe/index.html", universeHtml);
 writePage("app/universe/index.html", universeHtml);
 writePage("cosmos/index.html", universeHtml);
 
+const mobileHtml = fs.readFileSync(path.join(__dirname, "..", "views", "app-mobile.html"), "utf8");
+writePage("demo/mobile/index.html", mobileHtml);
+writePage("app/mobile/index.html", mobileHtml);
+writePage("mobile/index.html", mobileHtml);
+
 // 4. Docs Component Pages
 [...GETTING_STARTED, ...COMPONENTS].forEach(slug => {
   const pageHtml = buildComponentPage(slug);

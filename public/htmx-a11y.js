@@ -179,7 +179,7 @@
         options.onCellFocus(activeRow, activeCol, cell);
     }
     container.addEventListener("keydown", (e) => {
-      if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Home", "End", "PageUp", "PageDown"].includes(e.key)) {
+      if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Enter", "Home", "End", "PageUp", "PageDown"].includes(e.key)) {
         return;
       }
       const extend = e.shiftKey && selectable;
@@ -195,6 +195,13 @@
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         focusCell(activeRow - 1, activeCol, extend);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (e.shiftKey) {
+          focusCell(Math.max(0, activeRow - 1), activeCol, false);
+        } else {
+          focusCell(activeRow + 1, activeCol, false);
+        }
       } else if (e.key === "Tab") {
         e.preventDefault();
         if (e.shiftKey) {

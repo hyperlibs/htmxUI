@@ -156,12 +156,48 @@
                    value="${val}" 
                    onfocus="onCellFocus(this)"
                    onchange="onCellChange(this)"
+                   onkeydown="onCellKeydown(event, this)"
                    class="cell-input w-full h-8 px-2 bg-transparent text-slate-200 font-mono text-xs border-none focus:bg-slate-900">
           </td>`;
         }
         html += `</tr>`;
       }
       tbody.innerHTML = html;
+    }
+
+    function onCellKeydown(e, input) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        onCellChange(input);
+        const r = parseInt(input.getAttribute('data-row'), 10);
+        const c = parseInt(input.getAttribute('data-col'), 10);
+        const nextRow = e.shiftKey ? Math.max(0, r - 1) : r + 1;
+        const nextInput = document.querySelector(`input[data-row="${nextRow}"][data-col="${c}"]`);
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select();
+        }
+      } else if (e.key === 'Tab') {
+        e.preventDefault();
+        onCellChange(input);
+        const r = parseInt(input.getAttribute('data-row'), 10);
+        const c = parseInt(input.getAttribute('data-col'), 10);
+        const totalCols = 8;
+        let nextRow = r;
+        let nextCol = e.shiftKey ? c - 1 : c + 1;
+        if (nextCol >= totalCols) {
+          nextCol = 0;
+          nextRow = r + 1;
+        } else if (nextCol < 0) {
+          nextCol = totalCols - 1;
+          nextRow = Math.max(0, r - 1);
+        }
+        const nextInput = document.querySelector(`input[data-row="${nextRow}"][data-col="${nextCol}"]`);
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select();
+        }
+      }
     }
 
     function onCellFocus(input) {
@@ -194,6 +230,13 @@
       if (activeInput) {
         activeInput.value = formulaVal;
         onCellChange(activeInput);
+        const r = parseInt(activeInput.getAttribute('data-row'), 10);
+        const c = parseInt(activeInput.getAttribute('data-col'), 10);
+        const nextInput = document.querySelector(`input[data-row="${r + 1}"][data-col="${c}"]`);
+        if (nextInput) {
+          nextInput.focus();
+          nextInput.select();
+        }
       }
     }
 

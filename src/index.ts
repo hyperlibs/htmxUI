@@ -19,5 +19,6 @@ export { HxDevTools } from './htmx-devtools';
 export { HxCalc, CalcEngine, cellToCoords, coordsToCell, expandRange } from './htmx-calc';
 export { HxSim, SimCanvasRunner, Vec2, Boid, GravitySimulation, CollisionSimulation, LifeSimulation, SlimeSimulation } from './htmx-sim';
 export { Appz, AppzChan, AppzNavigator, HardwareBridge, applySegmentLayerStyles, getAppzChannel } from './appz';
+export { initCanvasEngine, updateCanvasConnections, getCanvasLayer } from './htmx-canvas';
 
 

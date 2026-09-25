@@ -173,7 +173,7 @@ export function initMatrixNav(container: HTMLElement, options?: Partial<MatrixNa
   }
 
   container.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
+    if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End', 'PageUp', 'PageDown'].includes(e.key)) {
       return;
     }
 
@@ -191,6 +191,13 @@ export function initMatrixNav(container: HTMLElement, options?: Partial<MatrixNa
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       focusCell(activeRow - 1, activeCol, extend);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (e.shiftKey) {
+        focusCell(Math.max(0, activeRow - 1), activeCol, false);
+      } else {
+        focusCell(activeRow + 1, activeCol, false);
+      }
     } else if (e.key === 'Tab') {
       e.preventDefault();
       if (e.shiftKey) {

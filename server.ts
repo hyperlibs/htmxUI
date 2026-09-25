@@ -228,6 +228,9 @@ const server = Bun.serve({
   port: 3000,
   async fetch(req) {
     const url = new URL(req.url);
+    if (url.pathname.length > 1 && url.pathname.endsWith("/")) {
+      url.pathname = url.pathname.slice(0, -1);
+    }
 
     if (url.pathname === "/") {
       return new Response(`<!DOCTYPE html>
@@ -440,6 +443,10 @@ const server = Bun.serve({
 
     if (url.pathname === "/app/universe" || url.pathname === "/demo/universe" || url.pathname === "/cosmos") {
       return new Response(Bun.file("views/app-universe.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
+    }
+
+    if (url.pathname === "/app/mobile" || url.pathname === "/demo/mobile" || url.pathname === "/mobile" || url.pathname === "/appz") {
+      return new Response(Bun.file("views/app-mobile.html"), { headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
     if (url.pathname === "/styles.css") {

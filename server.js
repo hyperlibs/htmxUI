@@ -97,7 +97,7 @@ function buildComponentPage(slug) {
       <div class="flex-1 p-8 max-w-5xl mx-auto w-full space-y-8">
         <div class="space-y-2">
           <h1 class="text-3xl font-extrabold tracking-tight">${name}</h1>
-          <p class="text-muted-foreground text-sm">Interactive production-grade hypermedia component for HTMXUI.</p>
+          <p class="text-muted-foreground text-sm">Interactive Shadcn-quality hypermedia component for HTMXUI.</p>
         </div>
         <div class="space-y-4">
           <h2 class="text-xl font-bold tracking-tight">Interactive Preview</h2>
@@ -128,7 +128,10 @@ const MIME_TYPES = {
 
 const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
-  const pathname = parsedUrl.pathname;
+  let pathname = parsedUrl.pathname || '/';
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    pathname = pathname.slice(0, -1);
+  }
 
   if (pathname === '/' || pathname === '/index.html') {
     const file = path.join(__dirname, 'views', 'landing.html');
@@ -172,6 +175,14 @@ const server = http.createServer((req, res) => {
 
   if (pathname === '/app/universe' || pathname === '/demo/universe' || pathname === '/cosmos') {
     const file = path.join(__dirname, 'views', 'app-universe.html');
+    if (fs.existsSync(file)) {
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      return res.end(fs.readFileSync(file));
+    }
+  }
+
+  if (pathname === '/app/mobile' || pathname === '/demo/mobile' || pathname === '/mobile') {
+    const file = path.join(__dirname, 'views', 'app-mobile.html');
     if (fs.existsSync(file)) {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       return res.end(fs.readFileSync(file));

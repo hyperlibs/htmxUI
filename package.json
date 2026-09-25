@@ -36,8 +36,8 @@
     "access": "public"
   },
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "bun run server.ts",
+    "dev": "bun run server.ts",
     "dev:bun": "bun run server.ts",
     "test": "bun test tests/",
     "build:engines": "bun build src/htmx-bolt.ts --format iife --outfile public/htmx-bolt.js && bun build src/htmx-flash.ts --format iife --outfile public/htmx-flash.js && bun build src/htmx-form.ts --format iife --outfile public/htmx-form.js && bun build src/htmx-vibe.ts --format iife --outfile public/htmx-vibe.js && bun build src/htmx-a11y.ts --format iife --outfile public/htmx-a11y.js && bun build src/htmx-virtual.ts --format iife --outfile public/htmx-virtual.js && bun build src/htmx-grid.ts --format iife --outfile public/htmx-grid.js && bun build src/htmx-offline.ts --format iife --outfile public/htmx-offline.js && bun build src/htmx-devtools.ts --format iife --outfile public/htmx-devtools.js && bun build src/htmx-calc.ts --format iife --outfile public/htmx-calc.js && bun build src/htmx-sim.ts --format iife --outfile public/htmx-sim.js && bun build src/appz.ts --format iife --outfile public/appz.js",

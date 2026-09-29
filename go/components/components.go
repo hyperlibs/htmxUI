@@ -199,3 +199,48 @@ func NavMenu(items []NavItem) Component {
 </aside>`)
 	return Component{html: sb.String()}
 }
+
+type GalleryProps struct {
+	Columns int
+	Slots   int
+	Dashed  bool
+	Images  []string
+}
+
+func Gallery(p GalleryProps) Component {
+	if p.Columns == 0 {
+		p.Columns = 6
+	}
+	if p.Slots == 0 {
+		p.Slots = 6
+	}
+	var sb strings.Builder
+	borderClass := "border border-border bg-card"
+	if p.Dashed {
+		borderClass = "border-2 border-dashed border-border/80 rounded-xl p-3 bg-muted/20"
+	}
+	sb.WriteString(fmt.Sprintf(`<div class="%s"><div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-%d gap-3">`, borderClass, p.Columns))
+
+	for i := 0; i < p.Slots; i++ {
+		if i < len(p.Images) && p.Images[i] != "" {
+			sb.WriteString(fmt.Sprintf(`<div class="group relative aspect-square rounded-lg overflow-hidden border border-border bg-slate-900 cursor-pointer shadow-sm">
+  <img src="%s" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+</div>`, p.Images[i]))
+		} else {
+			sb.WriteString(fmt.Sprintf(`<div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 cursor-pointer transition-all hover:border-primary/50 hover:shadow-sm">
+  <svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+    <rect x="3" y="3" width="14" height="14" rx="2"/>
+    <circle cx="7.5" cy="7.5" r="1.5"/>
+    <path d="M17 13l-4-4-7 7"/>
+    <rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5"/>
+    <path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/>
+  </svg>
+  <span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground">Slot %d</span>
+</div>`, i+1))
+		}
+	}
+
+	sb.WriteString(`</div></div>`)
+	return Component{html: sb.String()}
+}
+

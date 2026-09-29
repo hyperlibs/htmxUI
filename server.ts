@@ -4,7 +4,7 @@ const COMPONENTS = [
   "breadcrumb","button","button-group","calendar","card","carousel","checkbox","checkbox-group",
   "chip","collapsible","color-picker","combobox","command","container","context-menu","data-table",
   "date-picker","dialog","divider","drawer","dropdown-menu","empty-state","error-message",
-  "file-upload","flash-search","form","hover-card","icon","image","indicator","input","input-otp","kbd","label",
+  "file-upload","flash-search","form","gallery","hover-card","icon","image","indicator","input","input-otp","kbd","label",
   "layout-block","layout-canvas","layout-grid","layout-page","layout-print","layout-scaffold","layout-web","layout-mweb","layout-mapp",
   "link","list","list-item","loading-spinner","masonry-grid","menubar","message-bubble",
   "navigation-menu","notification","number-input","page-header","pagination","panel",

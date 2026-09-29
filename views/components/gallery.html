@@ -1,0 +1,254 @@
+<div class="space-y-12 max-w-5xl">
+  <!-- Header -->
+  <div class="space-y-2">
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">Media & Layout</span>
+      <span class="text-xs font-mono text-muted-foreground">views/components/gallery.html</span>
+    </div>
+    <h1 class="text-3xl font-extrabold tracking-tight">Gallery</h1>
+    <p class="text-base text-muted-foreground">
+      A versatile, responsive image gallery strip and grid with aspect-ratio locking, placeholder states, upload dropzones, and zero-JS lightbox modal previews.
+    </p>
+  </div>
+
+  <!-- Interactive Live Playground (Exact Match to Builder Component) -->
+  <div class="space-y-4" hx-ext="reactive" hx-state='{
+    "activeTab": "placeholder",
+    "columns": 6,
+    "selectedImage": null,
+    "lightboxOpen": false,
+    "items": [
+      { "id": 1, "title": "Alpine Peak", "url": "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80" },
+      { "id": 2, "title": "Golden Sunset", "url": "https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=600&auto=format&fit=crop&q=80" },
+      { "id": 3, "title": "Forest Trail", "url": "https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&auto=format&fit=crop&q=80" },
+      { "id": 4, "title": "Desert Dunes", "url": "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=600&auto=format&fit=crop&q=80" },
+      { "id": 5, "title": "Ocean Waves", "url": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop&q=80" },
+      { "id": 6, "title": "Northern Lights", "url": "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=600&auto=format&fit=crop&q=80" }
+    ]
+  }'>
+    <div class="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl border border-border bg-card">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-medium text-muted-foreground">Mode:</span>
+        <div class="inline-flex p-1 rounded-lg bg-muted text-xs">
+          <button class="px-3 py-1 rounded-md transition-all font-medium"
+                  hx-class="activeTab === 'placeholder' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                  hx-action="activeTab = 'placeholder'">
+            Placeholder Strip (Builder)
+          </button>
+          <button class="px-3 py-1 rounded-md transition-all font-medium"
+                  hx-class="activeTab === 'populated' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                  hx-action="activeTab = 'populated'">
+            Populated Lightbox
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-medium text-muted-foreground">Columns:</span>
+        <div class="flex items-center gap-1 bg-muted p-1 rounded-lg text-xs font-mono">
+          <button class="px-2 py-0.5 rounded" hx-class="columns === 3 ? 'bg-background font-bold shadow' : 'text-muted-foreground'" hx-action="columns = 3">3</button>
+          <button class="px-2 py-0.5 rounded" hx-class="columns === 4 ? 'bg-background font-bold shadow' : 'text-muted-foreground'" hx-action="columns = 4">4</button>
+          <button class="px-2 py-0.5 rounded" hx-class="columns === 6 ? 'bg-background font-bold shadow' : 'text-muted-foreground'" hx-action="columns = 6">6</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Canvas Frame -->
+    <div class="p-6 rounded-2xl border border-border bg-background/50 backdrop-blur shadow-inner">
+      <div class="mb-3 flex items-center justify-between">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground">Page Title</h3>
+        <span class="text-[11px] font-mono text-muted-foreground">6 Slots • Aspect 1:1</span>
+      </div>
+
+      <!-- 1. Builder Placeholder View (Exact 1:1 from User Screenshot) -->
+      <div hx-show="activeTab === 'placeholder'" class="transition-all duration-300">
+        <div class="border-2 border-dashed border-border/80 rounded-xl p-3 bg-muted/20">
+          <div class="grid gap-3" 
+               hx-class="columns === 6 ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6' : (columns === 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3')">
+            
+            <!-- Slot 1 -->
+            <div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 transition-all duration-200 cursor-pointer hover:border-primary/50 hover:shadow-sm">
+              <svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="14" height="14" rx="2" stroke-dasharray="0.5 0"/>
+                <circle cx="7.5" cy="7.5" r="1.5"/>
+                <path d="M17 13l-4-4-7 7"/>
+                <rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5" fill="none"/>
+                <path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/>
+              </svg>
+              <span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground">Slot 1</span>
+            </div>
+
+            <!-- Slot 2 -->
+            <div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 transition-all duration-200 cursor-pointer hover:border-primary/50 hover:shadow-sm">
+              <svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="14" height="14" rx="2"/>
+                <circle cx="7.5" cy="7.5" r="1.5"/>
+                <path d="M17 13l-4-4-7 7"/>
+                <rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5"/>
+                <path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/>
+              </svg>
+              <span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground">Slot 2</span>
+            </div>
+
+            <!-- Slot 3 -->
+            <div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 transition-all duration-200 cursor-pointer hover:border-primary/50 hover:shadow-sm">
+              <svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="14" height="14" rx="2"/>
+                <circle cx="7.5" cy="7.5" r="1.5"/>
+                <path d="M17 13l-4-4-7 7"/>
+                <rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5"/>
+                <path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/>
+              </svg>
+              <span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground">Slot 3</span>
+            </div>
+
+            <!-- Slot 4 -->
+            <div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 transition-all duration-200 cursor-pointer hover:border-primary/50 hover:shadow-sm">
+              <svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="14" height="14" rx="2"/>
+                <circle cx="7.5" cy="7.5" r="1.5"/>
+                <path d="M17 13l-4-4-7 7"/>
+                <rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5"/>
+                <path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/>
+              </svg>
+              <span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground">Slot 4</span>
+            </div>
+
+            <!-- Slot 5 -->
+            <div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 transition-all duration-200 cursor-pointer hover:border-primary/50 hover:shadow-sm">
+              <svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="14" height="14" rx="2"/>
+                <circle cx="7.5" cy="7.5" r="1.5"/>
+                <path d="M17 13l-4-4-7 7"/>
+                <rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5"/>
+                <path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/>
+              </svg>
+              <span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground">Slot 5</span>
+            </div>
+
+            <!-- Slot 6 -->
+            <div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 transition-all duration-200 cursor-pointer hover:border-primary/50 hover:shadow-sm">
+              <svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="14" height="14" rx="2"/>
+                <circle cx="7.5" cy="7.5" r="1.5"/>
+                <path d="M17 13l-4-4-7 7"/>
+                <rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5"/>
+                <path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/>
+              </svg>
+              <span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground">Slot 6</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Populated Image View with Lightbox -->
+      <div hx-show="activeTab === 'populated'" class="transition-all duration-300">
+        <div class="border-2 border-border/60 rounded-xl p-3 bg-muted/10">
+          <div class="grid gap-3" 
+               hx-class="columns === 6 ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-6' : (columns === 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3')">
+            
+            <div class="group relative aspect-square rounded-lg overflow-hidden border border-border bg-slate-900 cursor-pointer shadow-sm"
+                 hx-action="selectedImage = items[0].url; lightboxOpen = true">
+              <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&auto=format&fit=crop&q=80" alt="Alpine Peak" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                <span class="text-[11px] font-medium text-white truncate">Alpine Peak</span>
+              </div>
+            </div>
+
+            <div class="group relative aspect-square rounded-lg overflow-hidden border border-border bg-slate-900 cursor-pointer shadow-sm"
+                 hx-action="selectedImage = items[1].url; lightboxOpen = true">
+              <img src="https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?w=600&auto=format&fit=crop&q=80" alt="Golden Sunset" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                <span class="text-[11px] font-medium text-white truncate">Golden Sunset</span>
+              </div>
+            </div>
+
+            <div class="group relative aspect-square rounded-lg overflow-hidden border border-border bg-slate-900 cursor-pointer shadow-sm"
+                 hx-action="selectedImage = items[2].url; lightboxOpen = true">
+              <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&auto=format&fit=crop&q=80" alt="Forest Trail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                <span class="text-[11px] font-medium text-white truncate">Forest Trail</span>
+              </div>
+            </div>
+
+            <div class="group relative aspect-square rounded-lg overflow-hidden border border-border bg-slate-900 cursor-pointer shadow-sm"
+                 hx-action="selectedImage = items[3].url; lightboxOpen = true">
+              <img src="https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?w=600&auto=format&fit=crop&q=80" alt="Desert Dunes" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                <span class="text-[11px] font-medium text-white truncate">Desert Dunes</span>
+              </div>
+            </div>
+
+            <div class="group relative aspect-square rounded-lg overflow-hidden border border-border bg-slate-900 cursor-pointer shadow-sm"
+                 hx-action="selectedImage = items[4].url; lightboxOpen = true">
+              <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&auto=format&fit=crop&q=80" alt="Ocean Waves" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                <span class="text-[11px] font-medium text-white truncate">Ocean Waves</span>
+              </div>
+            </div>
+
+            <div class="group relative aspect-square rounded-lg overflow-hidden border border-border bg-slate-900 cursor-pointer shadow-sm"
+                 hx-action="selectedImage = items[5].url; lightboxOpen = true">
+              <img src="https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=600&auto=format&fit=crop&q=80" alt="Northern Lights" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+              <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                <span class="text-[11px] font-medium text-white truncate">Northern Lights</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox Modal Preview -->
+    <div hx-show="lightboxOpen" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+      <div class="relative max-w-4xl w-full bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
+        <button class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 text-white hover:bg-black/90 flex items-center justify-center text-sm font-bold"
+                hx-action="lightboxOpen = false">✕</button>
+        <div class="aspect-video w-full bg-black flex items-center justify-center">
+          <img hx-attr-src="selectedImage" class="max-h-full max-w-full object-contain" alt="Enlarged view">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Documentation & Copy-Paste Usage -->
+  <div class="space-y-6 pt-6 border-t border-border">
+    <h2 class="text-xl font-bold tracking-tight">Pure HTML / CSS Implementation</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Copy and paste this standard 6-slot gallery strip directly into your layout or template.
+    </p>
+
+    <div class="code-block"><code><pre>&lt;!-- HTMXUI 6-Slot Gallery Strip --&gt;
+&lt;div class="border-2 border-dashed border-border/80 rounded-xl p-3 bg-muted/20"&gt;
+  &lt;div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"&gt;
+    &lt;!-- Repeating Gallery Slot Item --&gt;
+    &lt;div class="group relative aspect-square rounded-lg border border-border bg-muted/40 hover:bg-muted/70 flex flex-col items-center justify-center p-4 cursor-pointer transition-all hover:border-primary/50 hover:shadow-sm"&gt;
+      &lt;svg class="w-10 h-10 text-muted-foreground/50 group-hover:text-primary transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"&gt;
+        &lt;rect x="3" y="3" width="14" height="14" rx="2"/&gt;
+        &lt;circle cx="7.5" cy="7.5" r="1.5"/&gt;
+        &lt;path d="M17 13l-4-4-7 7"/&gt;
+        &lt;rect x="7" y="7" width="14" height="14" rx="2" stroke-opacity="0.5"/&gt;
+        &lt;path d="M21 17l-4-4-3 3" stroke-opacity="0.5"/&gt;
+      &lt;/svg&gt;
+      &lt;span class="mt-2 text-[10px] font-medium text-muted-foreground/70 group-hover:text-foreground"&gt;Slot 1&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;!-- Repeat for slots 2..6 --&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></code></div>
+  </div>
+
+  <!-- Go DSL Usage -->
+  <div class="space-y-4 pt-6 border-t border-border">
+    <h2 class="text-xl font-bold tracking-tight">Go DSL Usage</h2>
+    <div class="code-block"><code><pre>import "github.com/hyperlibs/htmxui/go/components"
+
+// Server-rendered 6-Slot Gallery
+gallery := components.Gallery(components.GalleryProps{
+    Columns: 6,
+    Slots:   6,
+    Dashed:  true,
+})</pre></code></div>
+  </div>
+</div>

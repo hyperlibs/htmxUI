@@ -250,6 +250,12 @@
 
   <!-- Client Integration Scripts -->
   <script>
+    // 1,800+ Top Core English & Tech Vocabulary Dictionary
+    const WORD_LIST_STR = "a ability able about above accept according account across act action actions activity actually add address administration admit adult affect after again against age agency agent agentic agents agree agreement ahead air all allow allows almost alone along already also although always among amount analysis and animal animals another answer any anyone anything appear appearance appearances apply approach area areas argue argument arm arms array arrays article articles artist as ask assume at attack attention attorney audience author authority automatic available avoid away back bad bag balance ball bank bar base be beat beautiful because become bed before begin behavior behind believe benefit best better between beyond big bill billion bit black blood blue board body book born both box boy breaks brief build builder builders building built bullet bunch business busy but button buttons buy by call camera campaign can cancel cancer candidate canvas capital car card cards care career carry case catch cause cell cells center central century certain certainly chair chairman challenge chance change changes character characters check checking child children choice choose church circle citizen city civil claim class classes clear clearly client clients climate close coach code cold collection college color column columns combine come commercial common community company compare computer concern condition conference congress consider consumer contain content continue control controls core corporate cost could council count counter country county couple course court cover create created creates creation crime culture cup current customer cut dark dashboard data database daughter day days dead deal dear death debate decade decide decision declaration deep defense define degree demo describe description design designed designer designers designing desk destroy detail detailed determine develop developer developers development device dialog differ difference different difficult dimension dinner direction director discover discuss disease do doctor document documents dog dollar door double down draw dream dress drink drive drop drug due during each early earth easy eat economic economy edge edition editor editors edit education effect effects effort eight either election electric element elements elite else employee empty enable end energy engine engineer engineers enjoy enough ensure enter enterprise entire entry environment equal error errors especially establish even evening event events ever every everybody everyone everything evidence exact exactly example examples executive exist existence expand expect experience expert explain export extend extension extensions eye face fact factor fail family far fast father fault fear feature features federal feel feeling few field fields fight figure figures file files fill film filter filters final finally finance financial find fine finger finish fire first fish five fix fixes fixed flag flash floor fly focus follow following food foot for force foreign form format formatting forms forward found four frame frameworks framework free friend from front full fully function functional functions fundamental future game garden gas general generation get girl give glass global go goal good government great green ground group grow growth guess guidance guide gun guy hair half hand handle handler happen happy hard have he head header heading headings health hear heart heat heavy help helps helpful her here herself high highlight him himself history hit hold home hope hospital hot hotel hour house how however huge human hundred husband hypertext htmx htmxui idea identify if ignore image images imagine impact important improve in include includes including increase indeed indicate individual industry information info initial inject input inputs inside instant instead institution insurance intend interaction interactive interest internal international internet interval into investigate investment invite invoice involve issue item items its itself job join judge jump just keep key keyboard keys kill kind know knowledge land landscape language large last late later laugh launch law lawyer lay layer layers layout layouts lead leader leaders learn leave left legal legacy legend length less letter letters level levels library libraries license life lift light lightning like likely limit line lines link links list lists listen listener listeners literature little live local lock log logic look lose loss lot love low machine macro magazine mail maintain maintainer main major majority make male man manage manager managing modern many market marriage mass master match math matrix matter may maybe me meal mean meaning measurement mechanism media medical meet member memory mention menu message messages method micro middle might military million mind mine minute miss mission mistake mode model modern modify moment money month monthly more morning most mother motion move movement movie much multiple municipal music must mutate my myself name nation national native natural nature near nearby necessary need negative network never new news next nice night nine no nobody normal north not note notes notice novel number numbers observe occur occurred occurrence off offer office officer official often oh oil ok old on once one ongoing online only onto open opening operate operation operations opinion opportunity oppose option options or order ordered organization original other others our ourselves out outcome output outputs over overall owner package packages page pages pain paint panel paper paragraph paragraphs part partial partials participant particular party pass past path pattern pay payment peak peer penalty people perform performance permanent persist personal phone photo phrase physical physics picture piece pill pilot place plan planning platform play player point policy poor pop popup port portfolio position positive possible post potential pound pour power powerful practical practice precise prefer prepare presence president pressure pretty prevent price primitive print prior priority privacy private probability problem process produce product profession program project promise promote proper properly proportion protocol provide province provision public publish pull purpose push put quality quantitative query quick quickly quote quotes radar radius raise range rapid rare rate rather than race radio radius reaction read reading ready real realize really reason receive recent recipe record recover reduce region regular reject relate relative release reliable religion religious rely remain remember remote remove render rendering rendered renders renderer repeat replace report represent require research resolve response rest restaurant result return reveal rich right ring risk road rock role roll room rough round routine row rule run running safe safety salary same sample save saveStatus scan scene schedule schema science score screen script scroll search season seat second secret section security see seed seek seem self sell send sequence serial series server service set settle setup seven several severe shape share shell sheet shoot short should show sibling side sign signal signature significant simple simply since single sink sister sit site situation size skill skills slash slice slide slim small smart snapshot solution solve son soon sound source space spatial speak special species specific speech spend spirit spring staff stage standard start state statement states static status step steps still stimulus stock stone stop store story strategy street strike string structural structure structures student study style styles stylish subject submillisecond subscribe subscription subsequent success successful such sudden suffer suggest suit summarize summary summer super supplement support surface surprise surveillance switch symbol system systems table tables tablet tail take talk target task tasks tax team telemetry template templates temporary ten term test tests text textarea texture thank than that the their them theme themes themselves then theology theory there therefore these they thing think third this those though thought threat three through throughout throw ticket tier time tiny title to today together tolerance tomorrow tonight tool toolbar toolkit tools topic total tough tour toward track tracking trade tradition traffic trail train transaction transcript transition translation transport trash travel treasure treatment tree trigger true truly trust try tube turn tutorial twin two type typed typedarray typical typography ultimate ultra under understand unit unity universe unless until unto update updates upgrade upload upon upper upset urban use used useful user users utility vacation valid validate value values variable variables variation variety various verify version view visual vocabulary volume wait walk wall want war warm warn warning watch water wave way we weapon wear weather web website week weight well west western what whatever wheel when where whereas whether which while white whole whom whose why widget wide wife wild will win window wind wire wish with within without woman wonder word words work worker working workplace workshop workspace world worry worth would write writer writing wrong yard year years yellow yes yesterday yet you young your yourself zone";
+
+    const DICTIONARY_WORDS = new Set(WORD_LIST_STR.split(' '));
+    const ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
+
     // Common typo corrections dictionary
     const typoDictionary = [
       [/\bteh\b/g, 'the'], [/\bTeh\b/g, 'The'],
@@ -280,6 +286,98 @@
 
     let lastAutoFixSnapshot = null;
 
+    function matchCasing(original, corrected) {
+      if (!corrected) return original;
+      if (original === original.toUpperCase()) {
+        return corrected.toUpperCase();
+      }
+      if (original[0] === original[0].toUpperCase() && original.slice(1) === original.slice(1).toLowerCase()) {
+        return corrected.charAt(0).toUpperCase() + corrected.slice(1).toLowerCase();
+      }
+      return corrected.toLowerCase();
+    }
+
+    function correctWord(originalWord) {
+      if (!originalWord || originalWord.length < 3) return originalWord;
+      
+      // Keep pure uppercase acronyms untouched (e.g. HTML, CSS, DOM, API, UI, URL)
+      if (originalWord.length <= 5 && originalWord === originalWord.toUpperCase()) {
+        return originalWord;
+      }
+
+      const lower = originalWord.toLowerCase();
+      if (DICTIONARY_WORDS.has(lower)) {
+        return originalWord;
+      }
+
+      // Check explicit typo overrides
+      for (let i = 0; i < typoDictionary.length; i++) {
+        if (typoDictionary[i][0].test(originalWord)) {
+          return originalWord.replace(typoDictionary[i][0], typoDictionary[i][1]);
+        }
+      }
+
+      // 1. Accidental duplicate letter reduction (e.g. "rendeering" -> "rendering", "buttton" -> "button")
+      const deVoweled = lower.replace(/([aeiou])\1/g, '$1');
+      if (DICTIONARY_WORDS.has(deVoweled)) {
+        return matchCasing(originalWord, deVoweled);
+      }
+      const singleLetter = lower.replace(/(.)\1+/g, '$1');
+      if (DICTIONARY_WORDS.has(singleLetter)) {
+        return matchCasing(originalWord, singleLetter);
+      }
+
+      // 2. Levenshtein Edit Distance 1 Candidates (Deletions, Transpositions, Substitutions, Insertions)
+      const len = lower.length;
+      let candidates = [];
+
+      // Deletions (e.g. "rendeering" -> delete extra 'e' -> "rendering")
+      for (let i = 0; i < len; i++) {
+        const del = lower.slice(0, i) + lower.slice(i + 1);
+        if (DICTIONARY_WORDS.has(del)) {
+          candidates.push(del);
+        }
+      }
+
+      // Transpositions (e.g. "ediotr" -> "editor")
+      for (let i = 0; i < len - 1; i++) {
+        const trans = lower.slice(0, i) + lower[i + 1] + lower[i] + lower.slice(i + 2);
+        if (DICTIONARY_WORDS.has(trans)) {
+          candidates.push(trans);
+        }
+      }
+
+      // Substitutions (e.g. "editer" -> "editor")
+      if (candidates.length === 0) {
+        for (let i = 0; i < len; i++) {
+          for (let j = 0; j < ALPHABET.length; j++) {
+            const sub = lower.slice(0, i) + ALPHABET[j] + lower.slice(i + 1);
+            if (DICTIONARY_WORDS.has(sub)) {
+              candidates.push(sub);
+            }
+          }
+        }
+      }
+
+      // Insertions (e.g. "infomation" -> "information")
+      if (candidates.length === 0) {
+        for (let i = 0; i <= len; i++) {
+          for (let j = 0; j < ALPHABET.length; j++) {
+            const ins = lower.slice(0, i) + ALPHABET[j] + lower.slice(i);
+            if (DICTIONARY_WORDS.has(ins)) {
+              candidates.push(ins);
+            }
+          }
+        }
+      }
+
+      if (candidates.length > 0) {
+        return matchCasing(originalWord, candidates[0]);
+      }
+
+      return originalWord;
+    }
+
     function fixSpellingAndSpacing(text) {
       if (!text) return '';
       let res = text;
@@ -294,10 +392,8 @@
       res = res.replace(/ -- /g, ' — ');
       // 5. Smart ellipsis: ... -> …
       res = res.replace(/\.{3}/g, '…');
-      // 6. Common spelling fixes
-      for (let i = 0; i < typoDictionary.length; i++) {
-        res = res.replace(typoDictionary[i][0], typoDictionary[i][1]);
-      }
+      // 6. Intelligent spellchecking on all words (3+ letters)
+      res = res.replace(/\b([a-zA-Z]{3,})\b/g, (match) => correctWord(match));
       return res;
     }
 

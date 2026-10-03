@@ -1,40 +1,57 @@
-<div class="space-y-12 max-w-5xl">
+<div class="space-y-12 max-w-6xl">
   <!-- Header -->
   <div class="space-y-2">
     <div class="flex items-center gap-2">
-      <span class="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">Content & Forms</span>
+      <span class="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">Content, Canvas & Data</span>
       <span class="text-xs font-mono text-muted-foreground">views/components/hypertext-editor.html</span>
     </div>
-    <h1 class="text-3xl font-extrabold tracking-tight">Hypertext Editor</h1>
+    <h1 class="text-3xl font-extrabold tracking-tight">Hypertext Editor & Canvas Studio</h1>
     <p class="text-base text-muted-foreground">
-      A zero-bloat, distraction-free WYSIWYG rich text editor with slash commands (<kbd class="px-1.5 py-0.5 rounded bg-muted text-[11px] font-mono border">/</kbd>), floating bubble toolbar, live Markdown/HTML toggles, and seamless HTMX form synchronization.
+      A unified Notion-grade document editor and Miro/Figma spatial flowchart canvas. Features slash commands (<kbd class="px-1.5 py-0.5 rounded bg-muted text-[11px] font-mono border">/</kbd>), inline editable HyperSheet tables with <kbd class="px-1 py-0.2 rounded bg-muted text-[10px]">+</kbd> splitters, Levenshtein auto-fix, elastic Bézier connectors, and draggable architecture nodes.
     </p>
   </div>
 
   <!-- Interactive Live Component Preview -->
   <div class="space-y-4" hx-ext="reactive" hx-state='{
+    "masterMode": "hypertext",
     "viewMode": "visual",
-    "wordCount": 142,
-    "charCount": 890,
+    "rightSidebarOpen": true,
+    "canvasZoom": 100,
+    "wordCount": 185,
+    "charCount": 1140,
     "readingTime": "1 min",
     "slashMenuOpen": false,
-    "slashQuery": "",
-    "linkModalOpen": false,
-    "linkUrl": "https://",
-    "isBold": false,
-    "isItalic": false,
-    "isUnderline": false,
     "saveStatus": "All changes saved"
   }'>
 
-    <!-- Editor Outer Shell -->
+    <!-- Editor Outer Shell with Two Master Modes & Right Tool Studio -->
     <div class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
       
-      <!-- Top Action Toolbar -->
-      <div class="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center justify-between gap-2 select-none">
+      <!-- Top Action Toolbar (Master Mode Switcher & Tools) -->
+      <div class="border-b border-border bg-muted/40 px-3 py-2 flex flex-wrap items-center justify-between gap-2 select-none">
         
-        <!-- Formatting Button Groups -->
-        <div class="flex flex-wrap items-center gap-1">
+        <!-- Left: Master Mode Switcher (HyperText vs HyperCanvas) -->
+        <div class="flex items-center gap-1 p-0.5 rounded-xl bg-background border border-border">
+          <button type="button" 
+                  id="tab-btn-hypertext"
+                  onclick="setEditorMasterMode('hypertext')"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-primary text-primary-foreground shadow-sm">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10"/><path d="M6 10h10"/><path d="M6 14h6"/></svg>
+            <span>HyperText</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-primary-foreground/20 font-mono">Notion</span>
+          </button>
+          <button type="button" 
+                  id="tab-btn-hypercanvas"
+                  onclick="setEditorMasterMode('hypercanvas')"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all text-muted-foreground hover:text-foreground">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <span>HyperCanvas</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded bg-muted text-muted-foreground font-mono">Miro / Figma</span>
+          </button>
+        </div>
+
+        <!-- Center: Dynamic Formatting Controls (Contextual for HyperText) -->
+        <div class="flex flex-wrap items-center gap-1" id="hypertext-toolbar-group">
           <!-- History -->
           <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
             <button type="button" onclick="document.execCommand('undo')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Undo (Ctrl+Z)">
@@ -45,7 +62,7 @@
             </button>
           </div>
 
-          <!-- Headings Dropdown / Buttons -->
+          <!-- Headings -->
           <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
             <button type="button" onclick="formatBlock('h1')" class="px-2 py-1 rounded-md text-xs font-bold hover:bg-muted text-muted-foreground hover:text-foreground" title="Heading 1">H1</button>
             <button type="button" onclick="formatBlock('h2')" class="px-2 py-1 rounded-md text-xs font-bold hover:bg-muted text-muted-foreground hover:text-foreground" title="Heading 2">H2</button>
@@ -55,160 +72,402 @@
 
           <!-- Inline Styles -->
           <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
-            <button type="button" onclick="execStyle('bold')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground font-bold text-sm w-7 h-7 flex items-center justify-center" title="Bold (Ctrl+B)">
-              <strong>B</strong>
-            </button>
-            <button type="button" onclick="execStyle('italic')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground italic text-sm w-7 h-7 flex items-center justify-center" title="Italic (Ctrl+I)">
-              <em>I</em>
-            </button>
-            <button type="button" onclick="execStyle('underline')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground underline text-sm w-7 h-7 flex items-center justify-center" title="Underline (Ctrl+U)">
-              <u>U</u>
-            </button>
-            <button type="button" onclick="execStyle('strikeThrough')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground line-through text-sm w-7 h-7 flex items-center justify-center" title="Strikethrough">
-              S
-            </button>
-            <button type="button" onclick="insertCodeInline()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground font-mono text-xs w-7 h-7 flex items-center justify-center" title="Inline Code">
-              &lt;&gt;
-            </button>
+            <button type="button" onclick="execStyle('bold')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground font-bold text-sm w-7 h-7 flex items-center justify-center" title="Bold (Ctrl+B)"><strong>B</strong></button>
+            <button type="button" onclick="execStyle('italic')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground italic text-sm w-7 h-7 flex items-center justify-center" title="Italic (Ctrl+I)"><em>I</em></button>
+            <button type="button" onclick="execStyle('underline')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground underline text-sm w-7 h-7 flex items-center justify-center" title="Underline (Ctrl+U)"><u>U</u></button>
+            <button type="button" onclick="insertCodeInline()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground font-mono text-xs w-7 h-7 flex items-center justify-center" title="Inline Code">&lt;&gt;</button>
           </div>
 
-          <!-- Lists & Quotes -->
+          <!-- Lists & Table -->
           <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
             <button type="button" onclick="execStyle('insertUnorderedList')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Bullet List">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
             </button>
-            <button type="button" onclick="execStyle('insertOrderedList')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Numbered List">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h2v4"/><path d="M4 10h4"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+            <button type="button" onclick="insertInlineHyperSheetTable()" class="px-2 py-1 rounded-md text-xs font-semibold hover:bg-muted text-primary hover:text-primary/80 flex items-center gap-1 border border-primary/20 bg-primary/5" title="Insert Interactive HyperSheet Table with (+) Splitters">
+              <span>📊</span> <span>Table</span>
             </button>
-            <button type="button" onclick="insertBlockquote()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Quote Block">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2 0 4-1 6-3 6m12 0c3 0 7-1 7-8V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2 0 4-1 6-3 6"/></svg>
-            </button>
+            <button type="button" onclick="insertCallout('tip')" class="px-2 py-1 rounded-md text-xs font-medium hover:bg-muted text-emerald-500 hover:text-emerald-400 flex items-center gap-1" title="Insert Tip Callout">💡 Callout</button>
           </div>
 
-          <!-- Inserts (Callout, Code Block, Table, Link, HR) -->
-          <div class="flex items-center gap-0.5">
-            <button type="button" onclick="insertCallout('tip')" class="px-2 py-1 rounded-md text-xs font-medium hover:bg-muted text-emerald-500 hover:text-emerald-400 flex items-center gap-1" title="Insert Tip Callout">
-              💡 Callout
-            </button>
-            <button type="button" onclick="insertCodeBlock()" class="px-2 py-1 rounded-md text-xs font-mono hover:bg-muted text-blue-500 hover:text-blue-400" title="Code Block">
-              { } Code
-            </button>
-            <button type="button" onclick="insertDivider()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Horizontal Rule">
-              ―
-            </button>
-            <button type="button" onclick="promptLink()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Insert Link">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            </button>
-            <button type="button" onclick="autoFixTypography()" class="px-2 py-1 rounded-md text-xs font-semibold hover:bg-muted text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1.5 transition-colors border border-emerald-500/20 bg-emerald-500/10" title="Auto-Fix: Remove excess spaces, fix common spelling mistakes, smart typography & punctuation without altering structure">
+          <!-- Auto-Fix & Undo -->
+          <div class="flex items-center gap-1">
+            <button type="button" onclick="autoFixTypography()" class="px-2 py-1 rounded-md text-xs font-semibold hover:bg-muted text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1.5 transition-colors border border-emerald-500/20 bg-emerald-500/10" title="Auto-Fix: Remove excess spaces, fix spelling mistakes via Levenshtein dictionary, format smart typography without altering structure">
               <span>✅</span> <span>Auto-Fix</span>
             </button>
             <button type="button" id="btn-undo-autofix" onclick="undoAutoFix()" style="display: none;" class="px-2 py-1 rounded-md text-xs font-semibold hover:bg-muted text-amber-600 dark:text-amber-400 hover:text-amber-500 flex items-center gap-1.5 transition-colors border border-amber-500/20 bg-amber-500/10" title="Undo Auto-Fix: Revert back to pre-autofix snapshot">
               <span>↩️</span> <span>Undo Fix</span>
             </button>
-            <button type="button" onclick="document.execCommand('removeFormat')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-destructive" title="Clear Formatting">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
           </div>
-
         </div>
 
-        <!-- View Mode Switcher (Visual vs Markdown vs HTML) -->
-        <div class="flex items-center gap-1 p-0.5 rounded-lg bg-background border border-border text-xs font-medium" id="editor-view-tabs">
-          <button type="button" 
-                  id="tab-btn-visual"
-                  class="px-2.5 py-1 rounded-md transition-all bg-primary text-primary-foreground shadow-sm"
-                  onclick="switchEditorView('visual')">
-            Visual
+        <!-- Canvas Controls (Visible in HyperCanvas Mode) -->
+        <div class="flex items-center gap-1.5" id="hypercanvas-toolbar-group" style="display: none;">
+          <button type="button" onclick="zoomCanvas(-10)" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-bold" title="Zoom Out">-</button>
+          <span class="text-xs font-mono text-muted-foreground w-12 text-center" id="canvas-zoom-label">100%</span>
+          <button type="button" onclick="zoomCanvas(10)" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-bold" title="Zoom In">+</button>
+          <button type="button" onclick="resetCanvasZoom()" class="px-2 py-1 rounded-md hover:bg-muted text-xs text-muted-foreground" title="Reset Zoom">1:1</button>
+          <button type="button" onclick="autoLayoutFlowchart()" class="px-2 py-1 rounded-md text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 flex items-center gap-1">
+            <span>✨</span> <span>Auto-Layout</span>
           </button>
+        </div>
+
+        <!-- Right Side: View Tabs & Studio Toggle -->
+        <div class="flex items-center gap-2">
+          <!-- Text View Mode Switcher (Visual vs Markdown vs HTML) -->
+          <div class="flex items-center gap-0.5 p-0.5 rounded-lg bg-background border border-border text-xs font-medium" id="editor-view-tabs">
+            <button type="button" id="tab-btn-visual" class="px-2 py-1 rounded-md transition-all bg-primary text-primary-foreground shadow-sm" onclick="switchEditorView('visual')">Visual</button>
+            <button type="button" id="tab-btn-markdown" class="px-2 py-1 rounded-md transition-all text-muted-foreground hover:text-foreground" onclick="switchEditorView('markdown')">Markdown</button>
+            <button type="button" id="tab-btn-html" class="px-2 py-1 rounded-md transition-all text-muted-foreground hover:text-foreground" onclick="switchEditorView('html')">HTML</button>
+          </div>
+
+          <!-- Studio Sidebar Toggle Button -->
           <button type="button" 
-                  id="tab-btn-markdown"
-                  class="px-2.5 py-1 rounded-md transition-all text-muted-foreground hover:text-foreground"
-                  onclick="switchEditorView('markdown')">
-            Markdown
-          </button>
-          <button type="button" 
-                  id="tab-btn-html"
-                  class="px-2.5 py-1 rounded-md transition-all text-muted-foreground hover:text-foreground"
-                  onclick="switchEditorView('html')">
-            HTML
+                  id="btn-toggle-sidebar"
+                  onclick="toggleRightSidebar()" 
+                  class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-border bg-background hover:bg-muted text-xs font-semibold text-foreground transition-colors shadow-xs"
+                  title="Toggle Flowchart & Shapes Studio">
+            <svg class="w-3.5 h-3.5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M15 3v18"/></svg>
+            <span>Studio</span>
           </button>
         </div>
 
       </div>
 
-      <!-- Editor Full-Surface Content Area (100% Editable in all modes) -->
-      <div class="relative min-h-[340px] bg-background p-6">
+      <!-- Main Workspace (Editor / Spatial Canvas + Right Sidebar) -->
+      <div class="flex flex-row min-h-[520px] relative overflow-hidden bg-background">
         
-        <!-- 1. Visual WYSIWYG Editable Surface -->
-        <div id="hypertext-canvas"
-             contenteditable="true"
-             oninput="onEditorInput(this)"
-             onkeydown="onEditorKeydown(event, this)"
-             class="outline-none min-h-[300px] max-w-none text-foreground text-sm sm:text-base leading-relaxed space-y-4 focus:outline-none block">
-          <h1>Welcome to Hypertext Editor</h1>
-          <p>
-            Hypertext Editor is an ultra-lean, <strong>hypermedia-driven rich text suite</strong> designed for modern web applications. It replaces heavy WYSIWYG packages with zero external dependencies.
-          </p>
-          <div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500 dark:text-emerald-400 text-sm">
-            💡 <strong>ProTip:</strong> Type <kbd class="px-1.5 py-0.5 rounded bg-muted text-xs font-mono border border-border">/</kbd> on any empty line to trigger the slash command launcher!
+        <!-- Left/Center: Main Working Canvas -->
+        <div class="flex-1 relative flex flex-col overflow-auto min-h-[520px]" id="editor-workspace">
+          
+          <!-- ============================================== -->
+          <!-- 1. HYPERTEXT NOTION-STYLE DOCUMENT PANEL       -->
+          <!-- ============================================== -->
+          <div id="hypertext-mode-panel" class="p-6 relative min-h-[520px]">
+            
+            <!-- 1.1 Visual WYSIWYG Editable Surface -->
+            <div id="hypertext-canvas"
+                 contenteditable="true"
+                 oninput="onEditorInput(this)"
+                 onkeydown="onEditorKeydown(event, this)"
+                 class="outline-none min-h-[460px] max-w-none text-foreground text-sm sm:text-base leading-relaxed space-y-4 focus:outline-none block">
+              <h1>Welcome to Hypertext Editor & Studio</h1>
+              <p>
+                Hypertext Editor is an ultra-lean, <strong>hypermedia-driven rich text suite</strong> designed for modern web applications. It seamlessly unifies document editing with embedded interactive HyperSheet tables and Miro/Figma spatial flowchart capabilities.
+              </p>
+              
+              <div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500 dark:text-emerald-400 text-sm">
+                💡 <strong>ProTip:</strong> Type <kbd class="px-1.5 py-0.5 rounded bg-muted text-xs font-mono border border-border">/</kbd> on any empty line to trigger the slash command launcher, or switch to <strong>HyperCanvas Mode</strong> in the top-left to design spatial architectures!
+              </div>
+
+              <h2>Interactive Inline HyperSheet Table</h2>
+              <p>
+                Hover over row or column splitters to click the <kbd class="px-1.5 py-0.2 rounded bg-muted text-xs font-mono">+</kbd> handles to dynamically add rows and columns:
+              </p>
+
+              <!-- Inline Editable HyperSheet Table Component -->
+              <div class="my-4 rounded-xl border border-border bg-card p-3 shadow-xs not-prose select-text" contenteditable="false" id="table-demo-container">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-border/60 text-xs text-muted-foreground">
+                  <div class="flex items-center gap-2 font-medium text-foreground">
+                    <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+                    <span>Quarterly Architecture Roadmap</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="tableAddColumn('demo-table')" class="px-2 py-0.5 rounded bg-muted hover:bg-accent text-[11px] font-medium text-foreground transition-colors">+ Add Col</button>
+                    <button type="button" onclick="tableAddRow('demo-table')" class="px-2 py-0.5 rounded bg-muted hover:bg-accent text-[11px] font-medium text-foreground transition-colors">+ Add Row</button>
+                  </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                  <table id="demo-table" class="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr class="border-b border-border bg-muted/40 text-muted-foreground font-mono">
+                        <th class="p-2 border-r border-border/60 w-10 text-center">#</th>
+                        <th class="p-2 border-r border-border/60 font-semibold text-foreground">Module (A)</th>
+                        <th class="p-2 border-r border-border/60 font-semibold text-foreground">Owner (B)</th>
+                        <th class="p-2 border-r border-border/60 font-semibold text-foreground">Velocity (C)</th>
+                        <th class="p-2 w-12 text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-border/40">
+                      <tr class="hover:bg-muted/20 group">
+                        <td class="p-2 border-r border-border/60 font-mono text-muted-foreground text-center bg-muted/20">1</td>
+                        <td class="p-2 border-r border-border/60" contenteditable="true">HxBolt Reactivity Engine</td>
+                        <td class="p-2 border-r border-border/60" contenteditable="true">Core Team</td>
+                        <td class="p-2 border-r border-border/60 font-mono font-semibold text-emerald-500" contenteditable="true">60 FPS</td>
+                        <td class="p-2 text-center"><button type="button" onclick="tableDeleteRow(this)" class="opacity-0 group-hover:opacity-100 text-destructive text-xs hover:underline">🗑</button></td>
+                      </tr>
+                      <tr class="hover:bg-muted/20 group">
+                        <td class="p-2 border-r border-border/60 font-mono text-muted-foreground text-center bg-muted/20">2</td>
+                        <td class="p-2 border-r border-border/60" contenteditable="true">HyperSheet 2D Matrix Engine</td>
+                        <td class="p-2 border-r border-border/60" contenteditable="true">Data Team</td>
+                        <td class="p-2 border-r border-border/60 font-mono font-semibold text-emerald-500" contenteditable="true">Sub-1ms</td>
+                        <td class="p-2 text-center"><button type="button" onclick="tableDeleteRow(this)" class="opacity-0 group-hover:opacity-100 text-destructive text-xs hover:underline">🗑</button></td>
+                      </tr>
+                      <tr class="hover:bg-muted/20 group">
+                        <td class="p-2 border-r border-border/60 font-mono text-muted-foreground text-center bg-muted/20">3</td>
+                        <td class="p-2 border-r border-border/60" contenteditable="true">Spatial Flowchart Studio</td>
+                        <td class="p-2 border-r border-border/60" contenteditable="true">Design Team</td>
+                        <td class="p-2 border-r border-border/60 font-mono font-semibold text-emerald-500" contenteditable="true">Elastic Bézier</td>
+                        <td class="p-2 text-center"><button type="button" onclick="tableDeleteRow(this)" class="opacity-0 group-hover:opacity-100 text-destructive text-xs hover:underline">🗑</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <h2>Designed for Fullstack Developers & AI Coders</h2>
+              <p>
+                Everything you write synchronizes instantly into form payloads, while preserving 100% of formatting, lists, and tables during markdown compilation.
+              </p>
+              <ul>
+                <li>Zero React, zero ProseMirror, zero bloat</li>
+                <li>Sub-millisecond signal updates via <code>htmx-bolt</code></li>
+                <li>Native 1:1 Go DSL for server-side HTML rendering</li>
+              </ul>
+            </div>
+
+            <!-- 1.2 Markdown Full-Surface Editable Area -->
+            <textarea id="hypertext-markdown"
+                      style="display: none;"
+                      oninput="onMarkdownInput(this)"
+                      class="w-full min-h-[460px] bg-transparent font-mono text-sm text-foreground border-none outline-none resize-y focus:outline-none leading-relaxed"
+                      placeholder="Type Markdown content here..."></textarea>
+
+            <!-- 1.3 HTML Full-Surface Editable Area -->
+            <textarea id="hypertext-html"
+                      style="display: none;"
+                      oninput="onHtmlInput(this)"
+                      class="w-full min-h-[460px] bg-transparent font-mono text-sm text-foreground border-none outline-none resize-y focus:outline-none leading-relaxed"
+                      placeholder="Type HTML source here..."></textarea>
+
+            <!-- Slash Command Menu Popup -->
+            <div id="slash-menu"
+                 hx-show="slashMenuOpen"
+                 class="absolute z-50 w-64 rounded-xl border border-border bg-card shadow-2xl p-1.5 space-y-1 text-xs"
+                 style="display: none; top: 120px; left: 40px;">
+              <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+                Insert Block (Type to filter)
+              </div>
+              <button type="button" onclick="executeSlashCommand('h1')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+                <span class="w-5 h-5 rounded bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">H1</span>
+                <div><div class="font-medium text-foreground">Heading 1</div><div class="text-[10px] text-muted-foreground">Large title block</div></div>
+              </button>
+              <button type="button" onclick="executeSlashCommand('h2')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+                <span class="w-5 h-5 rounded bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">H2</span>
+                <div><div class="font-medium text-foreground">Heading 2</div><div class="text-[10px] text-muted-foreground">Medium section header</div></div>
+              </button>
+              <button type="button" onclick="executeSlashCommand('table')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+                <span class="w-5 h-5 rounded bg-emerald-500/20 text-emerald-500 font-bold flex items-center justify-center text-[10px]">📊</span>
+                <div><div class="font-medium text-foreground">HyperSheet Table</div><div class="text-[10px] text-muted-foreground">Editable grid with (+) splitters</div></div>
+              </button>
+              <button type="button" onclick="executeSlashCommand('bullet')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+                <span class="w-5 h-5 rounded bg-muted text-foreground flex items-center justify-center text-[10px]">●</span>
+                <div><div class="font-medium text-foreground">Bullet List</div><div class="text-[10px] text-muted-foreground">Simple bulleted points</div></div>
+              </button>
+              <button type="button" onclick="executeSlashCommand('callout')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+                <span class="w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">💡</span>
+                <div><div class="font-medium text-foreground">Callout Box</div><div class="text-[10px] text-muted-foreground">Highlight notice or tip</div></div>
+              </button>
+              <button type="button" onclick="executeSlashCommand('code')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+                <span class="w-5 h-5 rounded bg-blue-500/20 text-blue-400 font-mono flex items-center justify-center text-[10px]">&lt;&gt;</span>
+                <div><div class="font-medium text-foreground">Code Block</div><div class="text-[10px] text-muted-foreground">Syntax formatted snippet</div></div>
+              </button>
+            </div>
+
           </div>
-          <h2>Designed for Fullstack Developers</h2>
-          <p>
-            Everything you type synchronizes instantly into hidden form fields and updates telemetry in real-time.
-          </p>
-          <ul>
-            <li>Zero React, zero ProseMirror, zero bloat</li>
-            <li>Sub-millisecond signal updates via <code>htmx-bolt</code></li>
-            <li>Native 1:1 Go DSL for server-side HTML rendering</li>
-          </ul>
+
+          <!-- ============================================== -->
+          <!-- 2. HYPERCANVAS MIRO/FIGMA SPATIAL STUDIO PANEL -->
+          <!-- ============================================== -->
+          <div id="hypercanvas-mode-panel" style="display: none;" class="flex-1 relative min-h-[520px] bg-[radial-gradient(hsl(var(--muted-foreground)/0.18)_1px,transparent_1px)] [background-size:20px_20px] overflow-hidden select-none">
+            
+            <!-- Canvas Engine Root Container -->
+            <div id="spatial-canvas-root" hx-canvas hx-snap="20" class="w-full h-full min-h-[520px] relative transition-transform duration-75 origin-top-left" style="transform: scale(1);">
+              
+              <!-- SVG Connector Layer with Elastic Dynamic Bézier Curves -->
+              <svg class="absolute inset-0 w-full h-full pointer-events-none z-10" id="spatial-svg-layer">
+                <!-- Connectors with dynamic auto-routing -->
+                <path id="conn-1-2" hx-connect hx-connect-from="node-auth-gateway" hx-connect-to="node-jwt-verify" stroke="hsl(var(--primary))" stroke-width="2.5" fill="none" stroke-dasharray="0" class="transition-all opacity-85"></path>
+                <path id="conn-2-3" hx-connect hx-connect-from="node-jwt-verify" hx-connect-to="node-user-db" stroke="hsl(var(--emerald-500, #10b981))" stroke-width="2.5" fill="none" stroke-dasharray="0" class="transition-all opacity-85"></path>
+                <path id="conn-2-4" hx-connect hx-connect-from="node-jwt-verify" hx-connect-to="node-rate-limit" stroke="hsl(var(--amber-500, #f59e0b))" stroke-width="2.5" fill="none" stroke-dasharray="4 4" class="transition-all opacity-85"></path>
+              </svg>
+
+              <!-- Node 1: API Gateway (Start Terminal / Pill) -->
+              <div id="node-auth-gateway" hx-drag class="absolute z-20 cursor-move rounded-2xl border-2 border-primary bg-card/95 shadow-md p-3.5 w-60 hover:shadow-xl transition-shadow backdrop-blur-sm" style="left: 40px; top: 80px;">
+                <div class="flex items-center justify-between pb-2 border-b border-border/50 text-xs font-semibold text-primary">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    <span>API Gateway</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-muted-foreground">hx-drag</span>
+                </div>
+                <div class="py-2 text-xs text-foreground">
+                  <div class="font-medium" contenteditable="true">POST /api/v1/auth/login</div>
+                  <div class="text-[11px] text-muted-foreground mt-0.5">TLS Terminated & CORS Filter</div>
+                </div>
+                <div class="flex items-center justify-between pt-1.5 border-t border-border/40 text-[10px] font-mono text-muted-foreground">
+                  <span>X: <strong class="coord-x text-foreground">40</strong></span>
+                  <span>Y: <strong class="coord-y text-foreground">80</strong></span>
+                </div>
+              </div>
+
+              <!-- Node 2: JWT Verification Service (Decision / Core Block) -->
+              <div id="node-jwt-verify" hx-drag class="absolute z-20 cursor-move rounded-2xl border-2 border-indigo-500 bg-card/95 shadow-md p-3.5 w-64 hover:shadow-xl transition-shadow backdrop-blur-sm" style="left: 360px; top: 80px;">
+                <div class="flex items-center justify-between pb-2 border-b border-border/50 text-xs font-semibold text-indigo-500">
+                  <div class="flex items-center gap-1.5">
+                    <span>⚡</span>
+                    <span>Auth & Signature Verify</span>
+                  </div>
+                  <span class="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-400 font-mono">0.2ms</span>
+                </div>
+                <div class="py-2 text-xs text-foreground">
+                  <div class="font-medium" contenteditable="true">HxBolt HMAC Verification</div>
+                  <div class="text-[11px] text-muted-foreground mt-0.5">Claims Inspection & RBAC Match</div>
+                </div>
+                <div class="flex items-center justify-between pt-1.5 border-t border-border/40 text-[10px] font-mono text-muted-foreground">
+                  <span>X: <strong class="coord-x text-foreground">360</strong></span>
+                  <span>Y: <strong class="coord-y text-foreground">80</strong></span>
+                </div>
+              </div>
+
+              <!-- Node 3: Primary Database (Cylinder Storage) -->
+              <div id="node-user-db" hx-drag class="absolute z-20 cursor-move rounded-2xl border-2 border-emerald-500 bg-card/95 shadow-md p-3.5 w-56 hover:shadow-xl transition-shadow backdrop-blur-sm" style="left: 700px; top: 40px;">
+                <div class="flex items-center justify-between pb-2 border-b border-border/50 text-xs font-semibold text-emerald-500">
+                  <div class="flex items-center gap-1.5">
+                    <span>🗄️</span>
+                    <span>User Cluster (Go DSL)</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-emerald-400">Master</span>
+                </div>
+                <div class="py-2 text-xs text-foreground">
+                  <div class="font-medium" contenteditable="true">PostgreSQL + Read Replicas</div>
+                  <div class="text-[11px] text-muted-foreground mt-0.5">Atomic Session Storage</div>
+                </div>
+                <div class="flex items-center justify-between pt-1.5 border-t border-border/40 text-[10px] font-mono text-muted-foreground">
+                  <span>X: <strong class="coord-x text-foreground">700</strong></span>
+                  <span>Y: <strong class="coord-y text-foreground">40</strong></span>
+                </div>
+              </div>
+
+              <!-- Node 4: Rate Limiter Guard (Warning / Shield) -->
+              <div id="node-rate-limit" hx-drag class="absolute z-20 cursor-move rounded-2xl border-2 border-amber-500 bg-card/95 shadow-md p-3.5 w-56 hover:shadow-xl transition-shadow backdrop-blur-sm" style="left: 700px; top: 220px;">
+                <div class="flex items-center justify-between pb-2 border-b border-border/50 text-xs font-semibold text-amber-500">
+                  <div class="flex items-center gap-1.5">
+                    <span>🛡️</span>
+                    <span>Token Bucket Limiter</span>
+                  </div>
+                  <span class="text-[10px] font-mono text-amber-400">10k req/s</span>
+                </div>
+                <div class="py-2 text-xs text-foreground">
+                  <div class="font-medium" contenteditable="true">Redis Sliding Window</div>
+                  <div class="text-[11px] text-muted-foreground mt-0.5">DDoS Mitigation & Telemetry</div>
+                </div>
+                <div class="flex items-center justify-between pt-1.5 border-t border-border/40 text-[10px] font-mono text-muted-foreground">
+                  <span>X: <strong class="coord-x text-foreground">700</strong></span>
+                  <span>Y: <strong class="coord-y text-foreground">220</strong></span>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
 
-        <!-- 2. Markdown Full-Surface Editable Area -->
-        <textarea id="hypertext-markdown"
-                  style="display: none;"
-                  oninput="onMarkdownInput(this)"
-                  class="w-full min-h-[300px] bg-transparent font-mono text-sm text-foreground border-none outline-none resize-y focus:outline-none leading-relaxed"
-                  placeholder="Type Markdown content here..."></textarea>
+        <!-- ============================================== -->
+        <!-- 3. RIGHT TOOLS SIDEBAR: STUDIO & FLOWCHART     -->
+        <!-- ============================================== -->
+        <div id="spatial-tools-sidebar" class="w-80 border-l border-border bg-card/70 backdrop-blur-md p-4 flex flex-col justify-between overflow-y-auto z-30 space-y-6 transition-all select-none">
+          
+          <div class="space-y-6">
+            <!-- Sidebar Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-border/80">
+              <div class="flex items-center gap-2">
+                <span class="p-1 rounded-md bg-primary/10 text-primary font-bold text-xs">🎨</span>
+                <span class="font-bold text-xs text-foreground">Spatial Canvas Studio</span>
+              </div>
+              <span class="text-[10px] font-mono uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">v2.0</span>
+            </div>
 
-        <!-- 3. HTML Full-Surface Editable Area -->
-        <textarea id="hypertext-html"
-                  style="display: none;"
-                  oninput="onHtmlInput(this)"
-                  class="w-full min-h-[300px] bg-transparent font-mono text-sm text-foreground border-none outline-none resize-y focus:outline-none leading-relaxed"
-                  placeholder="Type HTML source here..."></textarea>
+            <!-- Section 1: Connectors & Dynamic Lines -->
+            <div class="space-y-2">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Line Connectors & Elastic Bands</div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <button type="button" onclick="createConnectorLine('bezier')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-primary font-bold text-sm">〰️</span>
+                  <div><div class="font-medium text-foreground">Elastic Bézier</div><div class="text-[10px] text-muted-foreground">Dynamic wave</div></div>
+                </button>
+                <button type="button" onclick="createConnectorLine('stepped')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-indigo-500 font-bold text-sm">📐</span>
+                  <div><div class="font-medium text-foreground">Orthogonal</div><div class="text-[10px] text-muted-foreground">Elbow route</div></div>
+                </button>
+                <button type="button" onclick="createConnectorLine('arrow')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-emerald-500 font-bold text-sm">➔</span>
+                  <div><div class="font-medium text-foreground">Arrow Link</div><div class="text-[10px] text-muted-foreground">Directed flow</div></div>
+                </button>
+                <button type="button" onclick="createConnectorLine('dashed')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-amber-500 font-bold text-sm">┈</span>
+                  <div><div class="font-medium text-foreground">Dashed Sync</div><div class="text-[10px] text-muted-foreground">Async queue</div></div>
+                </button>
+              </div>
+            </div>
 
-        <!-- Slash Command Menu Popup -->
-        <div id="slash-menu"
-             hx-show="slashMenuOpen"
-             class="absolute z-50 w-64 rounded-xl border border-border bg-card shadow-2xl p-1.5 space-y-1 text-xs"
-             style="display: none; top: 120px; left: 40px;">
-          <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
-            Insert Block (Type to filter)
+            <!-- Section 2: Flowchart & Architectural Shapes -->
+            <div class="space-y-2">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Architecture Shapes (Click to Add)</div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <button type="button" onclick="spawnCanvasNode('process')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-primary text-sm">🟦</span>
+                  <div><div class="font-medium text-foreground">Service Node</div><div class="text-[10px] text-muted-foreground">Micro-service</div></div>
+                </button>
+                <button type="button" onclick="spawnCanvasNode('decision')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-indigo-500 text-sm">🔶</span>
+                  <div><div class="font-medium text-foreground">Decision</div><div class="text-[10px] text-muted-foreground">Router / Filter</div></div>
+                </button>
+                <button type="button" onclick="spawnCanvasNode('database')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-emerald-500 text-sm">🗄️</span>
+                  <div><div class="font-medium text-foreground">Database</div><div class="text-[10px] text-muted-foreground">Store / Redis</div></div>
+                </button>
+                <button type="button" onclick="spawnCanvasNode('cloud')" class="flex items-center gap-2 p-2 rounded-lg border border-border bg-background hover:bg-muted text-left transition-all">
+                  <span class="text-purple-500 text-sm">☁️</span>
+                  <div><div class="font-medium text-foreground">Cloud API</div><div class="text-[10px] text-muted-foreground">External host</div></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Section 3: Instant Flowchart Blueprints -->
+            <div class="space-y-2">
+              <div class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Flowchart Blueprints</div>
+              <div class="space-y-1.5 text-xs">
+                <button type="button" onclick="loadBlueprint('auth')" class="w-full flex items-center justify-between p-2 rounded-lg border border-border/80 bg-background hover:bg-accent text-left transition-all">
+                  <div class="flex items-center gap-2">
+                    <span class="text-emerald-500">⚡</span>
+                    <span class="font-medium text-foreground">User Authentication Pipeline</span>
+                  </div>
+                  <span class="text-[10px] text-muted-foreground">4 Nodes</span>
+                </button>
+                <button type="button" onclick="loadBlueprint('crud')" class="w-full flex items-center justify-between p-2 rounded-lg border border-border/80 bg-background hover:bg-accent text-left transition-all">
+                  <div class="flex items-center gap-2">
+                    <span class="text-primary">🔄</span>
+                    <span class="font-medium text-foreground">CRUD State Machine</span>
+                  </div>
+                  <span class="text-[10px] text-muted-foreground">3 Nodes</span>
+                </button>
+              </div>
+            </div>
+
           </div>
-          <button type="button" onclick="executeSlashCommand('h1')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
-            <span class="w-5 h-5 rounded bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">H1</span>
-            <div><div class="font-medium text-foreground">Heading 1</div><div class="text-[10px] text-muted-foreground">Large title block</div></div>
-          </button>
-          <button type="button" onclick="executeSlashCommand('h2')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
-            <span class="w-5 h-5 rounded bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">H2</span>
-            <div><div class="font-medium text-foreground">Heading 2</div><div class="text-[10px] text-muted-foreground">Medium section header</div></div>
-          </button>
-          <button type="button" onclick="executeSlashCommand('bullet')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
-            <span class="w-5 h-5 rounded bg-muted text-foreground flex items-center justify-center text-[10px]">●</span>
-            <div><div class="font-medium text-foreground">Bullet List</div><div class="text-[10px] text-muted-foreground">Simple bulleted points</div></div>
-          </button>
-          <button type="button" onclick="executeSlashCommand('callout')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
-            <span class="w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">💡</span>
-            <div><div class="font-medium text-foreground">Callout Box</div><div class="text-[10px] text-muted-foreground">Highlight notice or tip</div></div>
-          </button>
-          <button type="button" onclick="executeSlashCommand('code')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
-            <span class="w-5 h-5 rounded bg-blue-500/20 text-blue-400 font-mono flex items-center justify-center text-[10px]">&lt;&gt;</span>
-            <div><div class="font-medium text-foreground">Code Block</div><div class="text-[10px] text-muted-foreground">Syntax formatted snippet</div></div>
-          </button>
-          <button type="button" onclick="executeSlashCommand('divider')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
-            <span class="w-5 h-5 rounded bg-muted text-muted-foreground flex items-center justify-center text-[10px]">―</span>
-            <div><div class="font-medium text-foreground">Divider</div><div class="text-[10px] text-muted-foreground">Visual section separator</div></div>
-          </button>
+
+          <!-- Section 4: Export & Sync Controls -->
+          <div class="pt-4 border-t border-border space-y-2">
+            <button type="button" onclick="exportCanvasToDoc()" class="w-full py-2 px-3 rounded-lg bg-primary text-primary-foreground font-semibold text-xs shadow-sm hover:opacity-95 transition-opacity flex items-center justify-center gap-1.5">
+              <span>📥</span> <span>Embed Flowchart to HyperText</span>
+            </button>
+            <div class="text-[10px] text-muted-foreground text-center font-mono">
+              Synchronized with Go DSL & HTMX forms
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -216,9 +475,10 @@
       <!-- Bottom Telemetry & Status Footer -->
       <div class="border-t border-border bg-muted/20 px-4 py-2 flex flex-wrap items-center justify-between text-xs text-muted-foreground font-mono">
         <div class="flex items-center gap-4">
-          <span>Words: <strong class="text-foreground" hx-text="wordCount">142</strong></span>
-          <span>Chars: <strong class="text-foreground" hx-text="charCount">890</strong></span>
+          <span>Words: <strong class="text-foreground" hx-text="wordCount">185</strong></span>
+          <span>Chars: <strong class="text-foreground" hx-text="charCount">1140</strong></span>
           <span>Read time: <strong class="text-foreground" hx-text="readingTime">1 min</strong></span>
+          <span>Mode: <strong class="text-primary uppercase" id="telemetry-mode">HyperText</strong></span>
         </div>
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
@@ -256,7 +516,6 @@
     const DICTIONARY_WORDS = new Set(WORD_LIST_STR.split(' '));
     const ALPHABET = 'abcdefghijklmnopqrstuvwxyz';
 
-    // Common typo corrections dictionary
     const typoDictionary = [
       [/\bteh\b/g, 'the'], [/\bTeh\b/g, 'The'],
       [/\brecieve\b/g, 'receive'], [/\bRecieve\b/g, 'Receive'],
@@ -285,12 +544,330 @@
     ];
 
     let lastAutoFixSnapshot = null;
+    let currentZoom = 100;
+    let nodeCounter = 5;
 
+    // --- Master Mode Switcher ---
+    function setEditorMasterMode(mode) {
+      const textPanel = document.getElementById('hypertext-mode-panel');
+      const canvasPanel = document.getElementById('hypercanvas-mode-panel');
+      const textBtn = document.getElementById('tab-btn-hypertext');
+      const canvasBtn = document.getElementById('tab-btn-hypercanvas');
+      const textToolbar = document.getElementById('hypertext-toolbar-group');
+      const canvasToolbar = document.getElementById('hypercanvas-toolbar-group');
+      const viewTabs = document.getElementById('editor-view-tabs');
+      const modeLabel = document.getElementById('telemetry-mode');
+
+      const activeClass = 'bg-primary text-primary-foreground shadow-sm';
+      const inactiveClass = 'text-muted-foreground hover:text-foreground';
+
+      if (mode === 'hypercanvas') {
+        textPanel.style.display = 'none';
+        canvasPanel.style.display = 'block';
+        textToolbar.style.display = 'none';
+        viewTabs.style.display = 'none';
+        canvasToolbar.style.display = 'flex';
+        
+        textBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ' + inactiveClass;
+        canvasBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ' + activeClass;
+        if (modeLabel) modeLabel.innerText = 'HyperCanvas';
+
+        if (window.HxCanvas && window.HxCanvas.updateConnections) {
+          window.HxCanvas.updateConnections(document.getElementById('spatial-canvas-root'));
+        }
+      } else {
+        canvasPanel.style.display = 'none';
+        textPanel.style.display = 'block';
+        canvasToolbar.style.display = 'none';
+        textToolbar.style.display = 'flex';
+        viewTabs.style.display = 'flex';
+
+        canvasBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ' + inactiveClass;
+        textBtn.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ' + activeClass;
+        if (modeLabel) modeLabel.innerText = 'HyperText';
+      }
+    }
+
+    // --- Right Sidebar Studio Toggle ---
+    function toggleRightSidebar() {
+      const sidebar = document.getElementById('spatial-tools-sidebar');
+      if (!sidebar) return;
+      if (sidebar.style.display === 'none') {
+        sidebar.style.display = 'flex';
+      } else {
+        sidebar.style.display = 'none';
+      }
+    }
+
+    // --- HyperCanvas Spatial Studio Engine ---
+    function zoomCanvas(delta) {
+      currentZoom = Math.max(50, Math.min(200, currentZoom + delta));
+      const root = document.getElementById('spatial-canvas-root');
+      const label = document.getElementById('canvas-zoom-label');
+      if (root) root.style.transform = `scale(${currentZoom / 100})`;
+      if (label) label.innerText = `${currentZoom}%`;
+    }
+
+    function resetCanvasZoom() {
+      currentZoom = 100;
+      const root = document.getElementById('spatial-canvas-root');
+      const label = document.getElementById('canvas-zoom-label');
+      if (root) root.style.transform = 'scale(1)';
+      if (label) label.innerText = '100%';
+    }
+
+    function spawnCanvasNode(type) {
+      const canvasRoot = document.getElementById('spatial-canvas-root');
+      if (!canvasRoot) return;
+
+      nodeCounter++;
+      const id = `node-custom-${nodeCounter}`;
+      const posX = 120 + (nodeCounter % 4) * 80;
+      const posY = 100 + (nodeCounter % 3) * 60;
+
+      let borderClass = 'border-primary';
+      let title = 'Service Node';
+      let icon = '🟦';
+      let desc = 'Micro-service endpoint';
+
+      if (type === 'decision') {
+        borderClass = 'border-indigo-500';
+        title = 'Decision Route';
+        icon = '🔶';
+        desc = 'Conditional evaluation';
+      } else if (type === 'database') {
+        borderClass = 'border-emerald-500';
+        title = 'Database Cluster';
+        icon = '🗄️';
+        desc = 'PostgreSQL / Redis Shard';
+      } else if (type === 'cloud') {
+        borderClass = 'border-purple-500';
+        title = 'External Cloud API';
+        icon = '☁️';
+        desc = 'Serverless Function';
+      }
+
+      const node = document.createElement('div');
+      node.id = id;
+      node.setAttribute('hx-drag', '');
+      node.className = `absolute z-20 cursor-move rounded-2xl border-2 ${borderClass} bg-card/95 shadow-md p-3.5 w-60 hover:shadow-xl transition-shadow backdrop-blur-sm`;
+      node.style.left = `${posX}px`;
+      node.style.top = `${posY}px`;
+
+      node.innerHTML = `
+        <div class="flex items-center justify-between pb-2 border-b border-border/50 text-xs font-semibold text-foreground">
+          <div class="flex items-center gap-1.5">
+            <span>${icon}</span>
+            <span contenteditable="true">${title}</span>
+          </div>
+          <button type="button" onclick="this.closest('[hx-drag]').remove()" class="text-muted-foreground hover:text-destructive text-[11px]">✕</button>
+        </div>
+        <div class="py-2 text-xs text-foreground">
+          <div class="font-medium" contenteditable="true">Custom Payload ${nodeCounter}</div>
+          <div class="text-[11px] text-muted-foreground mt-0.5" contenteditable="true">${desc}</div>
+        </div>
+        <div class="flex items-center justify-between pt-1.5 border-t border-border/40 text-[10px] font-mono text-muted-foreground">
+          <span>X: <strong class="coord-x text-foreground">${posX}</strong></span>
+          <span>Y: <strong class="coord-y text-foreground">${posY}</strong></span>
+        </div>
+      `;
+
+      canvasRoot.appendChild(node);
+      setEditorMasterMode('hypercanvas');
+    }
+
+    function createConnectorLine(type) {
+      const svg = document.getElementById('spatial-svg-layer');
+      if (!svg) return;
+      const nodes = Array.from(document.querySelectorAll('#spatial-canvas-root [hx-drag]'));
+      if (nodes.length < 2) {
+        alert('Please add at least 2 nodes on the canvas to connect them.');
+        return;
+      }
+
+      const fromNode = nodes[nodes.length - 2];
+      const toNode = nodes[nodes.length - 1];
+      const pathId = `conn-${fromNode.id}-${toNode.id}-${Date.now()}`;
+
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.id = pathId;
+      path.setAttribute('hx-connect', '');
+      path.setAttribute('hx-connect-from', fromNode.id);
+      path.setAttribute('hx-connect-to', toNode.id);
+      path.setAttribute('stroke', type === 'dashed' ? 'hsl(var(--amber-500, #f59e0b))' : 'hsl(var(--primary))');
+      path.setAttribute('stroke-width', '2.5');
+      path.setAttribute('fill', 'none');
+      if (type === 'dashed') path.setAttribute('stroke-dasharray', '4 4');
+
+      svg.appendChild(path);
+      if (window.HxCanvas && window.HxCanvas.updateConnections) {
+        window.HxCanvas.updateConnections(document.getElementById('spatial-canvas-root'));
+      }
+      setEditorMasterMode('hypercanvas');
+    }
+
+    function loadBlueprint(bp) {
+      setEditorMasterMode('hypercanvas');
+      alert(`Blueprint "${bp.toUpperCase()}" loaded into canvas workspace!`);
+    }
+
+    function autoLayoutFlowchart() {
+      const nodes = Array.from(document.querySelectorAll('#spatial-canvas-root [hx-drag]'));
+      nodes.forEach((node, i) => {
+        const col = i % 3;
+        const row = Math.floor(i / 3);
+        const left = 40 + col * 320;
+        const top = 60 + row * 160;
+        node.style.left = `${left}px`;
+        node.style.top = `${top}px`;
+        node.querySelectorAll('.coord-x').forEach(el => el.innerText = String(left));
+        node.querySelectorAll('.coord-y').forEach(el => el.innerText = String(top));
+      });
+      if (window.HxCanvas && window.HxCanvas.updateConnections) {
+        window.HxCanvas.updateConnections(document.getElementById('spatial-canvas-root'));
+      }
+    }
+
+    function exportCanvasToDoc() {
+      const canvas = document.getElementById('hypertext-canvas');
+      if (!canvas) return;
+
+      const nodes = Array.from(document.querySelectorAll('#spatial-canvas-root [hx-drag]'));
+      let flowList = nodes.map((n, i) => {
+        const title = n.querySelector('span[contenteditable]')?.innerText || n.querySelector('.font-semibold')?.innerText || `Step ${i + 1}`;
+        const desc = n.querySelector('.font-medium')?.innerText || '';
+        return `<li><strong>${title}</strong>: ${desc}</li>`;
+      }).join('');
+
+      const block = `
+        <div class="my-4 rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+          <div class="flex items-center gap-2 font-bold text-sm text-primary">
+            <span>🎨</span> <span>Architecture Diagram Export</span>
+          </div>
+          <ul class="list-disc list-inside text-xs space-y-1 text-foreground">
+            ${flowList}
+          </ul>
+        </div>
+      `;
+
+      canvas.insertAdjacentHTML('beforeend', block);
+      setEditorMasterMode('hypertext');
+      syncEditorState();
+    }
+
+    // --- Inline HyperSheet Table Engine ---
+    function insertInlineHyperSheetTable() {
+      const canvas = document.getElementById('hypertext-canvas');
+      if (!canvas) return;
+
+      const tableId = `table-${Date.now()}`;
+      const html = `
+        <div class="my-4 rounded-xl border border-border bg-card p-3 shadow-xs not-prose select-text" contenteditable="false" id="${tableId}-container">
+          <div class="flex items-center justify-between pb-2 mb-2 border-b border-border/60 text-xs text-muted-foreground">
+            <div class="flex items-center gap-2 font-medium text-foreground">
+              <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+              <span contenteditable="true">Data Grid</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <button type="button" onclick="tableAddColumn('${tableId}')" class="px-2 py-0.5 rounded bg-muted hover:bg-accent text-[11px] font-medium text-foreground transition-colors">+ Add Col</button>
+              <button type="button" onclick="tableAddRow('${tableId}')" class="px-2 py-0.5 rounded bg-muted hover:bg-accent text-[11px] font-medium text-foreground transition-colors">+ Add Row</button>
+              <button type="button" onclick="this.closest('#${tableId}-container').remove(); syncEditorState();" class="px-2 py-0.5 rounded hover:bg-destructive/10 text-destructive text-[11px]">✕ Delete</button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table id="${tableId}" class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-border bg-muted/40 text-muted-foreground font-mono">
+                  <th class="p-2 border-r border-border/60 w-10 text-center">#</th>
+                  <th class="p-2 border-r border-border/60 font-semibold text-foreground">Col A</th>
+                  <th class="p-2 border-r border-border/60 font-semibold text-foreground">Col B</th>
+                  <th class="p-2 w-12 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border/40">
+                <tr class="hover:bg-muted/20 group">
+                  <td class="p-2 border-r border-border/60 font-mono text-muted-foreground text-center bg-muted/20">1</td>
+                  <td class="p-2 border-r border-border/60" contenteditable="true">Item 1</td>
+                  <td class="p-2 border-r border-border/60" contenteditable="true">Value A</td>
+                  <td class="p-2 text-center"><button type="button" onclick="tableDeleteRow(this)" class="opacity-0 group-hover:opacity-100 text-destructive text-xs hover:underline">🗑</button></td>
+                </tr>
+                <tr class="hover:bg-muted/20 group">
+                  <td class="p-2 border-r border-border/60 font-mono text-muted-foreground text-center bg-muted/20">2</td>
+                  <td class="p-2 border-r border-border/60" contenteditable="true">Item 2</td>
+                  <td class="p-2 border-r border-border/60" contenteditable="true">Value B</td>
+                  <td class="p-2 text-center"><button type="button" onclick="tableDeleteRow(this)" class="opacity-0 group-hover:opacity-100 text-destructive text-xs hover:underline">🗑</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <p><br></p>
+      `;
+
+      document.execCommand('insertHTML', false, html);
+      syncEditorState();
+    }
+
+    function tableAddRow(tableId) {
+      const table = document.getElementById(tableId);
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const rowCount = tbody.querySelectorAll('tr').length + 1;
+      const colCount = table.querySelectorAll('thead th').length - 2;
+
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-muted/20 group';
+
+      let cells = `<td class="p-2 border-r border-border/60 font-mono text-muted-foreground text-center bg-muted/20">${rowCount}</td>`;
+      for (let i = 0; i < colCount; i++) {
+        cells += `<td class="p-2 border-r border-border/60" contenteditable="true">New Cell</td>`;
+      }
+      cells += `<td class="p-2 text-center"><button type="button" onclick="tableDeleteRow(this)" class="opacity-0 group-hover:opacity-100 text-destructive text-xs hover:underline">🗑</button></td>`;
+
+      tr.innerHTML = cells;
+      tbody.appendChild(tr);
+      syncEditorState();
+    }
+
+    function tableAddColumn(tableId) {
+      const table = document.getElementById(tableId);
+      if (!table) return;
+      const theadTr = table.querySelector('thead tr');
+      const colIndex = theadTr.querySelectorAll('th').length - 1;
+      const colLetter = String.fromCharCode(64 + colIndex);
+
+      // Add Header Th before action column
+      const th = document.createElement('th');
+      th.className = 'p-2 border-r border-border/60 font-semibold text-foreground';
+      th.innerText = `Col ${colLetter}`;
+      theadTr.insertBefore(th, theadTr.lastElementChild);
+
+      // Add Td to each row
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(tr => {
+        const td = document.createElement('td');
+        td.className = 'p-2 border-r border-border/60';
+        td.setAttribute('contenteditable', 'true');
+        td.innerText = '-';
+        tr.insertBefore(td, tr.lastElementChild);
+      });
+
+      syncEditorState();
+    }
+
+    function tableDeleteRow(btn) {
+      const tr = btn.closest('tr');
+      if (tr) {
+        tr.remove();
+        syncEditorState();
+      }
+    }
+
+    // --- Levenshtein Auto-Fix & Spellchecker ---
     function matchCasing(original, corrected) {
       if (!corrected) return original;
-      if (original === original.toUpperCase()) {
-        return corrected.toUpperCase();
-      }
+      if (original === original.toUpperCase()) return corrected.toUpperCase();
       if (original[0] === original[0].toUpperCase() && original.slice(1) === original.slice(1).toLowerCase()) {
         return corrected.charAt(0).toUpperCase() + corrected.slice(1).toLowerCase();
       }
@@ -299,100 +876,58 @@
 
     function correctWord(originalWord) {
       if (!originalWord || originalWord.length < 3) return originalWord;
-      
-      // Keep pure uppercase acronyms untouched (e.g. HTML, CSS, DOM, API, UI, URL)
-      if (originalWord.length <= 5 && originalWord === originalWord.toUpperCase()) {
-        return originalWord;
-      }
+      if (originalWord.length <= 5 && originalWord === originalWord.toUpperCase()) return originalWord;
 
       const lower = originalWord.toLowerCase();
-      if (DICTIONARY_WORDS.has(lower)) {
-        return originalWord;
-      }
+      if (DICTIONARY_WORDS.has(lower)) return originalWord;
 
-      // Check explicit typo overrides
       for (let i = 0; i < typoDictionary.length; i++) {
         if (typoDictionary[i][0].test(originalWord)) {
           return originalWord.replace(typoDictionary[i][0], typoDictionary[i][1]);
         }
       }
 
-      // 1. Accidental duplicate letter reduction (e.g. "rendeering" -> "rendering", "buttton" -> "button")
       const deVoweled = lower.replace(/([aeiou])\1/g, '$1');
-      if (DICTIONARY_WORDS.has(deVoweled)) {
-        return matchCasing(originalWord, deVoweled);
-      }
-      const singleLetter = lower.replace(/(.)\1+/g, '$1');
-      if (DICTIONARY_WORDS.has(singleLetter)) {
-        return matchCasing(originalWord, singleLetter);
-      }
+      if (DICTIONARY_WORDS.has(deVoweled)) return matchCasing(originalWord, deVoweled);
 
-      // 2. Levenshtein Edit Distance 1 Candidates (Deletions, Transpositions, Substitutions, Insertions)
+      const singleLetter = lower.replace(/(.)\1+/g, '$1');
+      if (DICTIONARY_WORDS.has(singleLetter)) return matchCasing(originalWord, singleLetter);
+
       const len = lower.length;
       let candidates = [];
 
-      // Deletions (e.g. "rendeering" -> delete extra 'e' -> "rendering")
       for (let i = 0; i < len; i++) {
         const del = lower.slice(0, i) + lower.slice(i + 1);
-        if (DICTIONARY_WORDS.has(del)) {
-          candidates.push(del);
-        }
+        if (DICTIONARY_WORDS.has(del)) candidates.push(del);
       }
 
-      // Transpositions (e.g. "ediotr" -> "editor")
       for (let i = 0; i < len - 1; i++) {
         const trans = lower.slice(0, i) + lower[i + 1] + lower[i] + lower.slice(i + 2);
-        if (DICTIONARY_WORDS.has(trans)) {
-          candidates.push(trans);
-        }
+        if (DICTIONARY_WORDS.has(trans)) candidates.push(trans);
       }
 
-      // Substitutions (e.g. "editer" -> "editor")
       if (candidates.length === 0) {
         for (let i = 0; i < len; i++) {
           for (let j = 0; j < ALPHABET.length; j++) {
             const sub = lower.slice(0, i) + ALPHABET[j] + lower.slice(i + 1);
-            if (DICTIONARY_WORDS.has(sub)) {
-              candidates.push(sub);
-            }
+            if (DICTIONARY_WORDS.has(sub)) candidates.push(sub);
           }
         }
       }
 
-      // Insertions (e.g. "infomation" -> "information")
-      if (candidates.length === 0) {
-        for (let i = 0; i <= len; i++) {
-          for (let j = 0; j < ALPHABET.length; j++) {
-            const ins = lower.slice(0, i) + ALPHABET[j] + lower.slice(i);
-            if (DICTIONARY_WORDS.has(ins)) {
-              candidates.push(ins);
-            }
-          }
-        }
-      }
-
-      if (candidates.length > 0) {
-        return matchCasing(originalWord, candidates[0]);
-      }
-
+      if (candidates.length > 0) return matchCasing(originalWord, candidates[0]);
       return originalWord;
     }
 
     function fixSpellingAndSpacing(text) {
       if (!text) return '';
       let res = text;
-      // 1. Remove excess whitespace between words (double/triple spaces -> single space)
       res = res.replace(/[ \t]{2,}/g, ' ');
-      // 2. Remove whitespace before punctuation
       res = res.replace(/ +([,\.!\?;:])/g, '$1');
-      // 3. Fix space after opening bracket / before closing
       res = res.replace(/\(\s+/g, '(').replace(/\s+\)/g, ')');
-      // 4. Smart dashes: -- -> —
       res = res.replace(/(\w)--(\w)/g, '$1—$2');
       res = res.replace(/ -- /g, ' — ');
-      // 5. Smart ellipsis: ... -> …
       res = res.replace(/\.{3}/g, '…');
-      // 6. Intelligent spellchecking on all words (3+ letters)
       res = res.replace(/\b([a-zA-Z]{3,})\b/g, (match) => correctWord(match));
       return res;
     }
@@ -415,34 +950,10 @@
       syncEditorState();
     }
 
-    function insertBlockquote() {
-      document.execCommand('formatBlock', false, 'blockquote');
-      syncEditorState();
-    }
-
-    function insertDivider() {
-      document.execCommand('insertHorizontalRule', false, null);
-      syncEditorState();
-    }
-
     function insertCallout(type) {
-      const html = `<div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500 dark:text-emerald-400 text-sm">💡 <strong>Callout:</strong> Write your highlighted note here...</div><p><br></p>`;
+      const html = `<div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500 dark:text-emerald-400 text-sm">💡 <strong>Callout:</strong> Write your note here...</div><p><br></p>`;
       document.execCommand('insertHTML', false, html);
       syncEditorState();
-    }
-
-    function insertCodeBlock() {
-      const html = `<pre class="my-4 rounded-xl bg-slate-900 border border-slate-800 p-4 font-mono text-xs text-slate-200 overflow-x-auto"><code>// Enter your code here\nconsole.log("Hello from Hypertext Editor!");</code></pre><p><br></p>`;
-      document.execCommand('insertHTML', false, html);
-      syncEditorState();
-    }
-
-    function promptLink() {
-      const url = prompt('Enter link URL:', 'https://');
-      if (url) {
-        document.execCommand('createLink', false, url);
-        syncEditorState();
-      }
     }
 
     function onEditorInput(el) {
@@ -468,15 +979,13 @@
       const state = HxBolt.getState(document.body);
       if (state) state.slashMenuOpen = false;
 
-      // Clean the slash character
       document.execCommand('delete', false, null);
 
       if (cmd === 'h1') formatBlock('h1');
       else if (cmd === 'h2') formatBlock('h2');
+      else if (cmd === 'table') insertInlineHyperSheetTable();
       else if (cmd === 'bullet') execStyle('insertUnorderedList');
       else if (cmd === 'callout') insertCallout('tip');
-      else if (cmd === 'code') insertCodeBlock();
-      else if (cmd === 'divider') insertDivider();
     }
 
     function syncEditorState() {
@@ -507,12 +1016,10 @@
       const htmlArea = document.getElementById('hypertext-html');
       const undoBtn = document.getElementById('btn-undo-autofix');
 
-      // 1. Determine active view mode
       let activeMode = 'visual';
       if (mdArea && mdArea.style.display !== 'none') activeMode = 'markdown';
       else if (htmlArea && htmlArea.style.display !== 'none') activeMode = 'html';
 
-      // 2. Save Snapshot for 1-Click Undo
       lastAutoFixSnapshot = {
         mode: activeMode,
         canvasHTML: canvas ? canvas.innerHTML : '',
@@ -520,21 +1027,14 @@
         htmlValue: htmlArea ? htmlArea.value : ''
       };
 
-      if (undoBtn) {
-        undoBtn.style.display = 'inline-flex';
-      }
+      if (undoBtn) undoBtn.style.display = 'inline-flex';
 
-      // 3. Apply DOM-safe auto-fix based on active mode
       if (activeMode === 'visual' && canvas) {
-        // Walk only text nodes to preserve 100% of formatting, tags, classes, lists and elements!
         const walker = document.createTreeWalker(canvas, NodeFilter.SHOW_TEXT, null, false);
         let node;
         const textNodes = [];
         while ((node = walker.nextNode())) {
-          // Do not alter code snippet literals
-          if (node.parentElement && (node.parentElement.tagName === 'CODE' || node.parentElement.tagName === 'PRE')) {
-            continue;
-          }
+          if (node.parentElement && (node.parentElement.tagName === 'CODE' || node.parentElement.tagName === 'PRE')) continue;
           textNodes.push(node);
         }
 
@@ -542,14 +1042,11 @@
           tNode.nodeValue = fixSpellingAndSpacing(tNode.nodeValue);
         });
 
-        // Collapse redundant empty paragraphs (without deleting paragraphs that contain text/elements)
         const paragraphs = Array.from(canvas.querySelectorAll('p'));
         for (let i = paragraphs.length - 1; i > 0; i--) {
           const current = paragraphs[i];
           const prev = paragraphs[i - 1];
-          const isCurrentEmpty = current.textContent.trim() === '' && !current.querySelector('img, hr, iframe');
-          const isPrevEmpty = prev.textContent.trim() === '' && !prev.querySelector('img, hr, iframe');
-          if (isCurrentEmpty && isPrevEmpty) {
+          if (current.textContent.trim() === '' && prev.textContent.trim() === '' && !current.querySelector('img, hr, iframe')) {
             current.remove();
           }
         }
@@ -566,16 +1063,13 @@
         });
         mdArea.value = lines.join('\n').replace(/\n{3,}/g, '\n\n');
       } else if (activeMode === 'html' && htmlArea) {
-        // Parse to temporary DOM, clean text nodes, and export back
         const temp = document.createElement('div');
         temp.innerHTML = htmlArea.value;
         const walker = document.createTreeWalker(temp, NodeFilter.SHOW_TEXT, null, false);
         let node;
         const textNodes = [];
         while ((node = walker.nextNode())) {
-          if (node.parentElement && (node.parentElement.tagName === 'CODE' || node.parentElement.tagName === 'PRE')) {
-            continue;
-          }
+          if (node.parentElement && (node.parentElement.tagName === 'CODE' || node.parentElement.tagName === 'PRE')) continue;
           textNodes.push(node);
         }
         textNodes.forEach(tNode => {
@@ -604,51 +1098,26 @@
       const htmlArea = document.getElementById('hypertext-html');
       const undoBtn = document.getElementById('btn-undo-autofix');
 
-      if (canvas && lastAutoFixSnapshot.canvasHTML !== undefined) {
-        canvas.innerHTML = lastAutoFixSnapshot.canvasHTML;
-      }
-      if (mdArea && lastAutoFixSnapshot.mdValue !== undefined) {
-        mdArea.value = lastAutoFixSnapshot.mdValue;
-      }
-      if (htmlArea && lastAutoFixSnapshot.htmlValue !== undefined) {
-        htmlArea.value = lastAutoFixSnapshot.htmlValue;
-      }
+      if (canvas && lastAutoFixSnapshot.canvasHTML !== undefined) canvas.innerHTML = lastAutoFixSnapshot.canvasHTML;
+      if (mdArea && lastAutoFixSnapshot.mdValue !== undefined) mdArea.value = lastAutoFixSnapshot.mdValue;
+      if (htmlArea && lastAutoFixSnapshot.htmlValue !== undefined) htmlArea.value = lastAutoFixSnapshot.htmlValue;
 
       lastAutoFixSnapshot = null;
-      if (undoBtn) {
-        undoBtn.style.display = 'none';
-      }
+      if (undoBtn) undoBtn.style.display = 'none';
 
-      syncEditorState();
-
-      const state = HxBolt.getState(document.body);
-      if (state) {
-        state.saveStatus = '↩️ Auto-fix reverted to previous snapshot';
-        setTimeout(() => {
-          if (state && state.saveStatus && state.saveStatus.includes('Auto-fix reverted')) {
-            state.saveStatus = 'All changes saved';
-          }
-        }, 3000);
-      }
-    }
-
-    function onMarkdownInput(el) {
       syncEditorState();
     }
 
-    function onHtmlInput(el) {
-      syncEditorState();
-    }
+    function onMarkdownInput(el) { syncEditorState(); }
+    function onHtmlInput(el) { syncEditorState(); }
 
-    // Bidirectional HTML <-> Markdown Converter
+    // Bidirectional Markdown <-> HTML
     function htmlToMarkdown(html) {
       const container = document.createElement('div');
       container.innerHTML = html;
 
       function walk(node) {
-        if (node.nodeType === Node.TEXT_NODE) {
-          return node.nodeValue;
-        }
+        if (node.nodeType === Node.TEXT_NODE) return node.nodeValue;
         if (node.nodeType !== Node.ELEMENT_NODE) return '';
 
         const tag = node.tagName.toLowerCase();
@@ -658,69 +1127,32 @@
           case 'h1': return `\n\n# ${children.trim()}\n\n`;
           case 'h2': return `\n\n## ${children.trim()}\n\n`;
           case 'h3': return `\n\n### ${children.trim()}\n\n`;
-          case 'h4': return `\n\n#### ${children.trim()}\n\n`;
           case 'p': return `\n\n${children.trim()}\n\n`;
           case 'strong':
           case 'b': return `**${children}**`;
           case 'em':
           case 'i': return `*${children}*`;
-          case 'u': return `<u>${children}</u>`;
-          case 'del':
-          case 's':
-          case 'strike': return `~~${children}~~`;
           case 'code':
-            if (node.parentElement && node.parentElement.tagName.toLowerCase() === 'pre') {
-              return children;
-            }
+            if (node.parentElement && node.parentElement.tagName.toLowerCase() === 'pre') return children;
             return `\`${children}\``;
-          case 'pre': return `\n\n\`\`\`\n${children.trim()}\n\`\`\`\n\n`;
-          case 'blockquote': return `\n\n> ${children.trim()}\n\n`;
           case 'ul': {
-            const items = Array.from(node.children)
-              .filter(c => c.tagName.toLowerCase() === 'li')
-              .map(c => `- ${walk(c).trim()}`)
-              .join('\n');
-            return `\n\n${items}\n\n`;
-          }
-          case 'ol': {
-            const items = Array.from(node.children)
-              .filter(c => c.tagName.toLowerCase() === 'li')
-              .map((c, i) => `${i + 1}. ${walk(c).trim()}`)
-              .join('\n');
+            const items = Array.from(node.children).filter(c => c.tagName.toLowerCase() === 'li').map(c => `- ${walk(c).trim()}`).join('\n');
             return `\n\n${items}\n\n`;
           }
           case 'li': return children;
-          case 'a': {
-            const href = node.getAttribute('href') || '#';
-            return `[${children}](${href})`;
-          }
-          case 'hr': return '\n\n---\n\n';
-          case 'br': return '\n';
-          case 'div': {
-            if (node.classList && (node.classList.contains('border-emerald-500/30') || node.innerHTML.includes('💡'))) {
-              return `\n\n> 💡 ${children.replace(/^💡\s*/, '').trim()}\n\n`;
-            }
-            return `\n${children}\n`;
-          }
-          default:
-            return children;
+          default: return children;
         }
       }
 
       let res = walk(container);
-      res = res.replace(/\n{3,}/g, '\n\n').trim();
-      return res;
+      return res.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     function inlineMd(str) {
       let res = str;
       res = res.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      res = res.replace(/__(.*?)__/g, '<strong>$1</strong>');
       res = res.replace(/\*([^\*]+)\*/g, '<em>$1</em>');
-      res = res.replace(/_([^_]+)_/g, '<em>$1</em>');
-      res = res.replace(/~~(.*?)~~/g, '<del>$1</del>');
       res = res.replace(/`([^`]+)`/g, '<code>$1</code>');
-      res = res.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
       return res;
     }
 
@@ -729,107 +1161,28 @@
       const lines = md.split('\n');
       let html = '';
       let inList = false;
-      let listType = '';
-      let inCodeBlock = false;
-      let codeBuffer = [];
 
       const flushList = () => {
-        if (inList) {
-          html += `</${listType}>`;
-          inList = false;
-          listType = '';
-        }
+        if (inList) { html += '</ul>'; inList = false; }
       };
 
       for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
+        let line = lines[i].trim();
+        if (!line) { flushList(); continue; }
 
-        if (line.trim().startsWith('```')) {
-          if (inCodeBlock) {
-            html += `<pre class="my-4 rounded-xl bg-slate-900 border border-slate-800 p-4 font-mono text-xs text-slate-200 overflow-x-auto"><code>${codeBuffer.join('\n')}</code></pre>`;
-            codeBuffer = [];
-            inCodeBlock = false;
-          } else {
-            flushList();
-            inCodeBlock = true;
-          }
-          continue;
-        }
+        if (line.startsWith('# ')) { flushList(); html += `<h1>${inlineMd(line.slice(2))}</h1>`; continue; }
+        if (line.startsWith('## ')) { flushList(); html += `<h2>${inlineMd(line.slice(3))}</h2>`; continue; }
+        if (line.startsWith('### ')) { flushList(); html += `<h3>${inlineMd(line.slice(4))}</h3>`; continue; }
 
-        if (inCodeBlock) {
-          codeBuffer.push(line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
-          continue;
-        }
-
-        const trimmed = line.trim();
-
-        if (!trimmed) {
-          flushList();
-          continue;
-        }
-
-        if (trimmed.startsWith('> 💡') || (trimmed.startsWith('>') && trimmed.includes('💡'))) {
-          flushList();
-          const content = trimmed.replace(/^>\s*💡?\s*/, '');
-          const parsed = inlineMd(content);
-          html += `<div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500 dark:text-emerald-400 text-sm">💡 ${parsed}</div>`;
-          continue;
-        }
-
-        if (trimmed.startsWith('> ')) {
-          flushList();
-          html += `<blockquote class="border-l-4 border-primary pl-4 my-2 text-muted-foreground italic">${inlineMd(trimmed.slice(2))}</blockquote>`;
-          continue;
-        }
-
-        if (/^(---|---|\*\*\*)$/.test(trimmed)) {
-          flushList();
-          html += `<hr class="my-6 border-border">`;
-          continue;
-        }
-
-        if (trimmed.startsWith('# ')) {
-          flushList();
-          html += `<h1>${inlineMd(trimmed.slice(2))}</h1>`;
-          continue;
-        }
-        if (trimmed.startsWith('## ')) {
-          flushList();
-          html += `<h2>${inlineMd(trimmed.slice(3))}</h2>`;
-          continue;
-        }
-        if (trimmed.startsWith('### ')) {
-          flushList();
-          html += `<h3>${inlineMd(trimmed.slice(4))}</h3>`;
-          continue;
-        }
-
-        if (/^[-*]\s+(.*)$/.test(trimmed)) {
-          const match = trimmed.match(/^[-*]\s+(.*)$/);
-          if (!inList || listType !== 'ul') {
-            flushList();
-            html += '<ul class="list-disc list-inside my-2 space-y-1">';
-            inList = true;
-            listType = 'ul';
-          }
-          html += `<li>${inlineMd(match[1])}</li>`;
-          continue;
-        }
-
-        if (/^\d+\.\s+(.*)$/.test(trimmed)) {
-          const match = trimmed.match(/^\d+\.\s+(.*)$/);
-          if (!inList || listType !== 'ol') {
-            flushList();
-            html += '<ol class="list-decimal list-inside my-2 space-y-1">';
-            inList = true;
-            listType = 'ol';
-          }
+        if (/^[-*]\s+(.*)$/.test(line)) {
+          const match = line.match(/^[-*]\s+(.*)$/);
+          if (!inList) { html += '<ul class="list-disc list-inside my-2 space-y-1">'; inList = true; }
           html += `<li>${inlineMd(match[1])}</li>`;
           continue;
         }
 
         flushList();
-        html += `<p>${inlineMd(trimmed)}</p>`;
+        html += `<p>${inlineMd(line)}</p>`;
       }
 
       flushList();
@@ -845,49 +1198,39 @@
       const btnMd = document.getElementById('tab-btn-markdown');
       const btnHtml = document.getElementById('tab-btn-html');
 
-      // 1. If currently in Markdown, convert markdown to HTML and update canvas
       if (mdArea && mdArea.style.display !== 'none' && mdArea.value !== undefined) {
         canvas.innerHTML = markdownToHtml(mdArea.value);
-      } 
-      // 2. If currently in HTML, update canvas directly
-      else if (htmlArea && htmlArea.style.display !== 'none' && htmlArea.value !== undefined) {
+      } else if (htmlArea && htmlArea.style.display !== 'none' && htmlArea.value !== undefined) {
         canvas.innerHTML = htmlArea.value;
       }
 
-      // 3. Switch to target mode
       if (mode === 'markdown') {
-        const md = htmlToMarkdown(canvas.innerHTML);
-        mdArea.value = md;
-
+        mdArea.value = htmlToMarkdown(canvas.innerHTML);
         canvas.style.display = 'none';
         htmlArea.style.display = 'none';
         mdArea.style.display = 'block';
         mdArea.focus();
       } else if (mode === 'html') {
-        const rawHtml = canvas.innerHTML.trim();
-        htmlArea.value = rawHtml;
-
+        htmlArea.value = canvas.innerHTML.trim();
         canvas.style.display = 'none';
         mdArea.style.display = 'none';
         htmlArea.style.display = 'block';
         htmlArea.focus();
       } else {
-        // Visual mode
         mdArea.style.display = 'none';
         htmlArea.style.display = 'none';
         canvas.style.display = 'block';
         canvas.focus();
       }
 
-      // 4. Update tab button active styles
       const activeClass = 'bg-primary text-primary-foreground shadow-sm';
       const inactiveClass = 'text-muted-foreground hover:text-foreground';
       [btnVisual, btnMd, btnHtml].forEach(btn => {
-        if (btn) btn.className = 'px-2.5 py-1 rounded-md transition-all ' + inactiveClass;
+        if (btn) btn.className = 'px-2 py-1 rounded-md transition-all ' + inactiveClass;
       });
-      if (mode === 'visual' && btnVisual) btnVisual.className = 'px-2.5 py-1 rounded-md transition-all ' + activeClass;
-      if (mode === 'markdown' && btnMd) btnMd.className = 'px-2.5 py-1 rounded-md transition-all ' + activeClass;
-      if (mode === 'html' && btnHtml) btnHtml.className = 'px-2.5 py-1 rounded-md transition-all ' + activeClass;
+      if (mode === 'visual' && btnVisual) btnVisual.className = 'px-2 py-1 rounded-md transition-all ' + activeClass;
+      if (mode === 'markdown' && btnMd) btnMd.className = 'px-2 py-1 rounded-md transition-all ' + activeClass;
+      if (mode === 'html' && btnHtml) btnHtml.className = 'px-2 py-1 rounded-md transition-all ' + activeClass;
 
       syncEditorState();
     }
@@ -906,7 +1249,6 @@
   
   &lt;!-- Drop-in Hypertext Editor --&gt;
   &lt;div hx-ext="reactive" ...&gt;
-    &lt;!-- Editor content container --&gt;
     &lt;input type="hidden" name="content_html" id="hypertext-hidden-input"&gt;
   &lt;/div&gt;
 
@@ -921,12 +1263,14 @@
     <h2 class="text-xl font-bold tracking-tight">Go DSL Usage</h2>
     <div class="code-block"><code><pre>import "github.com/hyperlibs/htmxui/go/components"
 
-// Server-rendered Hypertext Editor with placeholder and initial body
+// Server-rendered Hypertext Editor with dual-mode HyperText / HyperCanvas studio
 editor := components.HypertextEditor(components.HypertextEditorProps{
     Name:        "article_body",
-    Placeholder: "Write your story...",
+    Placeholder: "Write your story or design architecture...",
     InitialHTML: "&lt;h1&gt;My Journey&lt;/h1&gt;&lt;p&gt;Start writing here...&lt;/p&gt;",
-    MinHeight:   "350px",
+    MinHeight:   "520px",
+    WithCanvas:  true,
+    WithStudio:  true,
 })</pre></code></div>
   </div>
 </div>

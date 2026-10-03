@@ -249,6 +249,9 @@ type HypertextEditorProps struct {
 	Placeholder string
 	InitialHTML string
 	MinHeight   string
+	Mode        string // "hypertext" | "hypercanvas"
+	WithCanvas  bool
+	WithStudio  bool
 }
 
 func HypertextEditor(p HypertextEditorProps) Component {
@@ -256,19 +259,23 @@ func HypertextEditor(p HypertextEditorProps) Component {
 		p.Name = "content_html"
 	}
 	if p.MinHeight == "" {
-		p.MinHeight = "300px"
+		p.MinHeight = "520px"
 	}
 	if p.InitialHTML == "" {
-		p.InitialHTML = "<p>Start writing your hypertext document...</p>"
+		p.InitialHTML = "<h1>Welcome to Hypertext Editor</h1><p>Start writing your story or design architecture...</p>"
+	}
+	if p.Mode == "" {
+		p.Mode = "hypertext"
 	}
 
-	html := fmt.Sprintf(`<div class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" hx-ext="reactive" hx-state='{"viewMode":"visual","saveStatus":"Saved"}'>
-  <div class="border-b border-border bg-muted/30 px-3 py-2 flex items-center justify-between gap-2 text-xs">
+	html := fmt.Sprintf(`<div class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" hx-ext="reactive" hx-state='{"masterMode":"%s","viewMode":"visual","saveStatus":"Saved"}'>
+  <div class="border-b border-border bg-muted/40 px-3 py-2 flex items-center justify-between gap-2 text-xs">
     <div class="flex items-center gap-1">
       <button type="button" onclick="document.execCommand('bold')" class="p-1.5 rounded hover:bg-muted font-bold">B</button>
       <button type="button" onclick="document.execCommand('italic')" class="p-1.5 rounded hover:bg-muted italic">I</button>
       <button type="button" onclick="document.execCommand('underline')" class="p-1.5 rounded hover:bg-muted underline">U</button>
-      <button type="button" onclick="document.execCommand('insertUnorderedList')" class="p-1.5 rounded hover:bg-muted">●</button>
+      <button type="button" onclick="insertInlineHyperSheetTable()" class="px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">📊 Table</button>
+      <button type="button" onclick="autoFixTypography()" class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-medium">✅ Auto-Fix</button>
     </div>
     <span class="text-muted-foreground font-mono text-[11px]" hx-text="saveStatus">Saved</span>
   </div>
@@ -276,7 +283,7 @@ func HypertextEditor(p HypertextEditorProps) Component {
     %s
   </div>
   <input type="hidden" name="%s" id="%s-input" value="%s">
-</div>`, p.MinHeight, p.Name, p.InitialHTML, p.Name, p.Name, p.InitialHTML)
+</div>`, p.Mode, p.MinHeight, p.Name, p.InitialHTML, p.Name, p.Name, p.InitialHTML)
 
 	return Component{html: html}
 }

@@ -249,9 +249,6 @@ type HypertextEditorProps struct {
 	Placeholder string
 	InitialHTML string
 	MinHeight   string
-	Mode        string // "hypertext" | "hypercanvas"
-	WithCanvas  bool
-	WithStudio  bool
 }
 
 func HypertextEditor(p HypertextEditorProps) Component {
@@ -259,16 +256,13 @@ func HypertextEditor(p HypertextEditorProps) Component {
 		p.Name = "content_html"
 	}
 	if p.MinHeight == "" {
-		p.MinHeight = "520px"
+		p.MinHeight = "350px"
 	}
 	if p.InitialHTML == "" {
-		p.InitialHTML = "<h1>Welcome to Hypertext Editor</h1><p>Start writing your story or design architecture...</p>"
-	}
-	if p.Mode == "" {
-		p.Mode = "hypertext"
+		p.InitialHTML = "<h1>Welcome to Hypertext Editor</h1><p>Start writing your document...</p>"
 	}
 
-	html := fmt.Sprintf(`<div class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" hx-ext="reactive" hx-state='{"masterMode":"%s","viewMode":"visual","saveStatus":"Saved"}'>
+	html := fmt.Sprintf(`<div class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" hx-ext="reactive" hx-state='{"viewMode":"visual","saveStatus":"Saved"}'>
   <div class="border-b border-border bg-muted/40 px-3 py-2 flex items-center justify-between gap-2 text-xs">
     <div class="flex items-center gap-1">
       <button type="button" onclick="document.execCommand('bold')" class="p-1.5 rounded hover:bg-muted font-bold">B</button>
@@ -283,7 +277,7 @@ func HypertextEditor(p HypertextEditorProps) Component {
     %s
   </div>
   <input type="hidden" name="%s" id="%s-input" value="%s">
-</div>`, p.Mode, p.MinHeight, p.Name, p.InitialHTML, p.Name, p.Name, p.InitialHTML)
+</div>`, p.MinHeight, p.Name, p.InitialHTML, p.Name, p.Name, p.InitialHTML)
 
 	return Component{html: html}
 }

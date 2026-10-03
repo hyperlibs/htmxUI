@@ -244,3 +244,41 @@ func Gallery(p GalleryProps) Component {
 	return Component{html: sb.String()}
 }
 
+type HypertextEditorProps struct {
+	Name        string
+	Placeholder string
+	InitialHTML string
+	MinHeight   string
+}
+
+func HypertextEditor(p HypertextEditorProps) Component {
+	if p.Name == "" {
+		p.Name = "content_html"
+	}
+	if p.MinHeight == "" {
+		p.MinHeight = "300px"
+	}
+	if p.InitialHTML == "" {
+		p.InitialHTML = "<p>Start writing your hypertext document...</p>"
+	}
+
+	html := fmt.Sprintf(`<div class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col" hx-ext="reactive" hx-state='{"viewMode":"visual","saveStatus":"Saved"}'>
+  <div class="border-b border-border bg-muted/30 px-3 py-2 flex items-center justify-between gap-2 text-xs">
+    <div class="flex items-center gap-1">
+      <button type="button" onclick="document.execCommand('bold')" class="p-1.5 rounded hover:bg-muted font-bold">B</button>
+      <button type="button" onclick="document.execCommand('italic')" class="p-1.5 rounded hover:bg-muted italic">I</button>
+      <button type="button" onclick="document.execCommand('underline')" class="p-1.5 rounded hover:bg-muted underline">U</button>
+      <button type="button" onclick="document.execCommand('insertUnorderedList')" class="p-1.5 rounded hover:bg-muted">●</button>
+    </div>
+    <span class="text-muted-foreground font-mono text-[11px]" hx-text="saveStatus">Saved</span>
+  </div>
+  <div class="p-6 bg-background min-h-[%s] outline-none text-foreground leading-relaxed" contenteditable="true" oninput="document.getElementById('%s-input').value = this.innerHTML">
+    %s
+  </div>
+  <input type="hidden" name="%s" id="%s-input" value="%s">
+</div>`, p.MinHeight, p.Name, p.InitialHTML, p.Name, p.Name, p.InitialHTML)
+
+	return Component{html: html}
+}
+
+

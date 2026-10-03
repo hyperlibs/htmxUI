@@ -1,0 +1,409 @@
+<div class="space-y-12 max-w-5xl">
+  <!-- Header -->
+  <div class="space-y-2">
+    <div class="flex items-center gap-2">
+      <span class="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">Content & Forms</span>
+      <span class="text-xs font-mono text-muted-foreground">views/components/hypertext-editor.html</span>
+    </div>
+    <h1 class="text-3xl font-extrabold tracking-tight">Hypertext Editor</h1>
+    <p class="text-base text-muted-foreground">
+      A zero-bloat, distraction-free WYSIWYG rich text editor with slash commands (<kbd class="px-1.5 py-0.5 rounded bg-muted text-[11px] font-mono border">/</kbd>), floating bubble toolbar, live Markdown/HTML toggles, and seamless HTMX form synchronization.
+    </p>
+  </div>
+
+  <!-- Interactive Live Component Preview -->
+  <div class="space-y-4" hx-ext="reactive" hx-state='{
+    "viewMode": "visual",
+    "wordCount": 142,
+    "charCount": 890,
+    "readingTime": "1 min",
+    "slashMenuOpen": false,
+    "slashQuery": "",
+    "linkModalOpen": false,
+    "linkUrl": "https://",
+    "isBold": false,
+    "isItalic": false,
+    "isUnderline": false,
+    "saveStatus": "All changes saved"
+  }'>
+
+    <!-- Editor Outer Shell -->
+    <div class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+      
+      <!-- Top Action Toolbar -->
+      <div class="border-b border-border bg-muted/30 px-3 py-2 flex flex-wrap items-center justify-between gap-2 select-none">
+        
+        <!-- Formatting Button Groups -->
+        <div class="flex flex-wrap items-center gap-1">
+          <!-- History -->
+          <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
+            <button type="button" onclick="document.execCommand('undo')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Undo (Ctrl+Z)">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+            </button>
+            <button type="button" onclick="document.execCommand('redo')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors" title="Redo (Ctrl+Y)">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+            </button>
+          </div>
+
+          <!-- Headings Dropdown / Buttons -->
+          <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
+            <button type="button" onclick="formatBlock('h1')" class="px-2 py-1 rounded-md text-xs font-bold hover:bg-muted text-muted-foreground hover:text-foreground" title="Heading 1">H1</button>
+            <button type="button" onclick="formatBlock('h2')" class="px-2 py-1 rounded-md text-xs font-bold hover:bg-muted text-muted-foreground hover:text-foreground" title="Heading 2">H2</button>
+            <button type="button" onclick="formatBlock('h3')" class="px-2 py-1 rounded-md text-xs font-bold hover:bg-muted text-muted-foreground hover:text-foreground" title="Heading 3">H3</button>
+            <button type="button" onclick="formatBlock('p')" class="px-2 py-1 rounded-md text-xs font-medium hover:bg-muted text-muted-foreground hover:text-foreground" title="Paragraph">¶</button>
+          </div>
+
+          <!-- Inline Styles -->
+          <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
+            <button type="button" onclick="execStyle('bold')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground font-bold text-sm w-7 h-7 flex items-center justify-center" title="Bold (Ctrl+B)">
+              <strong>B</strong>
+            </button>
+            <button type="button" onclick="execStyle('italic')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground italic text-sm w-7 h-7 flex items-center justify-center" title="Italic (Ctrl+I)">
+              <em>I</em>
+            </button>
+            <button type="button" onclick="execStyle('underline')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground underline text-sm w-7 h-7 flex items-center justify-center" title="Underline (Ctrl+U)">
+              <u>U</u>
+            </button>
+            <button type="button" onclick="execStyle('strikeThrough')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground line-through text-sm w-7 h-7 flex items-center justify-center" title="Strikethrough">
+              S
+            </button>
+            <button type="button" onclick="insertCodeInline()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground font-mono text-xs w-7 h-7 flex items-center justify-center" title="Inline Code">
+              &lt;&gt;
+            </button>
+          </div>
+
+          <!-- Lists & Quotes -->
+          <div class="flex items-center border-r border-border/80 pr-1 mr-1 gap-0.5">
+            <button type="button" onclick="execStyle('insertUnorderedList')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Bullet List">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor"/><circle cx="4" cy="12" r="1.5" fill="currentColor"/><circle cx="4" cy="18" r="1.5" fill="currentColor"/></svg>
+            </button>
+            <button type="button" onclick="execStyle('insertOrderedList')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Numbered List">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h2v4"/><path d="M4 10h4"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+            </button>
+            <button type="button" onclick="insertBlockquote()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Quote Block">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2 0 4-1 6-3 6m12 0c3 0 7-1 7-8V5c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v6c0 1.1.9 2 2 2 0 4-1 6-3 6"/></svg>
+            </button>
+          </div>
+
+          <!-- Inserts (Callout, Code Block, Table, Link, HR) -->
+          <div class="flex items-center gap-0.5">
+            <button type="button" onclick="insertCallout('tip')" class="px-2 py-1 rounded-md text-xs font-medium hover:bg-muted text-emerald-500 hover:text-emerald-400 flex items-center gap-1" title="Insert Tip Callout">
+              💡 Callout
+            </button>
+            <button type="button" onclick="insertCodeBlock()" class="px-2 py-1 rounded-md text-xs font-mono hover:bg-muted text-blue-500 hover:text-blue-400" title="Code Block">
+              { } Code
+            </button>
+            <button type="button" onclick="insertDivider()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Horizontal Rule">
+              ―
+            </button>
+            <button type="button" onclick="promptLink()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Insert Link">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </button>
+            <button type="button" onclick="document.execCommand('removeFormat')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-destructive" title="Clear Formatting">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- View Mode Switcher (Visual vs Markdown vs HTML) -->
+        <div class="flex items-center gap-1 p-0.5 rounded-lg bg-background border border-border text-xs font-medium">
+          <button type="button" class="px-2.5 py-1 rounded-md transition-all"
+                  hx-class="viewMode === 'visual' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                  hx-action="switchView('visual')">
+            Visual
+          </button>
+          <button type="button" class="px-2.5 py-1 rounded-md transition-all"
+                  hx-class="viewMode === 'markdown' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                  hx-action="switchView('markdown')">
+            Markdown
+          </button>
+          <button type="button" class="px-2.5 py-1 rounded-md transition-all"
+                  hx-class="viewMode === 'html' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
+                  hx-action="switchView('html')">
+            HTML
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Editor Content Area -->
+      <div class="relative min-h-[320px] bg-background p-6">
+        
+        <!-- 1. Visual WYSIWYG Editable Surface -->
+        <div id="hypertext-canvas"
+             contenteditable="true"
+             hx-show="viewMode === 'visual'"
+             oninput="onEditorInput(this)"
+             onkeydown="onEditorKeydown(event, this)"
+             class="outline-none min-h-[280px] max-w-none text-foreground text-sm sm:text-base leading-relaxed space-y-4 focus:outline-none">
+          <h1>Welcome to Hypertext Editor</h1>
+          <p>
+            Hypertext Editor is an ultra-lean, <strong>hypermedia-driven rich text suite</strong> designed for modern web applications. It replaces heavy WYSIWYG packages with zero external dependencies.
+          </p>
+          <div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-400 text-sm">
+            💡 <strong>ProTip:</strong> Type <kbd class="px-1.5 py-0.5 rounded bg-black/40 text-xs font-mono border border-emerald-500/40">/</kbd> on any empty line to trigger the slash command launcher!
+          </div>
+          <h2>Designed for Fullstack Developers</h2>
+          <p>
+            Everything you type synchronizes instantly into hidden form fields and updates telemetry in real-time.
+          </p>
+          <ul>
+            <li>Zero React, zero ProseMirror, zero bloat</li>
+            <li>Sub-millisecond signal updates via <code>htmx-bolt</code></li>
+            <li>Native 1:1 Go DSL for server-side HTML rendering</li>
+          </ul>
+        </div>
+
+        <!-- 2. Markdown Raw Source View -->
+        <textarea id="hypertext-markdown"
+                  hx-show="viewMode === 'markdown'"
+                  oninput="onMarkdownInput(this)"
+                  class="w-full min-h-[280px] bg-transparent font-mono text-xs sm:text-sm text-slate-200 border-none outline-none resize-none focus:outline-none leading-relaxed"
+                  placeholder="Type Markdown content here..."></textarea>
+
+        <!-- 3. HTML Raw Source View -->
+        <textarea id="hypertext-html"
+                  hx-show="viewMode === 'html'"
+                  oninput="onHtmlInput(this)"
+                  class="w-full min-h-[280px] bg-transparent font-mono text-xs sm:text-sm text-blue-300 border-none outline-none resize-none focus:outline-none leading-relaxed"
+                  placeholder="Type HTML source here..."></textarea>
+
+        <!-- Slash Command Menu Popup -->
+        <div id="slash-menu"
+             hx-show="slashMenuOpen"
+             class="absolute z-50 w-64 rounded-xl border border-border bg-card shadow-2xl p-1.5 space-y-1 text-xs"
+             style="display: none; top: 120px; left: 40px;">
+          <div class="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border mb-1">
+            Insert Block (Type to filter)
+          </div>
+          <button type="button" onclick="executeSlashCommand('h1')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+            <span class="w-5 h-5 rounded bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">H1</span>
+            <div><div class="font-medium text-foreground">Heading 1</div><div class="text-[10px] text-muted-foreground">Large title block</div></div>
+          </button>
+          <button type="button" onclick="executeSlashCommand('h2')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+            <span class="w-5 h-5 rounded bg-primary/10 text-primary font-bold flex items-center justify-center text-[10px]">H2</span>
+            <div><div class="font-medium text-foreground">Heading 2</div><div class="text-[10px] text-muted-foreground">Medium section header</div></div>
+          </button>
+          <button type="button" onclick="executeSlashCommand('bullet')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+            <span class="w-5 h-5 rounded bg-muted text-foreground flex items-center justify-center text-[10px]">●</span>
+            <div><div class="font-medium text-foreground">Bullet List</div><div class="text-[10px] text-muted-foreground">Simple bulleted points</div></div>
+          </button>
+          <button type="button" onclick="executeSlashCommand('callout')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+            <span class="w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">💡</span>
+            <div><div class="font-medium text-foreground">Callout Box</div><div class="text-[10px] text-muted-foreground">Highlight notice or tip</div></div>
+          </button>
+          <button type="button" onclick="executeSlashCommand('code')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+            <span class="w-5 h-5 rounded bg-blue-500/20 text-blue-400 font-mono flex items-center justify-center text-[10px]">&lt;&gt;</span>
+            <div><div class="font-medium text-foreground">Code Block</div><div class="text-[10px] text-muted-foreground">Syntax formatted snippet</div></div>
+          </button>
+          <button type="button" onclick="executeSlashCommand('divider')" class="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-accent text-left transition-colors">
+            <span class="w-5 h-5 rounded bg-muted text-muted-foreground flex items-center justify-center text-[10px]">―</span>
+            <div><div class="font-medium text-foreground">Divider</div><div class="text-[10px] text-muted-foreground">Visual section separator</div></div>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Bottom Telemetry & Status Footer -->
+      <div class="border-t border-border bg-muted/20 px-4 py-2 flex flex-wrap items-center justify-between text-xs text-muted-foreground font-mono">
+        <div class="flex items-center gap-4">
+          <span>Words: <strong class="text-foreground" hx-text="wordCount">142</strong></span>
+          <span>Chars: <strong class="text-foreground" hx-text="charCount">890</strong></span>
+          <span>Read time: <strong class="text-foreground" hx-text="readingTime">1 min</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+          <span hx-text="saveStatus">All changes saved</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Hidden form input for seamless HTMX form synchronization -->
+    <input type="hidden" name="content_html" id="hypertext-hidden-input">
+
+  </div>
+
+  <!-- Client Integration Scripts -->
+  <script>
+    function formatBlock(tag) {
+      document.execCommand('formatBlock', false, tag);
+      syncEditorState();
+    }
+
+    function execStyle(cmd) {
+      document.execCommand(cmd, false, null);
+      syncEditorState();
+    }
+
+    function insertCodeInline() {
+      const selection = window.getSelection();
+      if (!selection.rangeCount) return;
+      const text = selection.toString() || 'code';
+      document.execCommand('insertHTML', false, `<code>${text}</code>`);
+      syncEditorState();
+    }
+
+    function insertBlockquote() {
+      document.execCommand('formatBlock', false, 'blockquote');
+      syncEditorState();
+    }
+
+    function insertDivider() {
+      document.execCommand('insertHorizontalRule', false, null);
+      syncEditorState();
+    }
+
+    function insertCallout(type) {
+      const html = `<div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-400 text-sm">💡 <strong>Callout:</strong> Write your highlighted note here...</div><p><br></p>`;
+      document.execCommand('insertHTML', false, html);
+      syncEditorState();
+    }
+
+    function insertCodeBlock() {
+      const html = `<pre class="my-4 rounded-xl bg-slate-900 border border-slate-800 p-4 font-mono text-xs text-slate-200 overflow-x-auto"><code>// Enter your code here\nconsole.log("Hello from Hypertext Editor!");</code></pre><p><br></p>`;
+      document.execCommand('insertHTML', false, html);
+      syncEditorState();
+    }
+
+    function promptLink() {
+      const url = prompt('Enter link URL:', 'https://');
+      if (url) {
+        document.execCommand('createLink', false, url);
+        syncEditorState();
+      }
+    }
+
+    function onEditorInput(el) {
+      syncEditorState();
+    }
+
+    function onEditorKeydown(e, el) {
+      const slashMenu = document.getElementById('slash-menu');
+      if (e.key === '/') {
+        const state = HxBolt.getState(document.body);
+        if (state) state.slashMenuOpen = true;
+        slashMenu.style.display = 'block';
+      } else if (e.key === 'Escape') {
+        const state = HxBolt.getState(document.body);
+        if (state) state.slashMenuOpen = false;
+        slashMenu.style.display = 'none';
+      }
+    }
+
+    function executeSlashCommand(cmd) {
+      const slashMenu = document.getElementById('slash-menu');
+      slashMenu.style.display = 'none';
+      const state = HxBolt.getState(document.body);
+      if (state) state.slashMenuOpen = false;
+
+      // Clean the slash character
+      document.execCommand('delete', false, null);
+
+      if (cmd === 'h1') formatBlock('h1');
+      else if (cmd === 'h2') formatBlock('h2');
+      else if (cmd === 'bullet') execStyle('insertUnorderedList');
+      else if (cmd === 'callout') insertCallout('tip');
+      else if (cmd === 'code') insertCodeBlock();
+      else if (cmd === 'divider') insertDivider();
+    }
+
+    function syncEditorState() {
+      const canvas = document.getElementById('hypertext-canvas');
+      if (!canvas) return;
+      const html = canvas.innerHTML;
+      const text = canvas.innerText.trim();
+      
+      const hiddenInput = document.getElementById('hypertext-hidden-input');
+      if (hiddenInput) hiddenInput.value = html;
+
+      const words = text.length > 0 ? text.split(/\s+/).length : 0;
+      const chars = text.length;
+      const readMin = Math.max(1, Math.ceil(words / 200));
+
+      const state = HxBolt.getState(document.body);
+      if (state) {
+        state.wordCount = words;
+        state.charCount = chars;
+        state.readingTime = `${readMin} min`;
+        state.saveStatus = 'Draft updated';
+      }
+    }
+
+    function switchView(mode) {
+      const canvas = document.getElementById('hypertext-canvas');
+      const mdArea = document.getElementById('hypertext-markdown');
+      const htmlArea = document.getElementById('hypertext-html');
+
+      if (mode === 'markdown') {
+        // Simple HTML to markdown heuristic
+        let md = canvas.innerHTML
+          .replace(/<h1>(.*?)<\/h1>/gi, '# $1\n\n')
+          .replace(/<h2>(.*?)<\/h2>/gi, '## $1\n\n')
+          .replace(/<h3>(.*?)<\/h3>/gi, '### $1\n\n')
+          .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+          .replace(/<em>(.*?)<\/em>/gi, '*$1*')
+          .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+          .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
+          .replace(/<br\s*[\/]?>/gi, '\n');
+        mdArea.value = md.trim();
+      } else if (mode === 'html') {
+        htmlArea.value = canvas.innerHTML;
+      } else if (mode === 'visual') {
+        if (mdArea.value && mdArea.offsetParent !== null) {
+          // Parse basic markdown back
+          canvas.innerHTML = mdArea.value
+            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+            .replace(/\n\n/gim, '<p></p>');
+        } else if (htmlArea.value && htmlArea.offsetParent !== null) {
+          canvas.innerHTML = htmlArea.value;
+        }
+      }
+
+      const state = HxBolt.getState(document.body);
+      if (state) state.viewMode = mode;
+      syncEditorState();
+    }
+  </script>
+
+  <!-- Usage & HTMX Integration Section -->
+  <div class="space-y-6 pt-6 border-t border-border">
+    <h2 class="text-xl font-bold tracking-tight">HTMX Form Integration</h2>
+    <p class="text-sm text-muted-foreground leading-relaxed">
+      Hypertext Editor connects directly to standard HTMX forms. It updates a hidden <code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">content_html</code> payload on every change.
+    </p>
+
+    <div class="code-block"><code><pre>&lt;!-- HTMX Form Submission --&gt;
+&lt;form hx-post="/api/posts/create" hx-target="#post-feedback" class="space-y-4"&gt;
+  &lt;input type="text" name="title" placeholder="Post Title..." class="w-full px-4 py-2 border rounded-lg"&gt;
+  
+  &lt;!-- Drop-in Hypertext Editor --&gt;
+  &lt;div hx-ext="reactive" ...&gt;
+    &lt;!-- Editor content container --&gt;
+    &lt;input type="hidden" name="content_html" id="hypertext-hidden-input"&gt;
+  &lt;/div&gt;
+
+  &lt;button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground font-semibold"&gt;
+    Publish Article →
+  &lt;/button&gt;
+&lt;/form&gt;</pre></code></div>
+  </div>
+
+  <!-- Go DSL Usage Section -->
+  <div class="space-y-4 pt-6 border-t border-border">
+    <h2 class="text-xl font-bold tracking-tight">Go DSL Usage</h2>
+    <div class="code-block"><code><pre>import "github.com/hyperlibs/htmxui/go/components"
+
+// Server-rendered Hypertext Editor with placeholder and initial body
+editor := components.HypertextEditor(components.HypertextEditorProps{
+    Name:        "article_body",
+    Placeholder: "Write your story...",
+    InitialHTML: "&lt;h1&gt;My Journey&lt;/h1&gt;&lt;p&gt;Start writing here...&lt;/p&gt;",
+    MinHeight:   "350px",
+})</pre></code></div>
+  </div>
+</div>

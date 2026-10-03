@@ -99,6 +99,9 @@
             <button type="button" onclick="promptLink()" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground" title="Insert Link">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
             </button>
+            <button type="button" onclick="autoFixTypography()" class="px-2 py-1 rounded-md text-xs font-semibold hover:bg-muted text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 flex items-center gap-1.5 transition-colors border border-emerald-500/20 bg-emerald-500/10" title="Auto-Format: Clean unwanted spacing, code formatting, smart typography & punctuation">
+              <span>✅</span> <span>Auto-Fix</span>
+            </button>
             <button type="button" onclick="document.execCommand('removeFormat')" class="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-destructive" title="Clear Formatting">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
@@ -130,21 +133,21 @@
 
       </div>
 
-      <!-- Editor Content Area -->
-      <div class="relative min-h-[320px] bg-background p-6">
+      <!-- Editor Full-Surface Content Area (100% Editable in all modes) -->
+      <div class="relative min-h-[340px] bg-background p-6">
         
         <!-- 1. Visual WYSIWYG Editable Surface -->
         <div id="hypertext-canvas"
              contenteditable="true"
              oninput="onEditorInput(this)"
              onkeydown="onEditorKeydown(event, this)"
-             class="outline-none min-h-[280px] max-w-none text-foreground text-sm sm:text-base leading-relaxed space-y-4 focus:outline-none block">
+             class="outline-none min-h-[300px] max-w-none text-foreground text-sm sm:text-base leading-relaxed space-y-4 focus:outline-none block">
           <h1>Welcome to Hypertext Editor</h1>
           <p>
             Hypertext Editor is an ultra-lean, <strong>hypermedia-driven rich text suite</strong> designed for modern web applications. It replaces heavy WYSIWYG packages with zero external dependencies.
           </p>
-          <div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-400 text-sm">
-            💡 <strong>ProTip:</strong> Type <kbd class="px-1.5 py-0.5 rounded bg-black/40 text-xs font-mono border border-emerald-500/40">/</kbd> on any empty line to trigger the slash command launcher!
+          <div class="my-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-500 dark:text-emerald-400 text-sm">
+            💡 <strong>ProTip:</strong> Type <kbd class="px-1.5 py-0.5 rounded bg-muted text-xs font-mono border border-border">/</kbd> on any empty line to trigger the slash command launcher!
           </div>
           <h2>Designed for Fullstack Developers</h2>
           <p>
@@ -157,45 +160,19 @@
           </ul>
         </div>
 
-        <!-- 2. Markdown Rich Syntax View -->
-        <div id="hypertext-markdown-container" style="display: none;" class="space-y-2">
-          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-muted/40 border border-border text-xs text-muted-foreground font-mono">
-            <span class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-primary"></span>
-              <span class="font-semibold text-foreground">Markdown Live Syntax Highlighter</span>
-            </span>
-            <button type="button" onclick="copyMarkdownSource()" class="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">Copy MD</button>
-          </div>
-          <div class="relative min-h-[280px] rounded-xl bg-card border border-border p-4 font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
-            <!-- Syntax highlighted display -->
-            <div id="hypertext-markdown-highlighted" class="space-y-1.5 whitespace-pre-wrap leading-relaxed"></div>
-            <!-- Raw editable textarea -->
-            <textarea id="hypertext-markdown"
-                      oninput="onMarkdownInput(this)"
-                      class="w-full mt-4 min-h-[140px] bg-muted/30 rounded-lg p-3 font-mono text-xs sm:text-sm text-foreground border border-input outline-none resize-y focus:border-ring focus:ring-1 focus:ring-ring leading-relaxed"
-                      placeholder="Type Markdown content here..."></textarea>
-          </div>
-        </div>
+        <!-- 2. Markdown Full-Surface Editable Area -->
+        <textarea id="hypertext-markdown"
+                  style="display: none;"
+                  oninput="onMarkdownInput(this)"
+                  class="w-full min-h-[300px] bg-transparent font-mono text-sm text-foreground border-none outline-none resize-y focus:outline-none leading-relaxed"
+                  placeholder="Type Markdown content here..."></textarea>
 
-        <!-- 3. HTML Rich Syntax View -->
-        <div id="hypertext-html-container" style="display: none;" class="space-y-2">
-          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-muted/40 border border-border text-xs text-muted-foreground font-mono">
-            <span class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-primary"></span>
-              <span class="font-semibold text-foreground">HTML Structured Syntax Inspector</span>
-            </span>
-            <button type="button" onclick="copyHtmlSource()" class="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">Copy HTML</button>
-          </div>
-          <div class="relative min-h-[280px] rounded-xl bg-card border border-border p-4 font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
-            <!-- Color-coded HTML syntax tree -->
-            <div id="hypertext-html-highlighted" class="space-y-1.5 whitespace-pre-wrap leading-relaxed"></div>
-            <!-- Raw editable HTML textarea -->
-            <textarea id="hypertext-html"
-                      oninput="onHtmlInput(this)"
-                      class="w-full mt-4 min-h-[140px] bg-muted/30 rounded-lg p-3 font-mono text-xs sm:text-sm text-foreground border border-input outline-none resize-y focus:border-ring focus:ring-1 focus:ring-ring leading-relaxed"
-                      placeholder="Type HTML source here..."></textarea>
-          </div>
-        </div>
+        <!-- 3. HTML Full-Surface Editable Area -->
+        <textarea id="hypertext-html"
+                  style="display: none;"
+                  oninput="onHtmlInput(this)"
+                  class="w-full min-h-[300px] bg-transparent font-mono text-sm text-foreground border-none outline-none resize-y focus:outline-none leading-relaxed"
+                  placeholder="Type HTML source here..."></textarea>
 
         <!-- Slash Command Menu Popup -->
         <div id="slash-menu"
@@ -359,91 +336,78 @@
       }
     }
 
-    function escapeHtmlString(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-    }
+    function autoFixTypography() {
+      const canvas = document.getElementById('hypertext-canvas');
+      const mdArea = document.getElementById('hypertext-markdown');
+      const htmlArea = document.getElementById('hypertext-html');
 
-    function renderMarkdownSyntax(rawMd) {
-      const target = document.getElementById('hypertext-markdown-highlighted');
-      if (!target) return;
-      
-      const lines = rawMd.split('\n');
-      const formattedLines = lines.map(line => {
-        let esc = escapeHtmlString(line);
-        if (esc.startsWith('# ')) {
-          return `<div class="text-primary font-extrabold text-base border-b border-border/40 pb-1 mt-2 mb-1">${esc}</div>`;
-        } else if (esc.startsWith('## ')) {
-          return `<div class="text-primary/95 font-bold text-sm border-b border-border/30 pb-0.5 mt-2 mb-1">${esc}</div>`;
-        } else if (esc.startsWith('### ')) {
-          return `<div class="text-primary/90 font-semibold text-xs mt-1.5 mb-0.5">${esc}</div>`;
-        } else if (esc.startsWith('&gt; ') || esc.startsWith('&gt; 💡')) {
-          return `<div class="rounded-lg bg-accent/60 border-l-4 border-primary px-3 py-1.5 my-1.5 text-foreground font-sans text-xs">${esc}</div>`;
-        } else if (esc.startsWith('- ') || esc.startsWith('* ')) {
-          return `<div class="flex items-start gap-2 text-foreground"><span class="text-primary font-bold">•</span><span>${esc.slice(2)}</span></div>`;
-        }
+      // Helper to clean and fix typography on text / html strings
+      const fixString = (str) => {
+        let res = str;
+        // 1. Remove trailing spaces on lines
+        res = res.replace(/[ \t]+$/gm, '');
+        // 2. Fix multiple inline spaces
+        res = res.replace(/([^\s>])\s{2,}([^\s<])/g, '$1 $2');
+        // 3. Smart typography: Em-dashes (-- to —)
+        res = res.replace(/(\w)--(\w)/g, '$1—$2');
+        res = res.replace(/\s--\s/g, ' — ');
+        // 4. Smart ellipsis (... to …)
+        res = res.replace(/\.{3}/g, '…');
+        // 5. Grammar & punctuation fixes: remove space before punctuation
+        res = res.replace(/\s+([,\.!\?;:])/g, '$1');
+        // 6. Parentheses spacing
+        res = res.replace(/\(\s+/g, '(').replace(/\s+\)/g, ')');
+        return res;
+      };
 
-        // Inline formatting
-        esc = esc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-bold underline decoration-primary/40">**$1**</strong>');
-        esc = esc.replace(/\*(.*?)\*/g, '<em class="text-foreground/90 italic">*$1*</em>');
-        esc = esc.replace(/`([^`]+)`/g, '<code class="text-primary bg-muted px-1.5 py-0.5 rounded border border-border font-mono text-xs font-semibold">`$1`</code>');
-        esc = esc.replace(/\[(.*?)\]\((.*?)\)/g, '<span class="text-primary underline font-medium">[$1]</span><span class="text-muted-foreground text-[11px]">($2)</span>');
-        
-        return `<div class="text-foreground min-h-[1.25rem]">${esc || '&nbsp;'}</div>`;
-      });
+      if (mdArea && mdArea.style.display !== 'none') {
+        // Markdown Mode Auto-Fix
+        let val = mdArea.value;
+        val = fixString(val);
+        // Clean redundant blank lines (max 2)
+        val = val.replace(/\n{3,}/g, '\n\n');
+        mdArea.value = val;
+      } else if (htmlArea && htmlArea.style.display !== 'none') {
+        // HTML Mode Auto-Fix
+        let val = htmlArea.value;
+        val = fixString(val);
+        // Clean redundant empty paragraphs
+        val = val.replace(/(<p>\s*(<br\s*[\/]?>|&nbsp;|\s*)*<\/p>\s*){2,}/gi, '<p><br></p>\n');
+        htmlArea.value = val;
+      } else if (canvas) {
+        // Visual Mode Auto-Fix
+        let html = canvas.innerHTML;
+        html = fixString(html);
+        // Clean redundant empty paragraphs
+        html = html.replace(/(<p>\s*(<br\s*[\/]?>|&nbsp;|\s*)*<\/p>\s*){2,}/gi, '<p><br></p>');
+        // Clean multiple br tags
+        html = html.replace(/(<br\s*[\/]?>\s*){3,}/gi, '<br><br>');
+        canvas.innerHTML = html;
+      }
 
-      target.innerHTML = formattedLines.join('');
-    }
+      syncEditorState();
 
-    function renderHtmlSyntax(rawHtml) {
-      const target = document.getElementById('hypertext-html-highlighted');
-      if (!target) return;
-
-      // Colorize HTML tags, attributes, strings, comments in theme tokens
-      let esc = escapeHtmlString(rawHtml);
-      
-      // Comments
-      esc = esc.replace(/(&lt;!--.*?--&gt;)/gs, '<span class="text-muted-foreground/60 italic">$1</span>');
-      // Opening & Closing tags with attributes
-      esc = esc.replace(/(&lt;\/?)([a-zA-Z0-9\-]+)(.*?)(&gt;)/gs, (match, open, tag, attrs, close) => {
-        let coloredAttrs = attrs.replace(/([a-zA-Z0-9\-:]+)=(&quot;.*?&quot;|&#39;.*?&#39;|[^\s&gt;]+)/g, (m, attrName, attrVal) => {
-          return ` <span class="text-foreground/80 font-medium">${attrName}</span>=<span class="text-primary font-semibold">${attrVal}</span>`;
-        });
-        return `<span class="text-muted-foreground font-bold">${open}</span><span class="text-primary font-bold">${tag}</span>${coloredAttrs}<span class="text-muted-foreground font-bold">${close}</span>`;
-      });
-
-      target.innerHTML = `<div class="text-foreground space-y-1">${esc}</div>`;
+      const state = HxBolt.getState(document.body);
+      if (state) {
+        state.saveStatus = '✨ Typography & formatting auto-fixed!';
+        setTimeout(() => {
+          if (state.saveStatus.includes('auto-fixed')) {
+            state.saveStatus = 'All changes saved';
+          }
+        }, 3000);
+      }
     }
 
     function onMarkdownInput(el) {
-      renderMarkdownSyntax(el.value);
       syncEditorState();
     }
 
     function onHtmlInput(el) {
-      renderHtmlSyntax(el.value);
       syncEditorState();
-    }
-
-    function copyMarkdownSource() {
-      const mdArea = document.getElementById('hypertext-markdown');
-      if (mdArea) {
-        navigator.clipboard.writeText(mdArea.value);
-        alert('Markdown source copied to clipboard!');
-      }
-    }
-
-    function copyHtmlSource() {
-      const htmlArea = document.getElementById('hypertext-html');
-      if (htmlArea) {
-        navigator.clipboard.writeText(htmlArea.value);
-        alert('HTML source copied to clipboard!');
-      }
     }
 
     function switchEditorView(mode) {
       const canvas = document.getElementById('hypertext-canvas');
-      const mdContainer = document.getElementById('hypertext-markdown-container');
-      const htmlContainer = document.getElementById('hypertext-html-container');
       const mdArea = document.getElementById('hypertext-markdown');
       const htmlArea = document.getElementById('hypertext-html');
 
@@ -451,58 +415,67 @@
       const btnMd = document.getElementById('tab-btn-markdown');
       const btnHtml = document.getElementById('tab-btn-html');
 
-      // 1. If switching FROM markdown/HTML, sync back to canvas first
-      if (mdContainer.style.display !== 'none' && mdArea.value) {
-        let convertedHtml = mdArea.value
+      // 1. If currently in Markdown, compile to HTML and update canvas
+      if (mdArea && mdArea.style.display !== 'none' && mdArea.value !== undefined) {
+        let converted = mdArea.value
           .replace(/^### (.*$)/gim, '<h3>$1</h3>')
           .replace(/^## (.*$)/gim, '<h2>$1</h2>')
           .replace(/^# (.*$)/gim, '<h1>$1</h1>')
           .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
           .replace(/\*(.*?)\*/gim, '<em>$1</em>')
           .replace(/`([^`]+)`/gim, '<code>$1</code>')
+          .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
           .replace(/\n\n/gim, '</p><p>')
           .replace(/\n/gim, '<br>');
-        canvas.innerHTML = `<p>${convertedHtml}</p>`;
-      } else if (htmlContainer.style.display !== 'none' && htmlArea.value) {
+        canvas.innerHTML = `<p>${converted}</p>`;
+      } 
+      // 2. If currently in HTML, update canvas directly
+      else if (htmlArea && htmlArea.style.display !== 'none' && htmlArea.value !== undefined) {
         canvas.innerHTML = htmlArea.value;
       }
 
-      // 2. Prepare target view
+      // 3. Switch to target mode
       if (mode === 'markdown') {
         let md = canvas.innerHTML
           .replace(/<h1>(.*?)<\/h1>/gi, '# $1\n\n')
           .replace(/<h2>(.*?)<\/h2>/gi, '## $1\n\n')
           .replace(/<h3>(.*?)<\/h3>/gi, '### $1\n\n')
           .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
+          .replace(/<b>(.*?)<\/b>/gi, '**$1**')
           .replace(/<em>(.*?)<\/em>/gi, '*$1*')
+          .replace(/<i>(.*?)<\/i>/gi, '*$1*')
           .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+          .replace(/<blockquote>(.*?)<\/blockquote>/gi, '> $1\n\n')
+          .replace(/<li>(.*?)<\/li>/gi, '- $1\n')
           .replace(/<div class="[^"]*rounded-xl[^"]*bg-emerald-500\/10[^"]*">.*?💡 <strong>(.*?)<\/strong>(.*?)<\/div>/gis, '> 💡 **$1**$2\n\n')
           .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
-          .replace(/<br\s*[\/]?>/gi, '\n');
+          .replace(/<br\s*[\/]?>/gi, '\n')
+          .replace(/<[^>]+>/g, ''); // strip any remaining tags
         
-        md = md.trim();
+        md = md.replace(/\n{3,}/g, '\n\n').trim();
         mdArea.value = md;
-        renderMarkdownSyntax(md);
 
         canvas.style.display = 'none';
-        htmlContainer.style.display = 'none';
-        mdContainer.style.display = 'block';
+        htmlArea.style.display = 'none';
+        mdArea.style.display = 'block';
+        mdArea.focus();
       } else if (mode === 'html') {
-        const rawHtml = canvas.innerHTML;
+        const rawHtml = canvas.innerHTML.trim();
         htmlArea.value = rawHtml;
-        renderHtmlSyntax(rawHtml);
 
         canvas.style.display = 'none';
-        mdContainer.style.display = 'none';
-        htmlContainer.style.display = 'block';
+        mdArea.style.display = 'none';
+        htmlArea.style.display = 'block';
+        htmlArea.focus();
       } else {
         // Visual mode
-        mdContainer.style.display = 'none';
-        htmlContainer.style.display = 'none';
+        mdArea.style.display = 'none';
+        htmlArea.style.display = 'none';
         canvas.style.display = 'block';
+        canvas.focus();
       }
 
-      // 3. Update tab button active styles
+      // 4. Update tab button active styles
       const activeClass = 'bg-primary text-primary-foreground shadow-sm';
       const inactiveClass = 'text-muted-foreground hover:text-foreground';
       [btnVisual, btnMd, btnHtml].forEach(btn => {

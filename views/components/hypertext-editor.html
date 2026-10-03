@@ -107,20 +107,23 @@
         </div>
 
         <!-- View Mode Switcher (Visual vs Markdown vs HTML) -->
-        <div class="flex items-center gap-1 p-0.5 rounded-lg bg-background border border-border text-xs font-medium">
-          <button type="button" class="px-2.5 py-1 rounded-md transition-all"
-                  hx-class="viewMode === 'visual' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
-                  hx-action="switchView('visual')">
+        <div class="flex items-center gap-1 p-0.5 rounded-lg bg-background border border-border text-xs font-medium" id="editor-view-tabs">
+          <button type="button" 
+                  id="tab-btn-visual"
+                  class="px-2.5 py-1 rounded-md transition-all bg-primary text-primary-foreground shadow-sm"
+                  onclick="switchEditorView('visual')">
             Visual
           </button>
-          <button type="button" class="px-2.5 py-1 rounded-md transition-all"
-                  hx-class="viewMode === 'markdown' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
-                  hx-action="switchView('markdown')">
+          <button type="button" 
+                  id="tab-btn-markdown"
+                  class="px-2.5 py-1 rounded-md transition-all text-muted-foreground hover:text-foreground"
+                  onclick="switchEditorView('markdown')">
             Markdown
           </button>
-          <button type="button" class="px-2.5 py-1 rounded-md transition-all"
-                  hx-class="viewMode === 'html' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'"
-                  hx-action="switchView('html')">
+          <button type="button" 
+                  id="tab-btn-html"
+                  class="px-2.5 py-1 rounded-md transition-all text-muted-foreground hover:text-foreground"
+                  onclick="switchEditorView('html')">
             HTML
           </button>
         </div>
@@ -133,10 +136,9 @@
         <!-- 1. Visual WYSIWYG Editable Surface -->
         <div id="hypertext-canvas"
              contenteditable="true"
-             hx-show="viewMode === 'visual'"
              oninput="onEditorInput(this)"
              onkeydown="onEditorKeydown(event, this)"
-             class="outline-none min-h-[280px] max-w-none text-foreground text-sm sm:text-base leading-relaxed space-y-4 focus:outline-none">
+             class="outline-none min-h-[280px] max-w-none text-foreground text-sm sm:text-base leading-relaxed space-y-4 focus:outline-none block">
           <h1>Welcome to Hypertext Editor</h1>
           <p>
             Hypertext Editor is an ultra-lean, <strong>hypermedia-driven rich text suite</strong> designed for modern web applications. It replaces heavy WYSIWYG packages with zero external dependencies.
@@ -157,14 +159,14 @@
 
         <!-- 2. Markdown Raw Source View -->
         <textarea id="hypertext-markdown"
-                  hx-show="viewMode === 'markdown'"
+                  style="display: none;"
                   oninput="onMarkdownInput(this)"
                   class="w-full min-h-[280px] bg-transparent font-mono text-xs sm:text-sm text-slate-200 border-none outline-none resize-none focus:outline-none leading-relaxed"
                   placeholder="Type Markdown content here..."></textarea>
 
         <!-- 3. HTML Raw Source View -->
         <textarea id="hypertext-html"
-                  hx-show="viewMode === 'html'"
+                  style="display: none;"
                   oninput="onHtmlInput(this)"
                   class="w-full min-h-[280px] bg-transparent font-mono text-xs sm:text-sm text-blue-300 border-none outline-none resize-none focus:outline-none leading-relaxed"
                   placeholder="Type HTML source here..."></textarea>
@@ -331,13 +333,41 @@
       }
     }
 
-    function switchView(mode) {
+    function onMarkdownInput(el) {
+      syncEditorState();
+    }
+
+    function onHtmlInput(el) {
+      syncEditorState();
+    }
+
+    function switchEditorView(mode) {
       const canvas = document.getElementById('hypertext-canvas');
       const mdArea = document.getElementById('hypertext-markdown');
       const htmlArea = document.getElementById('hypertext-html');
 
+      const btnVisual = document.getElementById('tab-btn-visual');
+      const btnMd = document.getElementById('tab-btn-markdown');
+      const btnHtml = document.getElementById('tab-btn-html');
+
+      // 1. If switching FROM markdown/HTML, sync back to canvas first
+      if (mdArea.style.display !== 'none' && mdArea.value) {
+        let convertedHtml = mdArea.value
+          .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+          .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+          .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+          .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+          .replace(/`([^`]+)`/gim, '<code>$1</code>')
+          .replace(/\n\n/gim, '</p><p>')
+          .replace(/\n/gim, '<br>');
+        canvas.innerHTML = `<p>${convertedHtml}</p>`;
+      } else if (htmlArea.style.display !== 'none' && htmlArea.value) {
+        canvas.innerHTML = htmlArea.value;
+      }
+
+      // 2. Prepare target view
       if (mode === 'markdown') {
-        // Simple HTML to markdown heuristic
         let md = canvas.innerHTML
           .replace(/<h1>(.*?)<\/h1>/gi, '# $1\n\n')
           .replace(/<h2>(.*?)<\/h2>/gi, '## $1\n\n')
@@ -345,27 +375,35 @@
           .replace(/<strong>(.*?)<\/strong>/gi, '**$1**')
           .replace(/<em>(.*?)<\/em>/gi, '*$1*')
           .replace(/<code>(.*?)<\/code>/gi, '`$1`')
+          .replace(/<div class="[^"]*rounded-xl[^"]*bg-emerald-500\/10[^"]*">.*?💡 <strong>(.*?)<\/strong>(.*?)<\/div>/gis, '> 💡 **$1**$2\n\n')
           .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
           .replace(/<br\s*[\/]?>/gi, '\n');
         mdArea.value = md.trim();
+        canvas.style.display = 'none';
+        htmlArea.style.display = 'none';
+        mdArea.style.display = 'block';
       } else if (mode === 'html') {
         htmlArea.value = canvas.innerHTML;
-      } else if (mode === 'visual') {
-        if (mdArea.value && mdArea.offsetParent !== null) {
-          // Parse basic markdown back
-          canvas.innerHTML = mdArea.value
-            .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-            .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-            .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-            .replace(/\n\n/gim, '<p></p>');
-        } else if (htmlArea.value && htmlArea.offsetParent !== null) {
-          canvas.innerHTML = htmlArea.value;
-        }
+        canvas.style.display = 'none';
+        mdArea.style.display = 'none';
+        htmlArea.style.display = 'block';
+      } else {
+        // Visual mode
+        mdArea.style.display = 'none';
+        htmlArea.style.display = 'none';
+        canvas.style.display = 'block';
       }
 
-      const state = HxBolt.getState(document.body);
-      if (state) state.viewMode = mode;
+      // 3. Update tab button active styles
+      const activeClass = 'bg-primary text-primary-foreground shadow-sm';
+      const inactiveClass = 'text-muted-foreground hover:text-foreground';
+      [btnVisual, btnMd, btnHtml].forEach(btn => {
+        if (btn) btn.className = 'px-2.5 py-1 rounded-md transition-all ' + inactiveClass;
+      });
+      if (mode === 'visual' && btnVisual) btnVisual.className = 'px-2.5 py-1 rounded-md transition-all ' + activeClass;
+      if (mode === 'markdown' && btnMd) btnMd.className = 'px-2.5 py-1 rounded-md transition-all ' + activeClass;
+      if (mode === 'html' && btnHtml) btnHtml.className = 'px-2.5 py-1 rounded-md transition-all ' + activeClass;
+
       syncEditorState();
     }
   </script>

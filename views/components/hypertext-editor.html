@@ -464,8 +464,17 @@
       const rows = tbody.querySelectorAll('tr');
       if (rowIdx >= 0 && rowIdx < rows.length) {
         const editableTds = Array.from(rows[rowIdx].children).filter(c => c.tagName === 'TD' && c.getAttribute('contenteditable') === 'true');
-        if (colIdx >= 0 && colIdx < editableTds.length) {
-          editableTds[colIdx].focus();
+        const targetCol = Math.max(0, Math.min(editableTds.length - 1, colIdx));
+        if (editableTds[targetCol]) {
+          editableTds[targetCol].focus();
+          try {
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.selectNodeContents(editableTds[targetCol]);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          } catch (_) {}
         }
       }
     }
@@ -725,38 +734,68 @@
         return;
       }
 
-      const td = activeContextTd;
-      const tr = td.closest('tr');
-      const table = td.closest('table');
+      const cell = activeContextTd;
+      const tr = cell.closest('tr');
+      const table = cell.closest('table');
       if (!table || !tr) {
         closeContextMenu();
         return;
       }
 
+      const theadTr = table.querySelector('thead tr');
       const tbody = table.querySelector('tbody');
+      if (!theadTr || !tbody) {
+        closeContextMenu();
+        return;
+      }
+
       const allTrs = Array.from(tbody.children);
       const rowIdx = allTrs.indexOf(tr);
-      const allTds = Array.from(tr.children).filter(c => c.tagName === 'TD' && c.getAttribute('contenteditable') === 'true');
-      const colIdx = allTds.indexOf(td);
+      const cellIndex = Array.from(tr.children).indexOf(cell);
+      const totalCols = theadTr.children.length; // #, data cols..., Action
 
       if (action === 'row-above') {
-        insertRowAt(table, Math.max(0, rowIdx));
+        insertRowAt(table, rowIdx >= 0 ? rowIdx : 0);
       } else if (action === 'row-below') {
-        insertRowAt(table, rowIdx + 1);
+        insertRowAt(table, rowIdx >= 0 ? rowIdx + 1 : allTrs.length);
       } else if (action === 'col-left') {
-        insertColumnAt(table, Math.max(0, colIdx));
+        const targetCol = Math.max(0, Math.min(totalCols - 2, cellIndex > 0 ? cellIndex - 1 : 0));
+        insertColumnAt(table, targetCol);
       } else if (action === 'col-right') {
-        insertColumnAt(table, colIdx + 1);
+        const targetCol = Math.max(0, Math.min(totalCols - 2, cellIndex > 0 ? cellIndex : 1));
+        insertColumnAt(table, targetCol);
       } else if (action === 'del-row') {
-        tr.remove();
-        renumberTableRows(table);
-        syncEditorState();
+        if (allTrs.length > 1) {
+          if (rowIdx >= 0) {
+            tr.remove();
+          } else {
+            allTrs[0].remove();
+          }
+          renumberTableRows(table);
+          syncEditorState();
+        } else if (allTrs.length === 1) {
+          allTrs[0].querySelectorAll('td[contenteditable="true"]').forEach(c => c.innerText = '-');
+          syncEditorState();
+        }
       } else if (action === 'del-col') {
-        const theadTr = table.querySelector('thead tr');
-        if (theadTr && theadTr.children[colIdx + 1]) theadTr.children[colIdx + 1].remove();
+        if (totalCols <= 3) {
+          // Must keep at least 1 data column
+          closeContextMenu();
+          return;
+        }
+        let colToDelete = cellIndex;
+        if (colToDelete < 1) colToDelete = 1;
+        if (colToDelete >= totalCols - 1) colToDelete = totalCols - 2;
+
+        if (theadTr.children[colToDelete]) {
+          theadTr.children[colToDelete].remove();
+        }
         tbody.querySelectorAll('tr').forEach(r => {
-          if (r.children[colIdx + 1]) r.children[colIdx + 1].remove();
+          if (r.children[colToDelete]) {
+            r.children[colToDelete].remove();
+          }
         });
+        initTableResizers(table);
         syncEditorState();
       }
 

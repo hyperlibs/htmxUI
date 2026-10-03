@@ -159,40 +159,40 @@
 
         <!-- 2. Markdown Rich Syntax View -->
         <div id="hypertext-markdown-container" style="display: none;" class="space-y-2">
-          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono">
+          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-muted/40 border border-border text-xs text-muted-foreground font-mono">
             <span class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-              <span class="font-bold text-amber-400">Markdown Live Syntax Highlighter</span>
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <span class="font-semibold text-foreground">Markdown Live Syntax Highlighter</span>
             </span>
-            <button type="button" onclick="copyMarkdownSource()" class="text-xs text-slate-400 hover:text-white transition-colors">Copy MD</button>
+            <button type="button" onclick="copyMarkdownSource()" class="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">Copy MD</button>
           </div>
-          <div class="relative min-h-[280px] rounded-xl bg-slate-950 border border-slate-800 p-4 font-mono text-xs sm:text-sm overflow-x-auto">
+          <div class="relative min-h-[280px] rounded-xl bg-card border border-border p-4 font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
             <!-- Syntax highlighted display -->
-            <div id="hypertext-markdown-highlighted" class="space-y-1 whitespace-pre-wrap leading-relaxed"></div>
+            <div id="hypertext-markdown-highlighted" class="space-y-1.5 whitespace-pre-wrap leading-relaxed"></div>
             <!-- Raw editable textarea -->
             <textarea id="hypertext-markdown"
                       oninput="onMarkdownInput(this)"
-                      class="w-full mt-3 min-h-[140px] bg-slate-900/90 rounded-lg p-3 font-mono text-xs sm:text-sm text-amber-300 border border-slate-700/80 outline-none resize-y focus:ring-1 focus:ring-amber-400 leading-relaxed"
+                      class="w-full mt-4 min-h-[140px] bg-muted/30 rounded-lg p-3 font-mono text-xs sm:text-sm text-foreground border border-input outline-none resize-y focus:border-ring focus:ring-1 focus:ring-ring leading-relaxed"
                       placeholder="Type Markdown content here..."></textarea>
           </div>
         </div>
 
         <!-- 3. HTML Rich Syntax View -->
         <div id="hypertext-html-container" style="display: none;" class="space-y-2">
-          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono">
+          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-muted/40 border border-border text-xs text-muted-foreground font-mono">
             <span class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-              <span class="font-bold text-rose-400">HTML Color-Coded Syntax Inspector</span>
+              <span class="w-2 h-2 rounded-full bg-primary"></span>
+              <span class="font-semibold text-foreground">HTML Structured Syntax Inspector</span>
             </span>
-            <button type="button" onclick="copyHtmlSource()" class="text-xs text-slate-400 hover:text-white transition-colors">Copy HTML</button>
+            <button type="button" onclick="copyHtmlSource()" class="text-xs text-muted-foreground hover:text-foreground font-medium transition-colors">Copy HTML</button>
           </div>
-          <div class="relative min-h-[280px] rounded-xl bg-slate-950 border border-slate-800 p-4 font-mono text-xs sm:text-sm overflow-x-auto">
+          <div class="relative min-h-[280px] rounded-xl bg-card border border-border p-4 font-mono text-xs sm:text-sm overflow-x-auto shadow-inner">
             <!-- Color-coded HTML syntax tree -->
-            <div id="hypertext-html-highlighted" class="space-y-1 whitespace-pre-wrap leading-relaxed"></div>
+            <div id="hypertext-html-highlighted" class="space-y-1.5 whitespace-pre-wrap leading-relaxed"></div>
             <!-- Raw editable HTML textarea -->
             <textarea id="hypertext-html"
                       oninput="onHtmlInput(this)"
-                      class="w-full mt-3 min-h-[140px] bg-slate-900/90 rounded-lg p-3 font-mono text-xs sm:text-sm text-rose-300 border border-slate-700/80 outline-none resize-y focus:ring-1 focus:ring-rose-400 leading-relaxed"
+                      class="w-full mt-4 min-h-[140px] bg-muted/30 rounded-lg p-3 font-mono text-xs sm:text-sm text-foreground border border-input outline-none resize-y focus:border-ring focus:ring-1 focus:ring-ring leading-relaxed"
                       placeholder="Type HTML source here..."></textarea>
           </div>
         </div>
@@ -371,47 +371,47 @@
       const formattedLines = lines.map(line => {
         let esc = escapeHtmlString(line);
         if (esc.startsWith('# ')) {
-          return `<span class="text-sky-400 font-extrabold text-base">${esc}</span>`;
+          return `<div class="text-primary font-extrabold text-base border-b border-border/40 pb-1 mt-2 mb-1">${esc}</div>`;
         } else if (esc.startsWith('## ')) {
-          return `<span class="text-sky-300 font-bold text-sm">${esc}</span>`;
+          return `<div class="text-primary/95 font-bold text-sm border-b border-border/30 pb-0.5 mt-2 mb-1">${esc}</div>`;
         } else if (esc.startsWith('### ')) {
-          return `<span class="text-sky-200 font-semibold text-xs">${esc}</span>`;
+          return `<div class="text-primary/90 font-semibold text-xs mt-1.5 mb-0.5">${esc}</div>`;
         } else if (esc.startsWith('&gt; ') || esc.startsWith('&gt; 💡')) {
-          return `<div class="rounded-md bg-emerald-500/10 border-l-2 border-emerald-500 px-2 py-0.5 my-1 text-emerald-400">${esc}</div>`;
+          return `<div class="rounded-lg bg-accent/60 border-l-4 border-primary px-3 py-1.5 my-1.5 text-foreground font-sans text-xs">${esc}</div>`;
         } else if (esc.startsWith('- ') || esc.startsWith('* ')) {
-          return `<span class="text-amber-400 font-bold">•</span> <span class="text-slate-200">${esc.slice(2)}</span>`;
+          return `<div class="flex items-start gap-2 text-foreground"><span class="text-primary font-bold">•</span><span>${esc.slice(2)}</span></div>`;
         }
 
         // Inline formatting
-        esc = esc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-400 font-bold">**$1**</strong>');
-        esc = esc.replace(/\*(.*?)\*/g, '<em class="text-purple-400 italic">*$1*</em>');
-        esc = esc.replace(/`([^`]+)`/g, '<code class="text-rose-400 bg-slate-800/90 px-1 py-0.5 rounded border border-rose-500/30 font-mono text-[11px]">`$1`</code>');
-        esc = esc.replace(/\[(.*?)\]\((.*?)\)/g, '<span class="text-cyan-400 underline font-medium">[$1]</span><span class="text-slate-500">($2)</span>');
+        esc = esc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-foreground font-bold underline decoration-primary/40">**$1**</strong>');
+        esc = esc.replace(/\*(.*?)\*/g, '<em class="text-foreground/90 italic">*$1*</em>');
+        esc = esc.replace(/`([^`]+)`/g, '<code class="text-primary bg-muted px-1.5 py-0.5 rounded border border-border font-mono text-xs font-semibold">`$1`</code>');
+        esc = esc.replace(/\[(.*?)\]\((.*?)\)/g, '<span class="text-primary underline font-medium">[$1]</span><span class="text-muted-foreground text-[11px]">($2)</span>');
         
-        return `<span class="text-slate-200">${esc || '&nbsp;'}</span>`;
+        return `<div class="text-foreground min-h-[1.25rem]">${esc || '&nbsp;'}</div>`;
       });
 
-      target.innerHTML = formattedLines.join('<br>');
+      target.innerHTML = formattedLines.join('');
     }
 
     function renderHtmlSyntax(rawHtml) {
       const target = document.getElementById('hypertext-html-highlighted');
       if (!target) return;
 
-      // Colorize HTML tags, attributes, strings, comments
+      // Colorize HTML tags, attributes, strings, comments in theme tokens
       let esc = escapeHtmlString(rawHtml);
       
       // Comments
-      esc = esc.replace(/(&lt;!--.*?--&gt;)/gs, '<span class="text-slate-500 italic">$1</span>');
+      esc = esc.replace(/(&lt;!--.*?--&gt;)/gs, '<span class="text-muted-foreground/60 italic">$1</span>');
       // Opening & Closing tags with attributes
       esc = esc.replace(/(&lt;\/?)([a-zA-Z0-9\-]+)(.*?)(&gt;)/gs, (match, open, tag, attrs, close) => {
         let coloredAttrs = attrs.replace(/([a-zA-Z0-9\-:]+)=(&quot;.*?&quot;|&#39;.*?&#39;|[^\s&gt;]+)/g, (m, attrName, attrVal) => {
-          return `<span class="text-violet-400 font-medium">${attrName}</span>=<span class="text-emerald-400 font-semibold">${attrVal}</span>`;
+          return ` <span class="text-foreground/80 font-medium">${attrName}</span>=<span class="text-primary font-semibold">${attrVal}</span>`;
         });
-        return `<span class="text-sky-400 font-bold">${open}</span><span class="text-rose-400 font-bold">${tag}</span>${coloredAttrs}<span class="text-sky-400 font-bold">${close}</span>`;
+        return `<span class="text-muted-foreground font-bold">${open}</span><span class="text-primary font-bold">${tag}</span>${coloredAttrs}<span class="text-muted-foreground font-bold">${close}</span>`;
       });
 
-      target.innerHTML = esc;
+      target.innerHTML = `<div class="text-foreground space-y-1">${esc}</div>`;
     }
 
     function onMarkdownInput(el) {

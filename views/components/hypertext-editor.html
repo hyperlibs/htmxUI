@@ -157,19 +157,45 @@
           </ul>
         </div>
 
-        <!-- 2. Markdown Raw Source View -->
-        <textarea id="hypertext-markdown"
-                  style="display: none;"
-                  oninput="onMarkdownInput(this)"
-                  class="w-full min-h-[280px] bg-transparent font-mono text-xs sm:text-sm text-slate-200 border-none outline-none resize-none focus:outline-none leading-relaxed"
-                  placeholder="Type Markdown content here..."></textarea>
+        <!-- 2. Markdown Rich Syntax View -->
+        <div id="hypertext-markdown-container" style="display: none;" class="space-y-2">
+          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono">
+            <span class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span class="font-bold text-amber-400">Markdown Live Syntax Highlighter</span>
+            </span>
+            <button type="button" onclick="copyMarkdownSource()" class="text-xs text-slate-400 hover:text-white transition-colors">Copy MD</button>
+          </div>
+          <div class="relative min-h-[280px] rounded-xl bg-slate-950 border border-slate-800 p-4 font-mono text-xs sm:text-sm overflow-x-auto">
+            <!-- Syntax highlighted display -->
+            <div id="hypertext-markdown-highlighted" class="space-y-1 whitespace-pre-wrap leading-relaxed"></div>
+            <!-- Raw editable textarea -->
+            <textarea id="hypertext-markdown"
+                      oninput="onMarkdownInput(this)"
+                      class="w-full mt-3 min-h-[140px] bg-slate-900/90 rounded-lg p-3 font-mono text-xs sm:text-sm text-amber-300 border border-slate-700/80 outline-none resize-y focus:ring-1 focus:ring-amber-400 leading-relaxed"
+                      placeholder="Type Markdown content here..."></textarea>
+          </div>
+        </div>
 
-        <!-- 3. HTML Raw Source View -->
-        <textarea id="hypertext-html"
-                  style="display: none;"
-                  oninput="onHtmlInput(this)"
-                  class="w-full min-h-[280px] bg-transparent font-mono text-xs sm:text-sm text-blue-300 border-none outline-none resize-none focus:outline-none leading-relaxed"
-                  placeholder="Type HTML source here..."></textarea>
+        <!-- 3. HTML Rich Syntax View -->
+        <div id="hypertext-html-container" style="display: none;" class="space-y-2">
+          <div class="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-400 font-mono">
+            <span class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+              <span class="font-bold text-rose-400">HTML Color-Coded Syntax Inspector</span>
+            </span>
+            <button type="button" onclick="copyHtmlSource()" class="text-xs text-slate-400 hover:text-white transition-colors">Copy HTML</button>
+          </div>
+          <div class="relative min-h-[280px] rounded-xl bg-slate-950 border border-slate-800 p-4 font-mono text-xs sm:text-sm overflow-x-auto">
+            <!-- Color-coded HTML syntax tree -->
+            <div id="hypertext-html-highlighted" class="space-y-1 whitespace-pre-wrap leading-relaxed"></div>
+            <!-- Raw editable HTML textarea -->
+            <textarea id="hypertext-html"
+                      oninput="onHtmlInput(this)"
+                      class="w-full mt-3 min-h-[140px] bg-slate-900/90 rounded-lg p-3 font-mono text-xs sm:text-sm text-rose-300 border border-slate-700/80 outline-none resize-y focus:ring-1 focus:ring-rose-400 leading-relaxed"
+                      placeholder="Type HTML source here..."></textarea>
+          </div>
+        </div>
 
         <!-- Slash Command Menu Popup -->
         <div id="slash-menu"
@@ -333,16 +359,91 @@
       }
     }
 
+    function escapeHtmlString(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function renderMarkdownSyntax(rawMd) {
+      const target = document.getElementById('hypertext-markdown-highlighted');
+      if (!target) return;
+      
+      const lines = rawMd.split('\n');
+      const formattedLines = lines.map(line => {
+        let esc = escapeHtmlString(line);
+        if (esc.startsWith('# ')) {
+          return `<span class="text-sky-400 font-extrabold text-base">${esc}</span>`;
+        } else if (esc.startsWith('## ')) {
+          return `<span class="text-sky-300 font-bold text-sm">${esc}</span>`;
+        } else if (esc.startsWith('### ')) {
+          return `<span class="text-sky-200 font-semibold text-xs">${esc}</span>`;
+        } else if (esc.startsWith('&gt; ') || esc.startsWith('&gt; 💡')) {
+          return `<div class="rounded-md bg-emerald-500/10 border-l-2 border-emerald-500 px-2 py-0.5 my-1 text-emerald-400">${esc}</div>`;
+        } else if (esc.startsWith('- ') || esc.startsWith('* ')) {
+          return `<span class="text-amber-400 font-bold">•</span> <span class="text-slate-200">${esc.slice(2)}</span>`;
+        }
+
+        // Inline formatting
+        esc = esc.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-400 font-bold">**$1**</strong>');
+        esc = esc.replace(/\*(.*?)\*/g, '<em class="text-purple-400 italic">*$1*</em>');
+        esc = esc.replace(/`([^`]+)`/g, '<code class="text-rose-400 bg-slate-800/90 px-1 py-0.5 rounded border border-rose-500/30 font-mono text-[11px]">`$1`</code>');
+        esc = esc.replace(/\[(.*?)\]\((.*?)\)/g, '<span class="text-cyan-400 underline font-medium">[$1]</span><span class="text-slate-500">($2)</span>');
+        
+        return `<span class="text-slate-200">${esc || '&nbsp;'}</span>`;
+      });
+
+      target.innerHTML = formattedLines.join('<br>');
+    }
+
+    function renderHtmlSyntax(rawHtml) {
+      const target = document.getElementById('hypertext-html-highlighted');
+      if (!target) return;
+
+      // Colorize HTML tags, attributes, strings, comments
+      let esc = escapeHtmlString(rawHtml);
+      
+      // Comments
+      esc = esc.replace(/(&lt;!--.*?--&gt;)/gs, '<span class="text-slate-500 italic">$1</span>');
+      // Opening & Closing tags with attributes
+      esc = esc.replace(/(&lt;\/?)([a-zA-Z0-9\-]+)(.*?)(&gt;)/gs, (match, open, tag, attrs, close) => {
+        let coloredAttrs = attrs.replace(/([a-zA-Z0-9\-:]+)=(&quot;.*?&quot;|&#39;.*?&#39;|[^\s&gt;]+)/g, (m, attrName, attrVal) => {
+          return `<span class="text-violet-400 font-medium">${attrName}</span>=<span class="text-emerald-400 font-semibold">${attrVal}</span>`;
+        });
+        return `<span class="text-sky-400 font-bold">${open}</span><span class="text-rose-400 font-bold">${tag}</span>${coloredAttrs}<span class="text-sky-400 font-bold">${close}</span>`;
+      });
+
+      target.innerHTML = esc;
+    }
+
     function onMarkdownInput(el) {
+      renderMarkdownSyntax(el.value);
       syncEditorState();
     }
 
     function onHtmlInput(el) {
+      renderHtmlSyntax(el.value);
       syncEditorState();
+    }
+
+    function copyMarkdownSource() {
+      const mdArea = document.getElementById('hypertext-markdown');
+      if (mdArea) {
+        navigator.clipboard.writeText(mdArea.value);
+        alert('Markdown source copied to clipboard!');
+      }
+    }
+
+    function copyHtmlSource() {
+      const htmlArea = document.getElementById('hypertext-html');
+      if (htmlArea) {
+        navigator.clipboard.writeText(htmlArea.value);
+        alert('HTML source copied to clipboard!');
+      }
     }
 
     function switchEditorView(mode) {
       const canvas = document.getElementById('hypertext-canvas');
+      const mdContainer = document.getElementById('hypertext-markdown-container');
+      const htmlContainer = document.getElementById('hypertext-html-container');
       const mdArea = document.getElementById('hypertext-markdown');
       const htmlArea = document.getElementById('hypertext-html');
 
@@ -351,7 +452,7 @@
       const btnHtml = document.getElementById('tab-btn-html');
 
       // 1. If switching FROM markdown/HTML, sync back to canvas first
-      if (mdArea.style.display !== 'none' && mdArea.value) {
+      if (mdContainer.style.display !== 'none' && mdArea.value) {
         let convertedHtml = mdArea.value
           .replace(/^### (.*$)/gim, '<h3>$1</h3>')
           .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -362,7 +463,7 @@
           .replace(/\n\n/gim, '</p><p>')
           .replace(/\n/gim, '<br>');
         canvas.innerHTML = `<p>${convertedHtml}</p>`;
-      } else if (htmlArea.style.display !== 'none' && htmlArea.value) {
+      } else if (htmlContainer.style.display !== 'none' && htmlArea.value) {
         canvas.innerHTML = htmlArea.value;
       }
 
@@ -378,19 +479,26 @@
           .replace(/<div class="[^"]*rounded-xl[^"]*bg-emerald-500\/10[^"]*">.*?💡 <strong>(.*?)<\/strong>(.*?)<\/div>/gis, '> 💡 **$1**$2\n\n')
           .replace(/<p>(.*?)<\/p>/gi, '$1\n\n')
           .replace(/<br\s*[\/]?>/gi, '\n');
-        mdArea.value = md.trim();
+        
+        md = md.trim();
+        mdArea.value = md;
+        renderMarkdownSyntax(md);
+
         canvas.style.display = 'none';
-        htmlArea.style.display = 'none';
-        mdArea.style.display = 'block';
+        htmlContainer.style.display = 'none';
+        mdContainer.style.display = 'block';
       } else if (mode === 'html') {
-        htmlArea.value = canvas.innerHTML;
+        const rawHtml = canvas.innerHTML;
+        htmlArea.value = rawHtml;
+        renderHtmlSyntax(rawHtml);
+
         canvas.style.display = 'none';
-        mdArea.style.display = 'none';
-        htmlArea.style.display = 'block';
+        mdContainer.style.display = 'none';
+        htmlContainer.style.display = 'block';
       } else {
         // Visual mode
-        mdArea.style.display = 'none';
-        htmlArea.style.display = 'none';
+        mdContainer.style.display = 'none';
+        htmlContainer.style.display = 'none';
         canvas.style.display = 'block';
       }
 
